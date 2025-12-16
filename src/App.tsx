@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import Index from "./pages/Index.tsx";
 import Funktionen from "./pages/Funktionen.tsx";
 import Preise from "./pages/Preise.tsx";
@@ -30,6 +31,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
+            <SpeedInsights />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/funktionen" element={<Funktionen />} />

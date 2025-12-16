@@ -1,19 +1,121 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ArrowRight } from "lucide-react";
 import { BillingToggle } from "@/components/pricing/BillingToggle";
+import { PlanTypeToggle } from "@/components/pricing/PlanTypeToggle";
 import { PricingCard, type PricingPlan } from "@/components/pricing/PricingCard";
 import { FeatureComparisonTable } from "@/components/pricing/FeatureComparisonTable";
+import { useUser, useOrganization, useClerk } from "@clerk/clerk-react";
+import { getUserCheckoutUrl, getOrgCheckoutUrl } from "@/lib/clerk-billing";
 
 export default function Preise() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const { user, isSignedIn } = useUser();
+  const { organization, membership } = useOrganization();
+  const clerk = useClerk();
   const [isYearly, setIsYearly] = useState(false);
+  const [planType, setPlanType] = useState<"user" | "team">("user");
 
-  // PLAN-DATEN: Hier Preise oder Features später anpassen
-  const plans: PricingPlan[] = [
+  // Handler für User Subscriptions
+  const handleUserSubscribe = (planKey: string) => {
+    if (!isSignedIn) {
+      clerk.openSignIn({
+        redirectUrl: window.location.href,
+      });
+      return;
+    }
+
+    if (planKey === "starter" || planKey === "free") {
+      // Free Plan - direkt zum Dashboard
+      navigate("/");
+      return;
+    }
+
+    if (planKey === "individual" || planKey === "custom") {
+      // Custom Plan - zur Kontaktseite
+      navigate("/kontakt");
+      return;
+    }
+
+    // Validiere Plan Key
+    const validPlanKeys = ["starter", "pro", "enterprise"] as const;
+    if (!validPlanKeys.includes(planKey as any)) {
+      console.error(`Invalid user plan key: ${planKey}`);
+      return;
+    }
+
+    try {
+      // Redirect zu Clerk Billing Checkout
+      const checkoutUrl = getUserCheckoutUrl(planKey as "starter" | "pro" | "enterprise");
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      console.error("Error creating checkout URL:", error);
+      // Fallback: Öffne User Profile Modal
+      clerk.openUserProfile({
+        initialPage: "account",
+      });
+    }
+  };
+
+  // Handler für Team Subscriptions
+  const handleTeamSubscribe = (planKey: string) => {
+    if (!isSignedIn) {
+      clerk.openSignIn({
+        redirectUrl: window.location.href,
+      });
+      return;
+    }
+
+    if (!organization) {
+      // User muss erst ein Team erstellen
+      clerk.openCreateOrganization({
+        afterCreateOrganizationUrl: window.location.href,
+      });
+      return;
+    }
+
+    if (planKey === "team_starter" || planKey === "free") {
+      // Free Team Plan
+      navigate("/");
+      return;
+    }
+
+    if (planKey === "custom") {
+      // Custom Plan - zur Kontaktseite
+      navigate("/kontakt");
+      return;
+    }
+
+    // Validiere Plan Key
+    const validPlanKeys = ["team_starter", "team_pro", "team_enterprise"] as const;
+    if (!validPlanKeys.includes(planKey as any)) {
+      console.error(`Invalid organization plan key: ${planKey}`);
+      return;
+    }
+
+    try {
+      // Redirect zu Clerk Billing Checkout für Organizations
+      const checkoutUrl = getOrgCheckoutUrl(
+        planKey as "team_starter" | "team_pro" | "team_enterprise",
+        organization.id
+      );
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      console.error("Error creating checkout URL:", error);
+      // Fallback: Öffne Organization Profile Modal
+      clerk.openOrganizationProfile({
+        initialPage: "members",
+      });
+    }
+  };
+
+  // User Plans
+  const userPlans: PricingPlan[] = [
     {
       id: "starter",
       name: t.pricing.starter.name,
@@ -64,6 +166,84 @@ export default function Preise() {
       ctaLink: t.pricing.individual.ctaLink,
     },
   ];
+
+  // Team Plans
+  const teamPlans: PricingPlan[] = [
+    {
+      id: "team_starter",
+      name: "Team Starter",
+      description: "Perfekt für kleine Teams",
+      price: "19,99 €",
+      priceYearly: "16,66 €",
+      period: "/ Monat",
+      users: "Bis zu 5 Teammitglieder",
+      features: [
+        "Bis zu 5 Teammitglieder",
+        "Team Chat & Collaboration",
+        "Gemeinsame Dokumente",
+        "Basis-Automatisierung",
+      ],
+      cta: "Team Starter wählen",
+      ctaLink: "#",
+    },
+    {
+      id: "team_pro",
+      name: "Team Pro",
+      description: "Für wachsende Teams",
+      price: "49,99 €",
+      priceYearly: "41,66 €",
+      period: "/ Monat",
+      users: "Bis zu 15 Teammitglieder",
+      features: [
+        "Bis zu 15 Teammitglieder",
+        "Alle Team Starter Features",
+        "Advanced Collaboration",
+        "Team Dashboards",
+        "Priority Support",
+      ],
+      cta: "Team Pro wählen",
+      ctaLink: "#",
+      popular: "Beliebt",
+    },
+    {
+      id: "team_enterprise",
+      name: "Team Enterprise",
+      description: "Für große Teams",
+      price: "199,99 €",
+      priceYearly: "166,66 €",
+      period: "/ Monat",
+      users: "Unbegrenzte Teammitglieder",
+      features: [
+        "Unbegrenzte Teammitglieder",
+        "Alle Team Pro Features",
+        "Custom Workflows",
+        "Advanced Security",
+        "Dedizierter Support",
+      ],
+      cta: "Team Enterprise wählen",
+      ctaLink: "#",
+    },
+    {
+      id: "custom",
+      name: "Individuell",
+      description: "Maßgeschneidert für dein Team",
+      price: "Auf Anfrage",
+      priceYearly: "Auf Anfrage",
+      period: "",
+      users: "Unbegrenzt",
+      features: [
+        "Alle Team Enterprise Features",
+        "Custom Integration",
+        "White Label Optionen",
+        "On-Premise Deployment",
+        "Persönlicher Account Manager",
+      ],
+      cta: "Kontakt aufnehmen",
+      ctaLink: "/kontakt",
+    },
+  ];
+
+  const plans = planType === "user" ? userPlans : teamPlans;
 
   // Feature-Vergleichsmatrix
   const featureMatrix = [
@@ -303,6 +483,16 @@ export default function Preise() {
               {t.pricing.heroText}
             </p>
 
+            {/* Plan Type Toggle (User vs Team) */}
+            <div className="mb-6">
+              <PlanTypeToggle
+                planType={planType}
+                onToggle={setPlanType}
+                userLabel="Für Einzelpersonen"
+                teamLabel="Für Teams"
+              />
+            </div>
+
             {/* Billing Toggle */}
             <BillingToggle
               isYearly={isYearly}
@@ -319,12 +509,23 @@ export default function Preise() {
       <section className="pb-20">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            {plans.map((plan, index) => (
+            {plans.map((plan) => (
               <PricingCard
                 key={plan.id}
                 plan={plan}
                 isYearly={isYearly}
-                highlighted={plan.id === "pro"}
+                highlighted={
+                  planType === "user"
+                    ? plan.id === "pro"
+                    : plan.id === "team_pro"
+                }
+                onSubscribe={() => {
+                  if (planType === "user") {
+                    handleUserSubscribe(plan.id);
+                  } else {
+                    handleTeamSubscribe(plan.id);
+                  }
+                }}
               />
             ))}
           </div>

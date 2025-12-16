@@ -4,6 +4,13 @@ import { Menu, X, Moon, Sun, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/clerk-react";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -75,9 +82,22 @@ export function Header() {
               )}
             </Button>
 
-            <Button variant="opux" size="sm" asChild>
-              <Link to="/kontakt">{t.nav.getStarted}</Link>
-            </Button>
+            {/* Clerk Auth Components */}
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button variant="ghost" size="sm">
+                  Anmelden
+                </Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button variant="opux" size="sm">
+                  Registrieren
+                </Button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </div>
 
           {/* Mobile Menu Button */}
@@ -130,11 +150,23 @@ export function Header() {
                 {language === "de" ? "English" : "Deutsch"}
               </Button>
             </div>
-            <Button variant="opux" asChild className="mt-2">
-              <Link to="/kontakt" onClick={() => setMobileMenuOpen(false)}>
-                {t.nav.getStarted}
-              </Link>
-            </Button>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button variant="ghost" className="mt-2 w-full" onClick={() => setMobileMenuOpen(false)}>
+                  Anmelden
+                </Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button variant="opux" className="mt-2 w-full" onClick={() => setMobileMenuOpen(false)}>
+                  Registrieren
+                </Button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <div className="mt-2 flex justify-center">
+                <UserButton />
+              </div>
+            </SignedIn>
           </div>
         </div>
       )}

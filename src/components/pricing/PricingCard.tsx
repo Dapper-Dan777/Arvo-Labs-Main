@@ -23,11 +23,19 @@ interface PricingCardProps {
   plan: PricingPlan;
   isYearly: boolean;
   highlighted?: boolean;
+  onSubscribe?: () => void;
 }
 
-export function PricingCard({ plan, isYearly, highlighted }: PricingCardProps) {
+export function PricingCard({ plan, isYearly, highlighted, onSubscribe }: PricingCardProps) {
   const displayPrice = isYearly ? plan.priceYearly : plan.price;
   const isCustom = plan.price === "Auf Anfrage" || plan.price === "On request";
+  const isFree = plan.id === "starter" || plan.id === "team_starter";
+
+  const handleClick = () => {
+    if (onSubscribe) {
+      onSubscribe();
+    }
+  };
 
   return (
     <div
@@ -70,14 +78,25 @@ export function PricingCard({ plan, isYearly, highlighted }: PricingCardProps) {
         ))}
       </ul>
 
-      <Button
-        variant={highlighted ? "opux" : "opuxOutline"}
-        className="w-full"
-        size="lg"
-        asChild
-      >
-        <Link to={plan.ctaLink}>{plan.cta}</Link>
-      </Button>
+      {onSubscribe ? (
+        <Button
+          variant={highlighted ? "opux" : "opuxOutline"}
+          className="w-full"
+          size="lg"
+          onClick={handleClick}
+        >
+          {plan.cta}
+        </Button>
+      ) : (
+        <Button
+          variant={highlighted ? "opux" : "opuxOutline"}
+          className="w-full"
+          size="lg"
+          asChild
+        >
+          <Link to={plan.ctaLink}>{plan.cta}</Link>
+        </Button>
+      )}
     </div>
   );
 }
