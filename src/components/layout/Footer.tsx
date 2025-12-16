@@ -41,7 +41,7 @@ export function Footer() {
   const copyrightText = t.footer.copyright.replace("{year}", currentYear.toString());
 
   return (
-    <footer className="bg-background border-t border-border">
+    <footer className="bg-background border-t border-border relative z-10">
       <div className="container mx-auto py-12 md:py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-8">
