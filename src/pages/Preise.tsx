@@ -48,18 +48,18 @@ export default function Preise() {
       return;
     }
 
-    // Öffne User Profile Modal mit Billing Tab
+    // Öffne User Profile Modal direkt zum Billing Tab
     // Dies ist die offizielle Methode für React-Anwendungen
     try {
       clerk.openUserProfile({
-        initialPage: "account",
+        initialPage: "billing",
       });
     } catch (error) {
       console.error("Error opening user profile:", error);
-      // Fallback: Versuche direkt zum Billing zu navigieren
-      if (clerk.user) {
-        window.open(`https://accounts.clerk.com/user`, "_blank");
-      }
+      // Fallback: Öffne Account Modal (User kann dann zu Billing navigieren)
+      clerk.openUserProfile({
+        initialPage: "account",
+      });
     }
   };
 
@@ -99,18 +99,17 @@ export default function Preise() {
       return;
     }
 
-    // Öffne Organization Profile Modal
-    // Der User kann dann im Modal zum Billing-Tab navigieren
+    // Öffne Organization Profile Modal direkt zum Billing Tab
     try {
       clerk.openOrganizationProfile({
-        initialPage: "members",
+        initialPage: "billing",
       });
     } catch (error) {
       console.error("Error opening organization profile:", error);
-      // Fallback: Versuche direkt zum Billing zu navigieren
-      if (organization) {
-        window.open(`https://accounts.clerk.com/organization/${organization.id}`, "_blank");
-      }
+      // Fallback: Öffne Members Tab (User kann dann zu Billing navigieren)
+      clerk.openOrganizationProfile({
+        initialPage: "members",
+      });
     }
   };
 
