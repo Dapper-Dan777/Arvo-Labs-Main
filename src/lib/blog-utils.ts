@@ -7,6 +7,26 @@ export interface BlogPost {
   content: string;
 }
 
+// Hilfsfunktion zum Übersetzen von Blog-Posts
+export function translateBlogPost(post: BlogPost, translations: any, language: "de" | "en"): BlogPost {
+  if (language === "de") {
+    return post; // Original auf Deutsch
+  }
+
+  // Übersetze Titel und Excerpt wenn verfügbar
+  const translatedPost = translations?.posts?.[post.slug as keyof typeof translations.posts];
+  
+  if (translatedPost) {
+    return {
+      ...post,
+      title: translatedPost.title || post.title,
+      excerpt: translatedPost.excerpt || post.excerpt,
+    };
+  }
+
+  return post; // Fallback: Original zurückgeben
+}
+
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
   try {
     // Lade Blog-Posts aus der generierten JSON-Datei

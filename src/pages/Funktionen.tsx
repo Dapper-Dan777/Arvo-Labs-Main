@@ -35,21 +35,6 @@ export default function Funktionen() {
     { icon: Smartphone, titleKey: "mobile", ...t.features.mobile },
   ];
 
-  const additionalFeaturesData = language === "de" ? [
-    { icon: Zap, title: "KI-gestützte Entscheidungen", description: "Unsere KI lernt aus deinen Daten und trifft intelligente Entscheidungen innerhalb deiner Workflows." },
-    { icon: Clock, title: "Zeitbasierte Trigger", description: "Plane Automatisierungen für bestimmte Zeiten oder Intervalle. Perfekt für wiederkehrende Aufgaben." },
-    { icon: Users, title: "Team-Kollaboration", description: "Arbeite gemeinsam an Workflows, teile Templates und verwalte Berechtigungen für dein ganzes Team." },
-    { icon: FileText, title: "Dokumenten-Verarbeitung", description: "Extrahiere automatisch Daten aus Dokumenten, klassifiziere Inhalte und leite sie weiter." },
-    { icon: Bell, title: "Smart Notifications", description: "Erhalte Benachrichtigungen genau dann, wenn sie relevant sind – nicht mehr, nicht weniger." },
-    { icon: Globe, title: "Mehrsprachigkeit", description: "Arvo Labs versteht und verarbeitet Inhalte in über 50 Sprachen – ideal für internationale Teams." },
-  ] : [
-    { icon: Zap, title: "AI-Powered Decisions", description: "Our AI learns from your data and makes intelligent decisions within your workflows." },
-    { icon: Clock, title: "Time-Based Triggers", description: "Schedule automations for specific times or intervals. Perfect for recurring tasks." },
-    { icon: Users, title: "Team Collaboration", description: "Work together on workflows, share templates, and manage permissions for your entire team." },
-    { icon: FileText, title: "Document Processing", description: "Automatically extract data from documents, classify content, and route it accordingly." },
-    { icon: Bell, title: "Smart Notifications", description: "Get notifications exactly when they're relevant—no more, no less." },
-    { icon: Globe, title: "Multilingual", description: "Arvo Labs understands and processes content in over 50 languages—ideal for international teams." },
-  ];
 
   return (
     <Layout>
@@ -71,7 +56,7 @@ export default function Funktionen() {
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto">
           <h2 className="text-2xl font-semibold text-foreground mb-12 text-center">
-            {language === "de" ? "Kernfunktionen" : "Core Features"}
+            {t.functions.coreFeatures}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {mainFeatures.map((feature, index) => (
@@ -94,10 +79,17 @@ export default function Funktionen() {
       <section className="py-16">
         <div className="container mx-auto">
           <h2 className="text-2xl font-semibold text-foreground mb-12 text-center">
-            {language === "de" ? "Weitere Funktionen" : "Additional Features"}
+            {t.functions.additionalFeatures}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {additionalFeaturesData.map((feature, index) => (
+            {[
+              { icon: Zap, ...t.functions.ai },
+              { icon: Clock, ...t.functions.time },
+              { icon: Users, ...t.functions.team },
+              { icon: FileText, ...t.functions.docs },
+              { icon: Bell, ...t.functions.notifications },
+              { icon: Globe, ...t.functions.multilang },
+            ].map((feature, index) => (
               <div
                 key={index}
                 className="p-6 rounded-xl bg-card border border-border hover:border-foreground/20 transition-colors"
@@ -126,7 +118,7 @@ export default function Funktionen() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="opux" size="lg" asChild>
                 <Link to="/preise">
-                  {language === "de" ? "Preise ansehen" : "View Pricing"}
+                  {t.functions.viewPricing}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>

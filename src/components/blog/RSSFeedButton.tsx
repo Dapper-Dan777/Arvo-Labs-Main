@@ -9,8 +9,12 @@ import {
 import { Rss, ChevronDown, ExternalLink, QrCode } from "lucide-react";
 import { AppleIcon } from "./AppleIcon";
 import { GoogleIcon } from "./GoogleIcon";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useToast } from "@/hooks/use-toast";
 
 export function RSSFeedButton() {
+  const { t } = useLanguage();
+  const { toast } = useToast();
   const baseUrl = typeof window !== "undefined" 
     ? `${window.location.protocol}//${window.location.host}`
     : "https://arvo-labs.de";
@@ -40,30 +44,31 @@ export function RSSFeedButton() {
   // Weitere Optionen
   const additionalOptions = [
     {
-      name: "In Apple News öffnen",
+      name: t.blog?.rss?.openInAppleNews || "In Apple News öffnen",
       url: `https://www.icloud.com/shortcuts/?url=${encodeURIComponent(rssUrl)}`,
       icon: <AppleIcon className="w-4 h-4" />,
-      description: "Für iOS-Nutzer",
+      description: t.blog?.rss?.forIOSUsers || "Für iOS-Nutzer",
     },
     {
-      name: "In Google News öffnen",
+      name: t.blog?.rss?.openInGoogleNews || "In Google News öffnen",
       url: `https://news.google.com/rss/search?q=${encodeURIComponent(rssUrl)}`,
       icon: <GoogleIcon className="w-4 h-4" />,
-      description: "Google News Integration",
+      description: t.blog?.rss?.googleNewsIntegration || "Google News Integration",
     },
     {
-      name: "QR-Code anzeigen",
+      name: t.blog?.rss?.showQRCode || "QR-Code anzeigen",
       url: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(rssUrl)}`,
       icon: <QrCode className="w-4 h-4" />,
-      description: "Für Mobile-Geräte",
+      description: t.blog?.rss?.forMobileDevices || "Für Mobile-Geräte",
       isQR: true,
     },
   ];
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(rssUrl);
-    // Optional: Toast-Benachrichtigung anzeigen
-    alert("RSS-URL wurde in die Zwischenablage kopiert!");
+    toast({
+      title: t.blog?.rss?.urlCopied || "RSS-URL wurde in die Zwischenablage kopiert!",
+    });
   };
 
   return (
@@ -71,17 +76,17 @@ export function RSSFeedButton() {
       <DropdownMenuTrigger asChild>
         <Button variant="opuxOutline" size="sm" className="text-sm">
           <Rss className="w-4 h-4 mr-2" />
-          RSS-Feed abonnieren
+          {t.blog?.rss?.subscribe || "RSS-Feed abonnieren"}
           <ChevronDown className="w-4 h-4 ml-2" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuItem onClick={handleCopyUrl} className="cursor-pointer">
           <Rss className="w-4 h-4 mr-2" />
-          RSS-URL kopieren
+          {t.blog?.rss?.copyUrl || "RSS-URL kopieren"}
         </DropdownMenuItem>
         <div className="px-2 py-1.5 text-xs text-muted-foreground border-t border-border mt-1">
-          In Reader öffnen:
+          {t.blog?.rss?.openInReader || "In Reader öffnen:"}
         </div>
         {rssReaders.map((reader) => (
           <DropdownMenuItem key={reader.name} asChild>
@@ -97,7 +102,7 @@ export function RSSFeedButton() {
           </DropdownMenuItem>
         ))}
         <div className="px-2 py-1.5 text-xs text-muted-foreground border-t border-border mt-1">
-          Weitere Optionen:
+          {t.blog?.rss?.moreOptions || "Weitere Optionen:"}
         </div>
         {additionalOptions.map((option) => (
           <DropdownMenuItem key={option.name} asChild>

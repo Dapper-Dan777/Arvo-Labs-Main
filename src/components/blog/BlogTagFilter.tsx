@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tag, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BlogTagFilterProps {
   tags: string[];
@@ -12,9 +13,18 @@ interface BlogTagFilterProps {
 const INITIAL_TAGS_TO_SHOW = 3;
 
 export function BlogTagFilter({ tags, selectedTags, onTagToggle }: BlogTagFilterProps) {
+  const { t, language } = useLanguage();
   const [showAllTags, setShowAllTags] = useState(false);
   
   if (tags.length === 0) return null;
+
+  // Übersetze Tags basierend auf der Sprache
+  const translateTag = (tag: string): string => {
+    if (language === "en" && t.blog?.tags?.[tag as keyof typeof t.blog.tags]) {
+      return t.blog.tags[tag as keyof typeof t.blog.tags];
+    }
+    return tag;
+  };
 
   const tagsToShow = showAllTags ? tags : tags.slice(0, INITIAL_TAGS_TO_SHOW);
   const hasMoreTags = tags.length > INITIAL_TAGS_TO_SHOW;
@@ -35,7 +45,7 @@ export function BlogTagFilter({ tags, selectedTags, onTagToggle }: BlogTagFilter
             )}
           >
             <Tag className="w-3 h-3 mr-1.5" />
-            {tag}
+            {translateTag(tag)}
           </Button>
         );
       })}
@@ -46,7 +56,7 @@ export function BlogTagFilter({ tags, selectedTags, onTagToggle }: BlogTagFilter
           onClick={() => setShowAllTags(true)}
           className="text-sm text-muted-foreground hover:text-foreground"
         >
-          Weitere
+          {t.blog.showMore}
           <ChevronDown className="w-4 h-4 ml-1" />
         </Button>
       )}
@@ -57,7 +67,7 @@ export function BlogTagFilter({ tags, selectedTags, onTagToggle }: BlogTagFilter
           onClick={() => setShowAllTags(false)}
           className="text-sm text-muted-foreground hover:text-foreground"
         >
-          Weniger
+          {t.blog.showLess}
           <ChevronDown className="w-4 h-4 ml-1 rotate-180" />
         </Button>
       )}

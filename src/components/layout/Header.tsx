@@ -86,12 +86,12 @@ export function Header() {
             <SignedOut>
               <SignInButton mode="modal">
                 <Button variant="ghost" size="sm">
-                  Anmelden
+                  {t.auth.signIn}
                 </Button>
               </SignInButton>
               <SignUpButton mode="modal">
                 <Button variant="opux" size="sm">
-                  Registrieren
+                  {t.auth.signUp}
                 </Button>
               </SignUpButton>
             </SignedOut>
@@ -153,12 +153,12 @@ export function Header() {
             <SignedOut>
               <SignInButton mode="modal">
                 <Button variant="ghost" className="mt-2 w-full" onClick={() => setMobileMenuOpen(false)}>
-                  Anmelden
+                  {t.auth.signIn}
                 </Button>
               </SignInButton>
               <SignUpButton mode="modal">
                 <Button variant="opux" className="mt-2 w-full" onClick={() => setMobileMenuOpen(false)}>
-                  Registrieren
+                  {t.auth.signUp}
                 </Button>
               </SignUpButton>
             </SignedOut>

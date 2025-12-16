@@ -100,10 +100,10 @@ export default function Blog() {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-semibold text-foreground mb-6">
-              {t.blog.title}
+              {t.blog?.title || "Blog"}
             </h1>
             <p className="text-muted-foreground text-lg md:text-xl leading-relaxed mb-8">
-              {t.blog.subtitle}
+              {t.blog?.subtitle || "Neuigkeiten, Tipps und Einblicke"}
             </p>
             <div className="flex justify-center">
               <RSSFeedButton />
@@ -117,7 +117,7 @@ export default function Blog() {
         <div className="container mx-auto max-w-6xl">
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">Blog-Posts werden geladen...</p>
+              <p className="text-muted-foreground">{t.blog?.loading || "Blog-Posts werden geladen..."}</p>
             </div>
           ) : (
             <>
@@ -138,7 +138,7 @@ export default function Blog() {
                 {(searchQuery || selectedTags.length > 0) && (
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span>
-                      {filteredPosts.length} {filteredPosts.length === 1 ? "Artikel gefunden" : "Artikel gefunden"}
+                      {filteredPosts.length} {filteredPosts.length === 1 ? (t.blog?.articleFound || "Artikel gefunden") : (t.blog?.articlesFound || "Artikel gefunden")}
                     </span>
                     <Button
                       variant="ghost"
@@ -146,7 +146,7 @@ export default function Blog() {
                       onClick={handleClearSearch}
                       className="text-muted-foreground hover:text-foreground"
                     >
-                      Filter zurücksetzen
+                      {t.blog?.resetFilters || "Filter zurücksetzen"}
                     </Button>
                   </div>
                 )}
@@ -157,13 +157,10 @@ export default function Blog() {
                 <div className="text-center py-12">
                   <div className="bg-secondary/30 rounded-2xl p-12 border border-border max-w-2xl mx-auto">
                     <p className="text-muted-foreground text-lg leading-relaxed mb-4">
-                      Noch keine Blog-Artikel verfügbar.
+                      {t.blog?.noPosts || "Noch keine Blog-Artikel verfügbar."}
                     </p>
                     <p className="text-muted-foreground text-sm">
-                      Blog-Artikel werden in Kürze veröffentlicht.
-                    </p>
-                    <p className="text-muted-foreground text-xs mt-4">
-                      (Prüfe die Browser-Konsole für Debug-Informationen)
+                      {t.blog?.noPostsSubtext || "Blog-Artikel werden in Kürze veröffentlicht."}
                     </p>
                   </div>
                 </div>
@@ -171,10 +168,10 @@ export default function Blog() {
                 <div className="text-center py-12">
                   <div className="bg-secondary/30 rounded-2xl p-12 border border-border max-w-2xl mx-auto">
                     <p className="text-muted-foreground text-lg leading-relaxed mb-4">
-                      Keine Artikel gefunden.
+                      {t.blog?.noResults || "Keine Artikel gefunden."}
                     </p>
                     <p className="text-muted-foreground text-sm">
-                      Versuche es mit anderen Suchbegriffen oder entferne die Filter.
+                      {t.blog?.noResultsSubtext || "Versuche es mit anderen Suchbegriffen oder entferne die Filter."}
                     </p>
                     <Button
                       variant="opuxOutline"
@@ -182,7 +179,7 @@ export default function Blog() {
                       onClick={handleClearSearch}
                       className="mt-4"
                     >
-                      Filter zurücksetzen
+                      {t.blog?.resetFilters || "Filter zurücksetzen"}
                     </Button>
                   </div>
                 </div>
@@ -201,7 +198,7 @@ export default function Blog() {
                         size="lg"
                         onClick={handleLoadMore}
                       >
-                        Weitere ansehen
+                        {t.blog?.loadMore || "Weitere ansehen"}
                         <ChevronRight className="w-4 h-4 ml-2" />
                       </Button>
                     </div>

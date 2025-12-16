@@ -13,8 +13,10 @@ import {
 } from "@/components/ui/select";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Support() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     category: "",
     name: "",
@@ -30,23 +32,23 @@ export default function Support() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.category) {
-      newErrors.category = "Bitte wählen Sie eine Problem-Kategorie";
+      newErrors.category = t.support.form.categoryRequired;
     }
 
     if (!formData.name.trim()) {
-      newErrors.name = "Bitte geben Sie Ihren Namen ein";
+      newErrors.name = t.support.form.nameRequired;
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = "Bitte geben Sie Ihre E-Mail-Adresse ein";
+      newErrors.email = t.support.form.emailRequired;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Bitte geben Sie eine gültige E-Mail-Adresse ein";
+      newErrors.email = t.support.form.emailInvalid;
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = "Bitte beschreiben Sie Ihr Problem";
+      newErrors.description = t.support.form.descriptionRequired;
     } else if (formData.description.trim().length < 10) {
-      newErrors.description = "Die Beschreibung muss mindestens 10 Zeichen lang sein";
+      newErrors.description = t.support.form.descriptionMinLength;
     }
 
     setErrors(newErrors);
@@ -113,11 +115,10 @@ export default function Support() {
         <div className="max-w-2xl mx-auto">
           <div className="bg-card rounded-lg shadow-lg p-8 border border-border">
             <h1 className="text-3xl font-bold text-foreground mb-2">
-              Support-Anfrage
+              {t.support.title}
             </h1>
             <p className="text-muted-foreground mb-8">
-              Wir helfen Ihnen gerne weiter. Beschreiben Sie Ihr Problem und wir
-              melden uns schnellstmöglich bei Ihnen.
+              {t.support.subtitle}
             </p>
 
             {/* Success Message */}
@@ -126,10 +127,10 @@ export default function Support() {
                 <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
                 <div>
                   <p className="font-medium text-green-800 dark:text-green-200">
-                    Anfrage erfolgreich gesendet!
+                    {t.support.form.success.title}
                   </p>
                   <p className="text-sm text-green-700 dark:text-green-300">
-                    Wir melden uns innerhalb von 24 Stunden bei Ihnen.
+                    {t.support.form.success.message}
                   </p>
                 </div>
               </div>
@@ -141,7 +142,7 @@ export default function Support() {
                 <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
                 <div>
                   <p className="font-medium text-red-800 dark:text-red-200">
-                    Bitte korrigieren Sie die Fehler im Formular
+                    {t.support.form.error.title}
                   </p>
                 </div>
               </div>
@@ -151,7 +152,7 @@ export default function Support() {
               {/* Problem-Kategorie */}
               <div className="space-y-2">
                 <Label htmlFor="category" className="text-sm font-medium">
-                  Problem-Kategorie <span className="text-red-500">*</span>
+                  {t.support.form.category} <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.category}
@@ -163,14 +164,14 @@ export default function Support() {
                       errors.category && "border-red-500 focus:border-red-500"
                     )}
                   >
-                    <SelectValue placeholder="Bitte wählen..." />
+                    <SelectValue placeholder="..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="technical">Technisches Problem</SelectItem>
-                    <SelectItem value="billing">Abrechnungsfrage</SelectItem>
-                    <SelectItem value="feature">Feature-Anfrage</SelectItem>
-                    <SelectItem value="account">Account-Verwaltung</SelectItem>
-                    <SelectItem value="other">Sonstiges</SelectItem>
+                    <SelectItem value="technical">{t.support.form.categoryOptions.technical}</SelectItem>
+                    <SelectItem value="billing">{t.support.form.categoryOptions.billing}</SelectItem>
+                    <SelectItem value="feature">{t.support.form.categoryOptions.feature}</SelectItem>
+                    <SelectItem value="account">{t.support.form.categoryOptions.account}</SelectItem>
+                    <SelectItem value="other">{t.support.form.categoryOptions.other}</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.category && (
@@ -181,7 +182,7 @@ export default function Support() {
               {/* Name */}
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-medium">
-                  Name <span className="text-red-500">*</span>
+                  {t.support.form.name} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="name"
@@ -201,7 +202,7 @@ export default function Support() {
               {/* Firmenname */}
               <div className="space-y-2">
                 <Label htmlFor="company" className="text-sm font-medium">
-                  Firmenname (optional)
+                  {t.support.form.company}
                 </Label>
                 <Input
                   id="company"
@@ -216,7 +217,7 @@ export default function Support() {
               {/* E-Mail */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">
-                  E-Mail-Adresse <span className="text-red-500">*</span>
+                  {t.support.form.email} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="email"
@@ -236,12 +237,12 @@ export default function Support() {
               {/* Problem-Beschreibung */}
               <div className="space-y-2">
                 <Label htmlFor="description" className="text-sm font-medium">
-                  Problem-Beschreibung <span className="text-red-500">*</span>
+                  {t.support.form.description} <span className="text-red-500">*</span>
                 </Label>
                 <Textarea
                   id="description"
                   name="description"
-                  placeholder="Bitte beschreiben Sie Ihr Problem so detailliert wie möglich..."
+                  placeholder="..."
                   rows={6}
                   value={formData.description}
                   onChange={handleChange}
@@ -255,7 +256,7 @@ export default function Support() {
                     <p className="text-sm text-red-500">{errors.description}</p>
                   )}
                   <p className="text-xs text-muted-foreground ml-auto">
-                    {formData.description.length} Zeichen
+                    {formData.description.length} {t.support.form.characterCount}
                   </p>
                 </div>
               </div>
@@ -271,10 +272,10 @@ export default function Support() {
                 {status === "loading" ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Wird gesendet...
+                    {t.support.form.submitting}
                   </>
                 ) : (
-                  "Support-Anfrage senden"
+                  t.support.form.submit
                 )}
               </Button>
             </form>

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { X, Phone, Mail, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function SupportModal() {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
 
   // ESC-Taste zum Schließen
@@ -37,7 +39,7 @@ export function SupportModal() {
           "transition-all hover:scale-105",
           "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         )}
-        aria-label="Support kontaktieren"
+        aria-label={t.support.modal.title}
       >
         {/* Chat Bubble SVG Icon */}
         <svg
@@ -78,7 +80,7 @@ export function SupportModal() {
 
             {/* Header */}
             <h2 className="text-2xl font-bold text-foreground mb-6 pr-8">
-              Support kontaktieren
+              {t.support.modal.title}
             </h2>
 
             {/* Kontakt-Infos */}
@@ -92,7 +94,7 @@ export function SupportModal() {
                   <Phone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">Telefon</p>
+                  <p className="text-sm text-muted-foreground">{t.support.modal.phone}</p>
                   <p className="font-semibold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     +49 123 456 789
                   </p>
@@ -108,7 +110,7 @@ export function SupportModal() {
                   <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">E-Mail</p>
+                  <p className="text-sm text-muted-foreground">{t.support.modal.email}</p>
                   <p className="font-semibold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     support@arvolabs.de
                   </p>
@@ -121,9 +123,9 @@ export function SupportModal() {
                   <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">Öffnungszeiten</p>
+                  <p className="text-sm text-muted-foreground">{t.support.modal.hours}</p>
                   <p className="font-semibold text-foreground">
-                    Mo-Fr: 9:00 - 18:00 Uhr
+                    {t.support.modal.hoursValue}
                   </p>
                 </div>
               </div>
@@ -135,15 +137,14 @@ export function SupportModal() {
             {/* CTA */}
             <div className="text-center">
               <p className="text-sm text-muted-foreground mb-4">
-                Für komplexe Anfragen nutzen Sie unser detailliertes
-                Support-Formular:
+                {t.support.modal.cta}
               </p>
               <Link
                 to="/support"
                 onClick={() => setIsOpen(false)}
                 className="inline-block w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
-                Zum Support-Formular
+                {t.support.modal.ctaButton}
               </Link>
             </div>
           </div>
