@@ -61,13 +61,14 @@ export default function BlogPost() {
     ? format(new Date(post.date), "d. MMMM yyyy", { locale: language === "de" ? de : enUS })
     : "";
 
-  // Übersetze Post-Titel und Excerpt
+  // Übersetze Post-Titel, Excerpt und Content
   const translatedPost = language === "en" && t.blog?.posts?.[post.slug as keyof typeof t.blog.posts]
     ? {
         title: t.blog.posts[post.slug as keyof typeof t.blog.posts]?.title || post.title,
         excerpt: t.blog.posts[post.slug as keyof typeof t.blog.posts]?.excerpt || post.excerpt,
+        content: t.blog.posts[post.slug as keyof typeof t.blog.posts]?.content || post.content,
       }
-    : { title: post.title, excerpt: post.excerpt };
+    : { title: post.title, excerpt: post.excerpt, content: post.content };
 
   return (
     <Layout>
@@ -132,7 +133,7 @@ export default function BlogPost() {
 
           {/* Content */}
           <div className="mb-12">
-            <BlogPostContent content={post.content} />
+            <BlogPostContent content={translatedPost.content} />
           </div>
 
           {/* Footer */}
