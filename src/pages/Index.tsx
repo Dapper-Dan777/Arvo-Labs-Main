@@ -5,14 +5,12 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ArrowRight, Zap, Target, Rocket, Mail, BarChart3, Workflow, Shield, Plug, Smartphone, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { BackgroundAnimation } from "@/components/BackgroundAnimation";
 
 export default function Index() {
   const { t } = useLanguage();
 
   return (
     <Layout>
-      <BackgroundAnimation />
       {/* Hero Section - Opux Style */}
       <section className="py-20 md:py-32 relative">
         <div className="container mx-auto">
