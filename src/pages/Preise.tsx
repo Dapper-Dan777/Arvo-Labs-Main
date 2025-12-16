@@ -139,6 +139,7 @@ export default function Preise() {
       cta: t.pricing.pro.cta,
       ctaLink: t.pricing.pro.ctaLink,
       popular: t.pricing.pro.popular,
+      yearlyDiscountPercent: 16.67, // 2 Monate geschenkt = 16.67% Rabatt
     },
     {
       id: "enterprise",
@@ -151,6 +152,7 @@ export default function Preise() {
       features: t.pricing.enterprise.features as unknown as string[],
       cta: t.pricing.enterprise.cta,
       ctaLink: t.pricing.enterprise.ctaLink,
+      yearlyDiscountPercent: 16.67, // 2 Monate geschenkt = 16.67% Rabatt
     },
     {
       id: "individual",
@@ -184,6 +186,7 @@ export default function Preise() {
       ],
       cta: "Team Starter wählen",
       ctaLink: "#",
+      yearlyDiscountPercent: 16.67, // 2 Monate geschenkt = 16.67% Rabatt
     },
     {
       id: "team_pro",
@@ -203,6 +206,7 @@ export default function Preise() {
       cta: "Team Pro wählen",
       ctaLink: "#",
       popular: "Beliebt",
+      yearlyDiscountPercent: 16.67, // 2 Monate geschenkt = 16.67% Rabatt
     },
     {
       id: "team_enterprise",
@@ -221,6 +225,7 @@ export default function Preise() {
       ],
       cta: "Team Enterprise wählen",
       ctaLink: "#",
+      yearlyDiscountPercent: 16.67, // 2 Monate geschenkt = 16.67% Rabatt
     },
     {
       id: "custom",

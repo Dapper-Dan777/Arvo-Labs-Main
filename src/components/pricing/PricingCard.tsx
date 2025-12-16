@@ -4,6 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  parsePrice,
+  formatPrice,
+  calculateYearlyTotal,
+  calculateYearlySavings,
+  calculateDiscountPercent,
+  formatSavingsText,
+  calculateMonthlyPriceYearly,
+} from "@/lib/pricing-utils";
 
 export interface PricingPlan {
   id: string;
@@ -17,6 +26,7 @@ export interface PricingPlan {
   cta: string;
   ctaLink: string;
   popular?: string;
+  yearlyDiscountPercent?: number; // Rabatt in Prozent für Jahresabo (z.B. 16.67)
 }
 
 interface PricingCardProps {
@@ -27,9 +37,33 @@ interface PricingCardProps {
 }
 
 export function PricingCard({ plan, isYearly, highlighted, onSubscribe }: PricingCardProps) {
-  const displayPrice = isYearly ? plan.priceYearly : plan.price;
   const isCustom = plan.price === "Auf Anfrage" || plan.price === "On request";
   const isFree = plan.id === "starter" || plan.id === "team_starter";
+
+  // Parse Preise zu Zahlen
+  const monthlyPrice = parsePrice(plan.price);
+  const monthlyPriceYearly = parsePrice(plan.priceYearly);
+
+  // Berechne Rabatt, falls nicht vorhanden
+  const discountPercent =
+    plan.yearlyDiscountPercent ||
+    (monthlyPrice > 0 && monthlyPriceYearly > 0
+      ? calculateDiscountPercent(monthlyPrice, monthlyPriceYearly)
+      : 16.67);
+
+  // Berechnungen für Yearly
+  const yearlyTotal = isYearly ? calculateYearlyTotal(monthlyPrice, discountPercent) : 0;
+  const yearlySavings = isYearly ? calculateYearlySavings(monthlyPrice, discountPercent) : 0;
+  const monthlyPriceInYearly = isYearly
+    ? calculateMonthlyPriceYearly(monthlyPrice, discountPercent)
+    : 0;
+
+  // Display-Preise
+  const displayPrice = isYearly
+    ? isCustom
+      ? plan.priceYearly
+      : formatPrice(monthlyPriceInYearly)
+    : plan.price;
 
   const handleClick = () => {
     if (onSubscribe) {
@@ -60,11 +94,33 @@ export function PricingCard({ plan, isYearly, highlighted, onSubscribe }: Pricin
       </div>
 
       <div className="mb-4">
-        <div className="flex items-baseline gap-1">
-          <span className="text-4xl font-semibold text-foreground">{displayPrice}</span>
-          {!isCustom && <span className="text-muted-foreground ml-1">{plan.period}</span>}
-        </div>
-        <p className="text-sm text-muted-foreground mt-2">{plan.users}</p>
+        {isYearly && !isCustom && !isFree && monthlyPrice > 0 ? (
+          <>
+            {/* Yearly View: Zeige monatlichen Preis im Jahresabo, Jahresgesamtpreis und Ersparnis */}
+            <div className="flex items-baseline gap-1">
+              <span className="text-4xl font-semibold text-foreground leading-none whitespace-nowrap">{displayPrice}</span>
+              <span className="text-muted-foreground ml-1 whitespace-nowrap">{plan.period}</span>
+            </div>
+            <div className="mt-2 space-y-1">
+              <p className="text-sm text-muted-foreground">
+                {formatPrice(yearlyTotal)} pro Jahr
+              </p>
+              <Badge variant="secondary" className="text-xs font-medium">
+                {formatSavingsText(yearlySavings, discountPercent)}
+              </Badge>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">{plan.users}</p>
+          </>
+        ) : (
+          <>
+            {/* Monthly View: Zeige nur monatlichen Preis */}
+            <div className="flex items-baseline gap-1">
+              <span className="text-4xl font-semibold text-foreground leading-none whitespace-nowrap">{displayPrice}</span>
+              {!isCustom && <span className="text-muted-foreground ml-1 whitespace-nowrap">{plan.period}</span>}
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">{plan.users}</p>
+          </>
+        )}
       </div>
 
       <ul className="space-y-3 mb-8 flex-grow">

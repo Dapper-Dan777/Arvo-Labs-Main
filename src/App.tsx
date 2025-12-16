@@ -13,8 +13,10 @@ import Funktionen from "./pages/Funktionen.tsx";
 import Preise from "./pages/Preise.tsx";
 import UseCases from "./pages/UseCases.tsx";
 import Kontakt from "./pages/Kontakt.tsx";
+import Support from "./pages/Support.tsx";
 import UeberUns from "./pages/UeberUns.tsx";
 import Blog from "./pages/Blog.tsx";
+import BlogPost from "./pages/BlogPost.tsx";
 import Datenschutz from "./pages/Datenschutz.tsx";
 import Impressum from "./pages/Impressum.tsx";
 import AGB from "./pages/AGB.tsx";
@@ -38,8 +40,10 @@ const App = () => (
               <Route path="/preise" element={<Preise />} />
               <Route path="/use-cases" element={<UseCases />} />
               <Route path="/kontakt" element={<Kontakt />} />
+              <Route path="/support" element={<Support />} />
               <Route path="/ueber-uns" element={<UeberUns />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/datenschutz" element={<Datenschutz />} />
               <Route path="/impressum" element={<Impressum />} />
               <Route path="/agb" element={<AGB />} />

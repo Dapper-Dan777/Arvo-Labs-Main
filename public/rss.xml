@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Arvo Labs Blog</title>
+    <link>https://arvo-labs.de/blog</link>
+    <description>Neuigkeiten, Tipps und Einblicke rund um KI-Automatisierung für Gründer und KMU</description>
+    <language>de-DE</language>
+    <lastBuildDate>Wed, 04 Feb 2026 00:00:00 GMT</lastBuildDate>
+    <atom:link href="https://arvo-labs.de/rss.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title><![CDATA[KI-Tools im Vergleich: Welches passt zu dir?]]></title>
+      <link>https://arvo-labs.de/blog/2026-02-04-ki-tools-vergleich</link>
+      <guid isPermaLink="true">https://arvo-labs.de/blog/2026-02-04-ki-tools-vergleich</guid>
+      <pubDate>Wed, 04 Feb 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[Es gibt viele KI-Tools für Automatisierung. Welches passt zu deinem Business? Hier erfährst du, worauf du achten solltest und wie du das richtige Tool findest.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Datenschutz bei KI-Automatisierung: Was du wissen musst]]></title>
+      <link>https://arvo-labs.de/blog/2026-01-21-datenschutz-bei-ki-automatisierung</link>
+      <guid isPermaLink="true">https://arvo-labs.de/blog/2026-01-21-datenschutz-bei-ki-automatisierung</guid>
+      <pubDate>Wed, 21 Jan 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[KI-Automatisierung bedeutet Datenaustausch. Datenschutz ist wichtig, besonders in Deutschland. Hier erfährst du, was du bei Automatisierung beachten musst.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[ROI von KI-Automatisierung: Wie du den Wert misst]]></title>
+      <link>https://arvo-labs.de/blog/2026-01-07-roi-von-ki-automatisierung</link>
+      <guid isPermaLink="true">https://arvo-labs.de/blog/2026-01-07-roi-von-ki-automatisierung</guid>
+      <pubDate>Wed, 07 Jan 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[KI-Automatisierung kostet Geld, aber spart auch Zeit. Wie misst du, ob sich die Investition lohnt? Hier erfährst du, wie du den ROI von Automatisierung berechnest.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Integrationen ohne Stress: Wie du deine Tools verbindest]]></title>
+      <link>https://arvo-labs.de/blog/2025-12-24-integrationen-ohne-stress</link>
+      <guid isPermaLink="true">https://arvo-labs.de/blog/2025-12-24-integrationen-ohne-stress</guid>
+      <pubDate>Wed, 24 Dec 2025 00:00:00 GMT</pubDate>
+      <description><![CDATA[Moderne Unternehmen nutzen viele Tools. Integrationen können kompliziert sein, müssen es aber nicht. Hier erfährst du, wie du deine Tools einfach und effizient verbindest.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Workflow-Automatisierung: Die Basics für Einsteiger]]></title>
+      <link>https://arvo-labs.de/blog/2025-12-10-workflow-automatisierung-basics</link>
+      <guid isPermaLink="true">https://arvo-labs.de/blog/2025-12-10-workflow-automatisierung-basics</guid>
+      <pubDate>Wed, 10 Dec 2025 00:00:00 GMT</pubDate>
+      <description><![CDATA[Workflow-Automatisierung klingt kompliziert, muss es aber nicht sein. Hier lernst du die Grundlagen und wie du mit einfachen Schritten deine ersten Workflows automatisierst.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Datenanalyse mit KI: Bessere Entscheidungen ohne Data Scientist]]></title>
+      <link>https://arvo-labs.de/blog/2025-11-26-datenanalyse-mit-ki</link>
+      <guid isPermaLink="true">https://arvo-labs.de/blog/2025-11-26-datenanalyse-mit-ki</guid>
+      <pubDate>Wed, 26 Nov 2025 00:00:00 GMT</pubDate>
+      <description><![CDATA[Daten sind wertvoll, aber ohne Analyse nutzlos. KI kann dir helfen, deine Daten zu analysieren und bessere Geschäftsentscheidungen zu treffen – ohne dass du ein Data Scientist sein musst.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Content-Automatisierung mit KI: Mehr Zeit für Strategie, weniger für Tippen]]></title>
+      <link>https://arvo-labs.de/blog/2025-11-12-content-automatisierung-mit-ki</link>
+      <guid isPermaLink="true">https://arvo-labs.de/blog/2025-11-12-content-automatisierung-mit-ki</guid>
+      <pubDate>Wed, 12 Nov 2025 00:00:00 GMT</pubDate>
+      <description><![CDATA[Content ist wichtig, aber zeitaufwendig. KI kann dir helfen, Social-Media-Posts, Blog-Artikel und E-Mail-Kampagnen effizienter zu erstellen – ohne die Qualität zu opfern.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[KI-gestützte Support-Automatisierung: 24/7 verfügbar ohne 24/7-Team]]></title>
+      <link>https://arvo-labs.de/blog/2025-10-29-ki-support-automatisierung</link>
+      <guid isPermaLink="true">https://arvo-labs.de/blog/2025-10-29-ki-support-automatisierung</guid>
+      <pubDate>Wed, 29 Oct 2025 00:00:00 GMT</pubDate>
+      <description><![CDATA[Kunden erwarten schnelle Antworten, auch außerhalb der Geschäftszeiten. KI-gestützte Support-Automatisierung hilft dir, rund um die Uhr verfügbar zu sein, ohne ein 24/7-Team zu benötigen.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[KI im Sales-Prozess: Mehr Zeit für echte Gespräche]]></title>
+      <link>https://arvo-labs.de/blog/2025-10-15-ki-im-sales-prozess</link>
+      <guid isPermaLink="true">https://arvo-labs.de/blog/2025-10-15-ki-im-sales-prozess</guid>
+      <pubDate>Wed, 15 Oct 2025 00:00:00 GMT</pubDate>
+      <description><![CDATA[Sales ist zeitintensiv, aber viele Aufgaben können automatisiert werden. Erfahre, wie KI dir hilft, mehr Zeit für echte Kundenkontakte zu haben und gleichzeitig mehr Leads zu qualifizieren.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[KI-Automatisierung für Gründer: So startest du richtig]]></title>
+      <link>https://arvo-labs.de/blog/2025-10-01-ki-automatisierung-fuer-gruender</link>
+      <guid isPermaLink="true">https://arvo-labs.de/blog/2025-10-01-ki-automatisierung-fuer-gruender</guid>
+      <pubDate>Wed, 01 Oct 2025 00:00:00 GMT</pubDate>
+      <description><![CDATA[Als Gründer hast du wenig Zeit und viele Aufgaben. KI-Automatisierung kann dir helfen, aber nur wenn du richtig startest. Hier erfährst du, wie du die ersten Schritte gehst.]]></description>
+    </item>
+  </channel>
+</rss>
