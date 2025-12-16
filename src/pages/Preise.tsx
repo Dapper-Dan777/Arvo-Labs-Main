@@ -50,9 +50,17 @@ export default function Preise() {
 
     // Öffne User Profile Modal mit Billing Tab
     // Dies ist die offizielle Methode für React-Anwendungen
-    clerk.openUserProfile({
-      initialPage: "account",
-    });
+    try {
+      clerk.openUserProfile({
+        initialPage: "account",
+      });
+    } catch (error) {
+      console.error("Error opening user profile:", error);
+      // Fallback: Versuche direkt zum Billing zu navigieren
+      if (clerk.user) {
+        window.open(`https://accounts.clerk.com/user`, "_blank");
+      }
+    }
   };
 
   // Handler für Team Subscriptions
@@ -93,9 +101,17 @@ export default function Preise() {
 
     // Öffne Organization Profile Modal
     // Der User kann dann im Modal zum Billing-Tab navigieren
-    clerk.openOrganizationProfile({
-      initialPage: "members",
-    });
+    try {
+      clerk.openOrganizationProfile({
+        initialPage: "members",
+      });
+    } catch (error) {
+      console.error("Error opening organization profile:", error);
+      // Fallback: Versuche direkt zum Billing zu navigieren
+      if (organization) {
+        window.open(`https://accounts.clerk.com/organization/${organization.id}`, "_blank");
+      }
+    }
   };
 
   // User Plans
