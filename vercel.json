@@ -6,6 +6,10 @@
   "framework": null,
   "rewrites": [
     {
+      "source": "/rss.xml",
+      "destination": "/rss.xml"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

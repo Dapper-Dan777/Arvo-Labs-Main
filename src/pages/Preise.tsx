@@ -51,15 +51,11 @@ export default function Preise() {
     // Öffne User Profile Modal direkt zum Billing Tab
     // Dies ist die offizielle Methode für React-Anwendungen
     try {
-      clerk.openUserProfile({
-        initialPage: "billing",
-      });
+      clerk.openUserProfile();
     } catch (error) {
       console.error("Error opening user profile:", error);
       // Fallback: Öffne Account Modal (User kann dann zu Billing navigieren)
-      clerk.openUserProfile({
-        initialPage: "account",
-      });
+      clerk.openUserProfile();
     }
   };
 
@@ -101,15 +97,11 @@ export default function Preise() {
 
     // Öffne Organization Profile Modal direkt zum Billing Tab
     try {
-      clerk.openOrganizationProfile({
-        initialPage: "billing",
-      });
+      clerk.openOrganizationProfile();
     } catch (error) {
       console.error("Error opening organization profile:", error);
       // Fallback: Öffne Members Tab (User kann dann zu Billing navigieren)
-      clerk.openOrganizationProfile({
-        initialPage: "members",
-      });
+      clerk.openOrganizationProfile();
     }
   };
 

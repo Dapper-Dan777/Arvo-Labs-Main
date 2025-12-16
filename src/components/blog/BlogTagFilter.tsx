@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Tag } from "lucide-react";
+import { Tag, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BlogTagFilterProps {
@@ -9,12 +9,19 @@ interface BlogTagFilterProps {
   onTagToggle: (tag: string) => void;
 }
 
+const INITIAL_TAGS_TO_SHOW = 3;
+
 export function BlogTagFilter({ tags, selectedTags, onTagToggle }: BlogTagFilterProps) {
+  const [showAllTags, setShowAllTags] = useState(false);
+  
   if (tags.length === 0) return null;
 
+  const tagsToShow = showAllTags ? tags : tags.slice(0, INITIAL_TAGS_TO_SHOW);
+  const hasMoreTags = tags.length > INITIAL_TAGS_TO_SHOW;
+
   return (
-    <div className="flex flex-wrap gap-2">
-      {tags.map((tag) => {
+    <div className="flex flex-wrap items-center gap-2">
+      {tagsToShow.map((tag) => {
         const isSelected = selectedTags.includes(tag);
         return (
           <Button
@@ -32,6 +39,28 @@ export function BlogTagFilter({ tags, selectedTags, onTagToggle }: BlogTagFilter
           </Button>
         );
       })}
+      {hasMoreTags && !showAllTags && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowAllTags(true)}
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
+          Weitere
+          <ChevronDown className="w-4 h-4 ml-1" />
+        </Button>
+      )}
+      {showAllTags && hasMoreTags && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowAllTags(false)}
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
+          Weniger
+          <ChevronDown className="w-4 h-4 ml-1 rotate-180" />
+        </Button>
+      )}
     </div>
   );
 }

@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "npm run generate-rss && vite build",
-    "build:dev": "npm run generate-rss && vite build --mode development",
+    "dev": "npm run generate-blog-data && vite",
+    "build": "npm run generate-blog-data && npm run generate-rss && vite build",
+    "build:dev": "npm run generate-blog-data && npm run generate-rss && vite build --mode development",
+    "generate-blog-data": "tsx scripts/generate-blog-data.ts",
     "generate-rss": "tsx scripts/generate-rss.ts",
     "lint": "eslint .",
     "preview": "vite preview"

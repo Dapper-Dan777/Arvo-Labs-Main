@@ -120,11 +120,13 @@ declare module "@/components/pricing/PricingCard" {
     cta: string;
     ctaLink: string;
     popular?: string;
+    yearlyDiscountPercent?: number;
   }
   export interface PricingCardProps {
     plan: PricingPlan;
     isYearly: boolean;
     highlighted?: boolean;
+    onSubscribe?: () => void;
   }
   export const PricingCard: React.ComponentType<PricingCardProps>;
 }

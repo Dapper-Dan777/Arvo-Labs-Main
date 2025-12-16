@@ -4,9 +4,10 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { BlogSearch } from "@/components/blog/BlogSearch";
 import { BlogTagFilter } from "@/components/blog/BlogTagFilter";
+import { RSSFeedButton } from "@/components/blog/RSSFeedButton";
 import { Button } from "@/components/ui/button";
 import { getAllBlogPosts, BlogPost } from "@/lib/blog-utils";
-import { ChevronRight, Rss } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 const POSTS_PER_PAGE = 5;
 
@@ -105,17 +106,7 @@ export default function Blog() {
               {t.blog.subtitle}
             </p>
             <div className="flex justify-center">
-              <Button
-                variant="opuxOutline"
-                size="sm"
-                asChild
-                className="text-sm"
-              >
-                <a href="/rss.xml" target="_blank" rel="noopener noreferrer">
-                  <Rss className="w-4 h-4 mr-2" />
-                  RSS-Feed abonnieren
-                </a>
-              </Button>
+              <RSSFeedButton />
             </div>
           </div>
         </div>
@@ -162,7 +153,21 @@ export default function Blog() {
               </div>
 
               {/* Posts Grid */}
-              {displayedPosts.length === 0 ? (
+              {posts.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="bg-secondary/30 rounded-2xl p-12 border border-border max-w-2xl mx-auto">
+                    <p className="text-muted-foreground text-lg leading-relaxed mb-4">
+                      Noch keine Blog-Artikel verfügbar.
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      Blog-Artikel werden in Kürze veröffentlicht.
+                    </p>
+                    <p className="text-muted-foreground text-xs mt-4">
+                      (Prüfe die Browser-Konsole für Debug-Informationen)
+                    </p>
+                  </div>
+                </div>
+              ) : displayedPosts.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="bg-secondary/30 rounded-2xl p-12 border border-border max-w-2xl mx-auto">
                     <p className="text-muted-foreground text-lg leading-relaxed mb-4">
@@ -171,6 +176,14 @@ export default function Blog() {
                     <p className="text-muted-foreground text-sm">
                       Versuche es mit anderen Suchbegriffen oder entferne die Filter.
                     </p>
+                    <Button
+                      variant="opuxOutline"
+                      size="sm"
+                      onClick={handleClearSearch}
+                      className="mt-4"
+                    >
+                      Filter zurücksetzen
+                    </Button>
                   </div>
                 </div>
               ) : (

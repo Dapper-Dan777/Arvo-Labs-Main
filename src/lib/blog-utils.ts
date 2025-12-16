@@ -1,5 +1,3 @@
-import matter from 'gray-matter';
-
 export interface BlogPost {
   slug: string;
   title: string;
@@ -10,55 +8,33 @@ export interface BlogPost {
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  // In Vite müssen wir die Blog-Posts dynamisch importieren
-  const modules = import.meta.glob('/content/blog/*.md', { query: '?raw', import: 'default', eager: true });
-  
-  const posts: BlogPost[] = [];
-  
-  for (const path in modules) {
-    const content = modules[path] as string;
-    const slug = path.split('/').pop()?.replace('.md', '') || '';
+  try {
+    // Lade Blog-Posts aus der generierten JSON-Datei
+    const response = await fetch('/blog-posts.json');
     
-    const { data, content: markdownContent } = matter(content);
+    if (!response.ok) {
+      console.error(`Fehler beim Laden von blog-posts.json: ${response.status} ${response.statusText}`);
+      return [];
+    }
     
-    posts.push({
-      slug,
-      title: data.title || '',
-      date: data.date || '',
-      excerpt: data.excerpt || '',
-      tags: data.tags || [],
-      content: markdownContent,
-    });
+    const posts: BlogPost[] = await response.json();
+    console.log(`✅ ${posts.length} Blog-Posts aus JSON geladen`);
+    
+    // Sortiere nach Datum (neueste zuerst) - sollte bereits sortiert sein, aber sicherheitshalber
+    return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  } catch (error) {
+    console.error("Fehler beim Laden der Blog-Posts:", error);
+    return [];
   }
-  
-  // Sortiere nach Datum (neueste zuerst)
-  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
-    // Versuche verschiedene Pfad-Varianten
-    const modules = import.meta.glob('/content/blog/*.md', { query: '?raw', import: 'default', eager: true });
-    
-    for (const path in modules) {
-      const fileSlug = path.split('/').pop()?.replace('.md', '') || '';
-      if (fileSlug === slug) {
-        const content = modules[path] as string;
-        const { data, content: markdownContent } = matter(content);
-        
-        return {
-          slug,
-          title: data.title || '',
-          date: data.date || '',
-          excerpt: data.excerpt || '',
-          tags: data.tags || [],
-          content: markdownContent,
-        };
-      }
-    }
-    
-    return null;
-  } catch {
+    const posts = await getAllBlogPosts();
+    const post = posts.find(p => p.slug === slug);
+    return post || null;
+  } catch (error) {
+    console.error(`Fehler beim Laden von ${slug}:`, error);
     return null;
   }
 }

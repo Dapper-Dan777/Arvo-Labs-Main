@@ -11,7 +11,19 @@ interface BlogPost {
 }
 
 async function getAllBlogPosts(): Promise<BlogPost[]> {
-  const blogDir = join(process.cwd(), "content", "blog");
+  // Prüfe beide mögliche Pfade (src/content/blog oder content/blog)
+  const blogDir1 = join(process.cwd(), "src", "content", "blog");
+  const blogDir2 = join(process.cwd(), "content", "blog");
+  
+  const { access } = await import("fs/promises");
+  let blogDir: string;
+  try {
+    await access(blogDir1);
+    blogDir = blogDir1;
+  } catch {
+    blogDir = blogDir2;
+  }
+  
   const files = await readdir(blogDir);
   const mdFiles = files.filter((file) => file.endsWith(".md"));
 

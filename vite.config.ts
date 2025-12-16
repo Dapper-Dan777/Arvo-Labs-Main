@@ -15,4 +15,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Stelle sicher, dass content/blog Dateien verfügbar sind
+  publicDir: "public",
+  assetsInclude: ["**/*.md"],
 }));
