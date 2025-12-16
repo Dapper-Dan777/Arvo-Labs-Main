@@ -56,3 +56,4 @@ export function getOrgCheckoutUrl(
   return `${baseUrl}/subscribe/${planId}?organizationId=${organizationId}`;
 }
 
+

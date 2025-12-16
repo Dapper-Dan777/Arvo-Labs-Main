@@ -6,14 +6,21 @@ import "./index.css";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
+// Warnung statt Fehler, damit die App auch ohne Key läuft (für Development)
 if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Clerk Publishable Key");
+  console.warn(
+    "⚠️ VITE_CLERK_PUBLISHABLE_KEY ist nicht gesetzt. Clerk-Funktionen funktionieren möglicherweise nicht."
+  );
 }
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+    {PUBLISHABLE_KEY ? (
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+        <App />
+      </ClerkProvider>
+    ) : (
       <App />
-    </ClerkProvider>
+    )}
   </StrictMode>
 );
