@@ -10,7 +10,6 @@ import { PlanTypeToggle } from "@/components/pricing/PlanTypeToggle";
 import { PricingCard, type PricingPlan } from "@/components/pricing/PricingCard";
 import { FeatureComparisonTable } from "@/components/pricing/FeatureComparisonTable";
 import { useUser, useOrganization, useClerk } from "@clerk/clerk-react";
-import { getUserCheckoutUrl, getOrgCheckoutUrl } from "@/lib/clerk-billing";
 
 export default function Preise() {
   const { t } = useLanguage();
@@ -49,17 +48,11 @@ export default function Preise() {
       return;
     }
 
-    try {
-      // Redirect zu Clerk Billing Checkout
-      const checkoutUrl = getUserCheckoutUrl(planKey as "starter" | "pro" | "enterprise");
-      window.location.href = checkoutUrl;
-    } catch (error) {
-      console.error("Error creating checkout URL:", error);
-      // Fallback: Öffne User Profile Modal
-      clerk.openUserProfile({
-        initialPage: "account",
-      });
-    }
+    // Öffne User Profile Modal mit Billing Tab
+    // Dies ist die offizielle Methode für React-Anwendungen
+    clerk.openUserProfile({
+      initialPage: "account",
+    });
   };
 
   // Handler für Team Subscriptions
@@ -98,20 +91,11 @@ export default function Preise() {
       return;
     }
 
-    try {
-      // Redirect zu Clerk Billing Checkout für Organizations
-      const checkoutUrl = getOrgCheckoutUrl(
-        planKey as "team_starter" | "team_pro" | "team_enterprise",
-        organization.id
-      );
-      window.location.href = checkoutUrl;
-    } catch (error) {
-      console.error("Error creating checkout URL:", error);
-      // Fallback: Öffne Organization Profile Modal
-      clerk.openOrganizationProfile({
-        initialPage: "members",
-      });
-    }
+    // Öffne Organization Profile Modal
+    // Der User kann dann im Modal zum Billing-Tab navigieren
+    clerk.openOrganizationProfile({
+      initialPage: "members",
+    });
   };
 
   // User Plans
