@@ -18,16 +18,46 @@ export default function Kontakt() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    toast({
-      title: t.contact.form.success.title,
-      description: t.contact.form.success.message,
-    });
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData as any).toString(),
+      });
+
+      if (response.ok) {
+        setIsSubmitting(false);
+        setIsSubmitted(true);
+        toast({
+          title: t.contact.form.success.title,
+          description: t.contact.form.success.message,
+        });
+        // Reset form
+        setFormState({
+          name: "",
+          email: "",
+          company: "",
+          interest: "",
+          message: "",
+        });
+      } else {
+        throw new Error("Form submission failed");
+      }
+    } catch (error) {
+      setIsSubmitting(false);
+      toast({
+        title: "Fehler",
+        description: "Das Formular konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleChange = (
@@ -89,7 +119,25 @@ export default function Kontakt() {
                   </Button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form
+                  onSubmit={handleSubmit}
+                  method="POST"
+                  data-netlify="true"
+                  data-netlify-honeypot="bot-field"
+                  name="contact"
+                  className="space-y-6"
+                >
+                  {/* Hidden form-name field for Netlify */}
+                  <input type="hidden" name="form-name" value="contact" />
+                  
+                  {/* Honeypot spam protection */}
+                  <p className="hidden">
+                    <label>
+                      Don't fill this out if you're human:
+                      <input name="bot-field" />
+                    </label>
+                  </p>
+
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
