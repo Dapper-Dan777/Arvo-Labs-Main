@@ -89,6 +89,11 @@ declare module "@/components/BackgroundAnimation" {
   export const BackgroundAnimation: React.ComponentType;
 }
 
+declare module "@/components/ScrollToTop" {
+  import * as React from "react";
+  export const ScrollToTop: React.ComponentType;
+}
+
 declare module "@/components/pricing/BillingToggle" {
   import * as React from "react";
   export interface BillingToggleProps {
