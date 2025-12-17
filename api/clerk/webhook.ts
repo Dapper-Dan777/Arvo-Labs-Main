@@ -6,15 +6,14 @@
  * 
  * Deployment: Wird automatisch als Vercel Serverless Function deployed
  * 
- * WICHTIG: Für Vercel muss @clerk/nextjs installiert sein:
- * npm install @clerk/nextjs svix
+ * Dependencies:
+ * npm install svix @clerk/clerk-sdk-node
  * 
- * Alternative: Falls du @clerk/clerk-sdk-node verwenden möchtest,
- * ändere den Import zu: import { clerkClient } from '@clerk/clerk-sdk-node';
+ * ODER für Next.js Projekte:
+ * npm install svix @clerk/nextjs
  */
 
 import { Webhook } from 'svix';
-import { headers } from 'next/headers';
 
 // Plan-Mapping (MUSS mit deinen Clerk Plan IDs übereinstimmen)
 const PLAN_MAPPING: Record<string, string> = {
@@ -36,11 +35,10 @@ export async function POST(req: Request) {
     return new Response('Webhook secret not configured', { status: 500 });
   }
 
-  // Get headers
-  const headerPayload = await headers();
-  const svix_id = headerPayload.get('svix-id');
-  const svix_timestamp = headerPayload.get('svix-timestamp');
-  const svix_signature = headerPayload.get('svix-signature');
+  // Get headers directly from request
+  const svix_id = req.headers.get('svix-id');
+  const svix_timestamp = req.headers.get('svix-timestamp');
+  const svix_signature = req.headers.get('svix-signature');
 
   if (!svix_id || !svix_timestamp || !svix_signature) {
     return new Response('Error: Missing Svix headers', { status: 400 });
