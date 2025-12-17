@@ -22,9 +22,48 @@ export default function DashboardRedirect() {
     if (!isLoaded || !isSignedIn) return;
     if (isRedirecting) return;
 
-    // Prüfe ob ein Plan gesetzt ist
-    const userPlan = user?.publicMetadata?.plan as PlanType | undefined;
-    const hasPlan = userPlan && userPlan !== 'starter'; // 'starter' ist der Default, zählen wir als "kein Plan gewählt"
+    // User-Objekt neu laden, um sicherzustellen, dass publicMetadata aktuell ist
+    if (user && !user.publicMetadata?.plan) {
+      user.reload().catch((error) => {
+        console.error('Error reloading user:', error);
+      });
+    }
+
+    // Prüfe ob ein Plan gesetzt ist - direkt aus publicMetadata lesen und normalisieren
+    const rawPlan = user?.publicMetadata?.plan;
+    let normalizedUserPlan: PlanType | undefined;
+    
+    if (rawPlan) {
+      if (typeof rawPlan === 'string') {
+        const lowerPlan = rawPlan.toLowerCase().trim();
+        // Mappe mögliche Varianten
+        if (lowerPlan === 'enterprise' || lowerPlan.includes('enterprise')) {
+          normalizedUserPlan = 'enterprise';
+        } else if (lowerPlan === 'pro' || lowerPlan.includes('pro')) {
+          normalizedUserPlan = 'pro';
+        } else if (lowerPlan === 'starter' || lowerPlan.includes('starter')) {
+          normalizedUserPlan = 'starter';
+        } else if (lowerPlan === 'individual' || lowerPlan.includes('individual')) {
+          normalizedUserPlan = 'individual';
+        }
+      }
+    }
+    
+    // Debug-Logging
+    if (import.meta.env.DEV) {
+      console.log('[DashboardRedirect] Plan Check:', {
+        rawPlan,
+        normalizedUserPlan,
+        planFromHook: plan,
+        accountType,
+        publicMetadata: user?.publicMetadata,
+      });
+    }
+    
+    const hasPlan = normalizedUserPlan && normalizedUserPlan !== 'starter'; // 'starter' ist der Default, zählen wir als "kein Plan gewählt"
+    
+    // Verwende den normalisierten Plan für die Weiterleitung
+    const planToUse = normalizedUserPlan || plan;
 
     // Für Team-Benutzer: Prüfe ob Organization vorhanden ist
     if (accountType === 'team') {
@@ -52,14 +91,14 @@ export default function DashboardRedirect() {
 
       // Plan vorhanden → Weiterleitung zum passenden Team-Dashboard
       setIsRedirecting(true);
-      if (plan === 'starter') {
-        navigate('/dashboard/starter', { replace: true });
-      } else if (plan === 'pro') {
-        navigate('/dashboard/pro', { replace: true });
-      } else if (plan === 'enterprise') {
+      if (planToUse === 'enterprise') {
         navigate('/dashboard/enterprise', { replace: true });
-      } else {
+      } else if (planToUse === 'pro') {
+        navigate('/dashboard/pro', { replace: true });
+      } else if (planToUse === 'individual') {
         navigate('/dashboard/individual', { replace: true });
+      } else {
+        navigate('/dashboard/starter', { replace: true });
       }
       return;
     }
@@ -74,14 +113,14 @@ export default function DashboardRedirect() {
 
     // Plan vorhanden → Weiterleitung zum passenden Dashboard
     setIsRedirecting(true);
-    if (plan === 'starter') {
-      navigate('/dashboard/starter', { replace: true });
-    } else if (plan === 'pro') {
-      navigate('/dashboard/pro', { replace: true });
-    } else if (plan === 'enterprise') {
+    if (planToUse === 'enterprise') {
       navigate('/dashboard/enterprise', { replace: true });
-    } else {
+    } else if (planToUse === 'pro') {
+      navigate('/dashboard/pro', { replace: true });
+    } else if (planToUse === 'individual') {
       navigate('/dashboard/individual', { replace: true });
+    } else {
+      navigate('/dashboard/starter', { replace: true });
     }
   }, [isLoaded, isSignedIn, plan, accountType, user, organizationList, orgListLoaded, navigate, isRedirecting]);
 

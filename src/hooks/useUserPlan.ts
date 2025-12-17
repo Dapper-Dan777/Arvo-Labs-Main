@@ -7,11 +7,34 @@ export function useUserPlan() {
   // Plan aus publicMetadata lesen
   // Normalisiere den Plan-String (lowercase) um Case-Sensitivity-Probleme zu vermeiden
   const rawPlan = user?.publicMetadata?.plan;
-  const normalizedPlan = rawPlan 
-    ? (typeof rawPlan === 'string' ? rawPlan.toLowerCase() : rawPlan)
-    : undefined;
   
-  const plan = (normalizedPlan as PlanType | undefined) ?? 'starter' as PlanType;
+  // Normalisiere den Plan-String
+  let normalizedPlan: string | undefined;
+  if (rawPlan) {
+    if (typeof rawPlan === 'string') {
+      // Normalisiere: "Enterprise" -> "enterprise", "enterprise" -> "enterprise"
+      normalizedPlan = rawPlan.toLowerCase().trim();
+      
+      // Mappe mögliche Varianten
+      if (normalizedPlan === 'enterprise' || normalizedPlan === 'enterprise_individual' || normalizedPlan === 'enterprise_team') {
+        normalizedPlan = 'enterprise';
+      } else if (normalizedPlan === 'pro' || normalizedPlan === 'pro_individual' || normalizedPlan === 'pro_team') {
+        normalizedPlan = 'pro';
+      } else if (normalizedPlan === 'starter' || normalizedPlan === 'starter_individual' || normalizedPlan === 'starter_team') {
+        normalizedPlan = 'starter';
+      } else if (normalizedPlan === 'individual' || normalizedPlan === 'individual_individual' || normalizedPlan === 'individual_team') {
+        normalizedPlan = 'individual';
+      }
+    } else {
+      normalizedPlan = rawPlan as string;
+    }
+  }
+  
+  // Validiere, dass der Plan ein gültiger PlanType ist
+  const validPlans: PlanType[] = ['starter', 'pro', 'enterprise', 'individual'];
+  const plan: PlanType = (validPlans.includes(normalizedPlan as PlanType) 
+    ? normalizedPlan 
+    : 'starter') as PlanType;
   
   // Debug-Logging (nur in Development)
   if (import.meta.env.DEV && user) {
@@ -19,9 +42,11 @@ export function useUserPlan() {
       rawPlan,
       normalizedPlan,
       plan,
+      isValidPlan: validPlans.includes(plan),
       accountType: user.publicMetadata?.accountType,
       organizationMemberships: user.organizationMemberships?.length || 0,
       publicMetadata: user.publicMetadata,
+      fullUserObject: user,
     });
   }
   

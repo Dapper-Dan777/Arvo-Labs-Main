@@ -22,7 +22,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     if (document.body) {
       document.body.style.backgroundColor = saved === 'dark' ? 'hsl(240 10% 6%)' : 'hsl(0 0% 100%)';
     }
-  }, []);
+    
+    // User-Objekt neu laden, um sicherzustellen, dass publicMetadata aktuell ist
+    if (user) {
+      user.reload().catch((error) => {
+        console.error('Error reloading user:', error);
+      });
+    }
+  }, [user]);
   
   return (
     <>
