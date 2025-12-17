@@ -5,7 +5,25 @@ export function useUserPlan() {
   const { user, isLoaded, isSignedIn } = useUser();
   
   // Plan aus publicMetadata lesen
-  const plan = (user?.publicMetadata?.plan as PlanType | undefined) ?? 'starter' as PlanType;
+  // Normalisiere den Plan-String (lowercase) um Case-Sensitivity-Probleme zu vermeiden
+  const rawPlan = user?.publicMetadata?.plan;
+  const normalizedPlan = rawPlan 
+    ? (typeof rawPlan === 'string' ? rawPlan.toLowerCase() : rawPlan)
+    : undefined;
+  
+  const plan = (normalizedPlan as PlanType | undefined) ?? 'starter' as PlanType;
+  
+  // Debug-Logging (nur in Development)
+  if (import.meta.env.DEV && user) {
+    console.log('[useUserPlan] Debug Info:', {
+      rawPlan,
+      normalizedPlan,
+      plan,
+      accountType: user.publicMetadata?.accountType,
+      organizationMemberships: user.organizationMemberships?.length || 0,
+      publicMetadata: user.publicMetadata,
+    });
+  }
   
   // AccountType aus publicMetadata lesen (individual oder team)
   // Falls nicht gesetzt, prüfe ob user zu einer Organization gehört

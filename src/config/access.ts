@@ -84,16 +84,16 @@ const ACCESS_CONFIG: Record<`${PlanType}_${AccountType}`, PlanAccessConfig> = {
       chat: true,
       documents: true,
       forms: true,
-      automations: false,
-      quickActions: false,
+      automations: true,
+      quickActions: true,
       dashboard: true,
-      mail: false,
-      teamActions: false,
-      teamManagement: false,
+      mail: true,
+      teamActions: false, // Nur für Team-Accounts
+      teamManagement: false, // Nur für Team-Accounts
       inbox: true,
-      whiteboards: false,
-      goals: false,
-      timesheets: false,
+      whiteboards: true,
+      goals: true,
+      timesheets: true,
     },
   },
   individual_individual: {
@@ -202,15 +202,40 @@ export function hasFeatureAccess(
   accountType: AccountType,
   feature: FeatureId
 ): boolean {
-  const configKey = `${plan}_${accountType}` as keyof typeof ACCESS_CONFIG;
+  // Normalisiere Plan (lowercase) für konsistente Prüfung
+  const normalizedPlan = plan.toLowerCase() as PlanType;
+  const configKey = `${normalizedPlan}_${accountType}` as keyof typeof ACCESS_CONFIG;
   const config = ACCESS_CONFIG[configKey];
   
   if (!config) {
+    // Debug-Logging wenn Config nicht gefunden
+    if (import.meta.env.DEV) {
+      console.warn(`[hasFeatureAccess] Config nicht gefunden für:`, {
+        plan,
+        normalizedPlan,
+        accountType,
+        configKey,
+        availableKeys: Object.keys(ACCESS_CONFIG),
+      });
+    }
     // Fallback: Starter Individual als Standard
     return ACCESS_CONFIG.starter_individual.features[feature] ?? false;
   }
   
-  return config.features[feature] ?? false;
+  const hasAccess = config.features[feature] ?? false;
+  
+  // Debug-Logging (nur in Development)
+  if (import.meta.env.DEV) {
+    console.log(`[hasFeatureAccess] Feature "${feature}":`, {
+      plan,
+      normalizedPlan,
+      accountType,
+      configKey,
+      hasAccess,
+    });
+  }
+  
+  return hasAccess;
 }
 
 /**

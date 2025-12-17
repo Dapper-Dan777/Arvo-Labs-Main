@@ -12,6 +12,7 @@ import { CheckCircle2, Clock, TrendingUp, Users } from 'lucide-react';
 import { DashboardLayout } from '@/components/dashboard-layout/DashboardLayout';
 import { useUser } from '@clerk/clerk-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { PlanDebugInfo } from '@/components/dashboard/PlanDebugInfo';
 
 function DashboardEnterpriseContent() {
   const { user } = useUser();
@@ -23,6 +24,7 @@ function DashboardEnterpriseContent() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      <PlanDebugInfo />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">

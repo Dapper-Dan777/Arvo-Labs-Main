@@ -18,7 +18,18 @@ export function useAccessControl() {
    */
   const canAccess = (feature: FeatureId): boolean => {
     if (!isLoaded) return false;
-    return hasFeatureAccess(plan, accountType, feature);
+    const hasAccess = hasFeatureAccess(plan, accountType, feature);
+    
+    // Debug-Logging (nur in Development)
+    if (import.meta.env.DEV) {
+      console.log(`[useAccessControl] Feature "${feature}":`, {
+        plan,
+        accountType,
+        hasAccess,
+      });
+    }
+    
+    return hasAccess;
   };
   
   /**
