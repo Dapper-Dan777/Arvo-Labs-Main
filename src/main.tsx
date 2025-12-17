@@ -13,6 +13,9 @@ if (!PUBLISHABLE_KEY) {
   );
 }
 
+// Hinweis: Die Clerk "Development keys" Warnung ist in Development normal und kann ignoriert werden.
+// In Production wird sie automatisch verschwinden, wenn Production-Keys verwendet werden.
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {PUBLISHABLE_KEY ? (
