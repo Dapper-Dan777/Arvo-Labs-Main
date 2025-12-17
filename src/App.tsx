@@ -32,6 +32,24 @@ import EmailKommunikation from "./pages/dokumentation/EmailKommunikation.tsx";
 import AutomationenWorkflows from "./pages/dokumentation/AutomationenWorkflows.tsx";
 import Updates from "./pages/dokumentation/Updates.tsx";
 import Guides from "./pages/dokumentation/Guides.tsx";
+import DashboardRedirect from "./pages/DashboardRedirect.tsx";
+import DashboardStarter from "./pages/DashboardStarter.tsx";
+import DashboardPro from "./pages/DashboardPro.tsx";
+import DashboardEnterprise from "./pages/DashboardEnterprise.tsx";
+import DashboardIndividual from "./pages/DashboardIndividual.tsx";
+import DashboardChat from "./pages/dashboard/DashboardChat.tsx";
+import DashboardDocuments from "./pages/dashboard/DashboardDocuments.tsx";
+import DashboardMail from "./pages/dashboard/DashboardMail.tsx";
+import DashboardGoals from "./pages/dashboard/DashboardGoals.tsx";
+import DashboardTimesheets from "./pages/dashboard/DashboardTimesheets.tsx";
+import DashboardInbox from "./pages/dashboard/DashboardInbox.tsx";
+import DashboardTeams from "./pages/dashboard/DashboardTeams.tsx";
+import DashboardDashboards from "./pages/dashboard/DashboardDashboards.tsx";
+import DashboardAssistant from "./pages/dashboard/DashboardAssistant.tsx";
+import DashboardWhiteboards from "./pages/dashboard/DashboardWhiteboards.tsx";
+import DashboardForms from "./pages/dashboard/DashboardForms.tsx";
+import DashboardMore from "./pages/dashboard/DashboardMore.tsx";
+import DashboardBilling from "./pages/dashboard/DashboardBilling.tsx";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +87,25 @@ const App = () => (
               <Route path="/dokumentation/automationen-workflows" element={<AutomationenWorkflows />} />
               <Route path="/dokumentation/updates" element={<Updates />} />
               <Route path="/dokumentation/guides" element={<Guides />} />
+              <Route path="/dashboard" element={<DashboardRedirect />} />
+              <Route path="/dashboard/billing" element={<DashboardBilling />} />
+              <Route path="/dashboard/starter" element={<DashboardStarter />} />
+              <Route path="/dashboard/pro" element={<DashboardPro />} />
+              <Route path="/dashboard/enterprise" element={<DashboardEnterprise />} />
+              <Route path="/dashboard/individual" element={<DashboardIndividual />} />
+              <Route path="/dashboard/chat" element={<DashboardChat />} />
+              <Route path="/dashboard/inbox" element={<DashboardInbox />} />
+              <Route path="/dashboard/documents" element={<DashboardDocuments />} />
+              <Route path="/dashboard/mail" element={<DashboardMail />} />
+              <Route path="/dashboard/goals" element={<DashboardGoals />} />
+              <Route path="/dashboard/timesheets" element={<DashboardTimesheets />} />
+              <Route path="/dashboard/teams" element={<DashboardTeams />} />
+              <Route path="/dashboard/dashboards" element={<DashboardDashboards />} />
+              <Route path="/dashboard/assistant" element={<DashboardAssistant />} />
+              <Route path="/dashboard/whiteboards" element={<DashboardWhiteboards />} />
+              <Route path="/dashboard/forms" element={<DashboardForms />} />
+              <Route path="/dashboard/more" element={<DashboardMore />} />
+              <Route path="/dashboard/more/:sectionId" element={<DashboardMore />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

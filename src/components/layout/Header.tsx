@@ -84,12 +84,12 @@ export function Header() {
 
             {/* Clerk Auth Components */}
             <SignedOut>
-              <SignInButton mode="modal">
+              <SignInButton mode="modal" redirectUrl="/dashboard">
                 <Button variant="ghost" size="sm">
                   {t.auth.signIn}
                 </Button>
               </SignInButton>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" redirectUrl="/dashboard">
                 <Button variant="opux" size="sm">
                   {t.auth.signUp}
                 </Button>
@@ -151,12 +151,12 @@ export function Header() {
               </Button>
             </div>
             <SignedOut>
-              <SignInButton mode="modal">
+              <SignInButton mode="modal" redirectUrl="/dashboard">
                 <Button variant="ghost" className="mt-2 w-full" onClick={() => setMobileMenuOpen(false)}>
                   {t.auth.signIn}
                 </Button>
               </SignInButton>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" redirectUrl="/dashboard">
                 <Button variant="opux" className="mt-2 w-full" onClick={() => setMobileMenuOpen(false)}>
                   {t.auth.signUp}
                 </Button>

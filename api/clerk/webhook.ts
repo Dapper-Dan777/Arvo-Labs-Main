@@ -14,6 +14,7 @@
  */
 
 import { Webhook } from 'svix';
+import { clerkClient } from '@clerk/clerk-sdk-node';
 
 // Plan-Mapping (MUSS mit deinen Clerk Plan IDs übereinstimmen)
 const PLAN_MAPPING: Record<string, string> = {
@@ -68,18 +69,7 @@ export async function POST(req: Request) {
 
   console.log(`Webhook received: ${eventType}`);
 
-  // Import Clerk Client (Server-side)
-  // Für Vercel: @clerk/nextjs/server
-  // Alternative: @clerk/clerk-sdk-node (für Node.js Server)
-  let clerkClient: any;
-  try {
-    const clerkModule = await import('@clerk/nextjs/server');
-    clerkClient = clerkModule.clerkClient;
-  } catch (error) {
-    // Fallback für @clerk/clerk-sdk-node
-    const clerkModule = await import('@clerk/clerk-sdk-node');
-    clerkClient = clerkModule.clerkClient;
-  }
+  // Clerk Client ist bereits importiert (oben)
 
   // Event: Neuer User erstellt
   if (eventType === 'user.created') {

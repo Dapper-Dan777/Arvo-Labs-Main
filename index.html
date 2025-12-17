@@ -3,6 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Theme sofort setzen, bevor React rendert
+      (function() {
+        // Standard: light (heller Hintergrund)
+        const saved = localStorage.getItem('arvo-theme');
+        const theme = saved === 'light' || saved === 'dark' ? saved : 'light';
+        
+        // Theme-Klasse sofort setzen
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(theme);
+        
+        // Hintergrund sofort setzen basierend auf Theme
+        function setBackground() {
+          if (document.documentElement) {
+            document.documentElement.style.backgroundColor = theme === 'dark' 
+              ? 'hsl(240 10% 6%)' 
+              : 'hsl(0 0% 100%)';
+          }
+          if (document.body) {
+            document.body.style.backgroundColor = theme === 'dark' 
+              ? 'hsl(240 10% 6%)' 
+              : 'hsl(0 0% 100%)';
+          }
+        }
+        
+        // Sofort versuchen
+        setBackground();
+        
+        // Auch wenn DOM geladen ist
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', setBackground);
+        } else {
+          setBackground();
+        }
+      })();
+    </script>
     <title>Arvo Labs - Digitale Routinen, die deinen Alltag entlasten</title>
     <meta name="description" content="Automatisierung, die sich an deinen Alltag anpasst. Arvo Labs hilft Unternehmen dabei, ihre Prozesse zu automatisieren und effizienter zu arbeiten." />
     <meta name="author" content="Arvo Labs" />

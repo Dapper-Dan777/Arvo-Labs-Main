@@ -4,6 +4,7 @@ type Theme = "light" | "dark";
 
 interface ThemeContextType {
   theme: Theme;
+  resolvedTheme: Theme;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
 }
@@ -14,9 +15,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("arvo-theme");
-      if (saved === "light" || saved === "dark") return saved;
+      if (saved === "light" || saved === "dark") {
+        // Sofort anwenden, bevor React rendert
+        document.documentElement.classList.remove("light", "dark");
+        document.documentElement.classList.add(saved);
+        return saved;
+      }
     }
-    return "dark";
+    // Standard: light, sofort anwenden
+    if (typeof window !== "undefined") {
+      document.documentElement.classList.remove("light", "dark");
+      document.documentElement.classList.add("light");
+    }
+    return "light";
   });
 
   const setTheme = (newTheme: Theme) => {
@@ -35,7 +46,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, resolvedTheme: theme, setTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
