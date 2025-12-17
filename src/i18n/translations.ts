@@ -5,14 +5,14 @@ export const translations = {
         pricing: "Preise",
         useCases: "Use Cases",
         contact: "Kontakt",
-        getStarted: "Kostenloses Automatisierungs‑Gespräch buchen",
+        getStarted: "Kostenlos beraten lassen",
       },
       hero: {
         badge: "Digitale Routinen, die deinen Alltag entlasten",
         title: "KI-gestützte Automatisierung für Unternehmen",
         subtitle: "Automatisierung, die sich an deinen Alltag anpasst.",
         description: "Weniger Papierkram, weniger Nachfassen – mehr Zeit für deine eigentliche Arbeit",
-        cta: "Kostenloses Automatisierungs‑Gespräch buchen",
+        cta: "Kostenlos beraten lassen",
         secondary: "Funktionen entdecken",
         subtext: "Weniger Papierkram, weniger Nachfassen – mehr Zeit für deine eigentliche Arbeit",
       },
@@ -450,6 +450,149 @@ export const translations = {
           urlCopied: "RSS-URL wurde in die Zwischenablage kopiert!",
         },
       },
+      documentation: {
+        breadcrumb: {
+          home: "Startseite",
+          documentation: "Dokumentation",
+        },
+        hero: {
+          title: "Dokumentation & Hilfe",
+          description: "Hier findest du Anleitungen, Feature-Guides, Integrationsbeschreibungen und Antworten auf häufige Fragen. Alles, was du brauchst, um mit Arvo Labs produktiver zu werden.",
+          searchPlaceholder: "Suche nach Themen, z.B. 'E-Mails automatisieren'",
+          searchTip: "Tipp: Starte mit \"Erste Schritte\", wenn du neu bei Arvo Labs bist.",
+        },
+        gettingStarted: {
+          title: "Erste Schritte",
+          subtitle: "Dieser Bereich ist ideal für neue Nutzer:innen. Hier lernst du die Grundlagen von Arvo Labs kennen und kannst schnell loslegen.",
+          whatIsArvoLabs: {
+            title: "Was ist Arvo Labs?",
+            description: "Lerne Arvo Labs kennen: Ein All-in-One-Tool für Automatisierung und KI-Unterstützung im Alltag. Perfekt für Teams und Solo-Selbstständige, die Zeit sparen und effizienter arbeiten wollen.",
+            button: "Artikel lesen",
+          },
+          firstWorkspace: {
+            title: "Dein erster Workspace",
+            items: {
+              create: "Workspace anlegen",
+              invite: "Team einladen",
+              settings: "Grundlegende Einstellungen",
+            },
+            button: "Schritt-für-Schritt Anleitung",
+          },
+          firstAutomation: {
+            title: "Erste Automatisierung erstellen",
+            description: "In wenigen Minuten kannst du deine erste Automatisierung bauen. Beispiel: Automatische E-Mail-Reminder für wiederkehrende Aufgaben.",
+            button: "Guide öffnen",
+          },
+        },
+        features: {
+          title: "Features im Detail",
+          subtitle: "Lerne die wichtigsten Bereiche von Arvo Labs kennen – vom Dashboard bis zur E-Mail-Automatisierung.",
+          dashboard: {
+            title: "Dashboard & Workspaces",
+            items: {
+              overview: "Überblick über Aufgaben",
+              structure: "Struktur für Teams",
+              control: "Zentrale Steuerung deiner KI-Workflows",
+            },
+            button: "Zur Doku",
+          },
+          aiChat: {
+            title: "KI-Chat & Assistenten",
+            items: {
+              context: "Kontextbezogene Antworten",
+              knowledge: "Dokumentenwissen nutzen",
+              delegate: "Wiederkehrende Aufgaben delegieren",
+            },
+            button: "Zur Doku",
+          },
+          documents: {
+            title: "Dokumente & Wissensbasis",
+            items: {
+              storage: "Wissensspeicher für dein Team",
+              versioning: "Versionierung & Updates",
+              search: "Suche über alle Inhalte",
+            },
+            button: "Zur Doku",
+          },
+          email: {
+            title: "E-Mail & Kommunikation",
+            items: {
+              autoReply: "E-Mails automatisiert beantworten",
+              templates: "Vorlagen & Sequenzen",
+              tracking: "Tracking und Nachverfolgung",
+            },
+            button: "Zur Doku",
+          },
+          automations: {
+            title: "Automationen & Workflows",
+            items: {
+              logic: "If-this-then-that Logik",
+              recurring: "Wiederkehrende Tasks automatisieren",
+              integration: "Integration externer Systeme",
+            },
+            button: "Zur Doku",
+          },
+        },
+        integrations: {
+          title: "Integrationen & API",
+          subtitle: "Arvo Labs verbindet sich nahtlos mit E-Mail, Kalender, CRM und anderen Tools, um deine Automatisierungen zu erweitern und deinen Workflow zu optimieren.",
+          whyImportant: {
+            title: "Warum Integrationen wichtig sind",
+            text1: "Integrationen ermöglichen es dir, alle deine Tools an einem Ort zu steuern. Statt zwischen verschiedenen Anwendungen zu wechseln, kannst du E-Mails, Termine und Daten direkt in Arvo Labs verwalten und automatisieren.",
+            text2: "Durch die Verbindung mit externen Systemen sparst du nicht nur Zeit, sondern reduzierst auch Fehlerquellen und schaffst eine zentrale Wissensbasis für dein Team.",
+          },
+          emailBoxes: {
+            title: "E-Mail-Postfächer",
+            description: "Einrichtung, Sync, automatische Antworten und intelligente Kategorisierung deiner E-Mails.",
+          },
+          calendar: {
+            title: "Kalender & Termine",
+            description: "Meetings, Erinnerungen, Follow-ups und automatische Terminplanung direkt aus Arvo Labs.",
+          },
+          moreIntegrations: {
+            title: "Weitere Integrationen",
+            description: "Weitere Verbindungen folgen – sag uns, welche Tools du brauchst.",
+          },
+          api: {
+            title: "API & Entwicklerbereich",
+            description: "Technische Details, Authentifizierung und Beispiel-Requests für Entwickler:innen. Erweitere Arvo Labs nach deinen Bedürfnissen.",
+          },
+        },
+        faq: {
+          title: "FAQ & Troubleshooting",
+          subtitle: "Hier findest du Antworten auf die häufigsten Fragen und kannst kleinere Probleme selbst lösen.",
+          loginIssue: {
+            question: "Ich kann mich nicht einloggen – was tun?",
+            answer1: "Wenn du dich nicht einloggen kannst, prüfe zuerst deinen Browser-Cache und versuche, die Seite neu zu laden. Falls das nicht hilft, kannst du dein Passwort zurücksetzen, indem du auf \"Passwort vergessen\" klickst.",
+            answer2: "Überprüfe auch, ob es aktuelle Wartungsarbeiten gibt, indem du unsere Status-Seite besuchst. Falls das Problem weiterhin besteht, kontaktiere unseren Support – wir helfen dir gerne weiter.",
+          },
+          planChange: {
+            question: "Wie ändere ich meinen Plan oder mein Abo?",
+            answer1: "Du kannst deinen Plan jederzeit in den Einstellungen unter \"Abrechnung\" ändern. Dort siehst du alle verfügbaren Pläne und kannst zwischen monatlicher und jährlicher Abrechnung wechseln.",
+            answer2: "Wichtig: Änderungen am Abrechnungszyklus werden zum nächsten Abrechnungszeitpunkt wirksam. Eine Downgrade-Änderung wird erst nach Ablauf deines aktuellen Abrechnungszeitraums aktiv.",
+          },
+          support: {
+            question: "Wie erreiche ich den Support?",
+            answer1: "Du kannst uns über das Kontaktformular auf unserer Website erreichen oder eine E-Mail an support@arvo-labs.de senden. Wir melden uns in der Regel innerhalb von 24 Stunden zurück.",
+            answer2: "Für dringende technische Probleme nutze bitte unser Support-Ticket-System, das du direkt in deinem Arvo Labs Dashboard findest.",
+          },
+          contactButton: "Support kontaktieren",
+          contactText: "Du hast keine passende Antwort gefunden? Schreib uns – wir melden uns in der Regel innerhalb von 24 Stunden.",
+        },
+        resources: {
+          title: "Ressourcen & Updates",
+          updates: {
+            title: "Produkt-Updates & Changelog",
+            description: "Bleib auf dem Laufenden über neue Features, Verbesserungen und Bugfixes. Wir dokumentieren alle Änderungen transparent und nachvollziehbar.",
+            button: "Zu den Updates",
+          },
+          guides: {
+            title: "Guides & Best Practices",
+            description: "Erfahre, wie andere Nutzer:innen Arvo Labs erfolgreich einsetzen. Von Tipps für Einsteiger bis zu fortgeschrittenen Automatisierungsstrategien.",
+            button: "Zu den Guides",
+          },
+        },
+      },
       privacy: {
         title: "Datenschutzerklärung",
         lastUpdated: "Letzte Aktualisierung: {date}",
@@ -574,7 +717,7 @@ export const translations = {
       cta: {
         title: "Bereit, deinen Alltag zu entlasten?",
         description: "Lass uns in einem kurzen Gespräch prüfen, welche Abläufe wir für dich automatisieren können.",
-        primary: "Kostenloses Automatisierungs‑Gespräch buchen",
+        primary: "Kostenlos beraten lassen",
         secondary: "Mehr über die Funktionen erfahren",
       },
       auth: {
@@ -665,14 +808,14 @@ export const translations = {
         pricing: "Pricing",
         useCases: "Use Cases",
         contact: "Contact",
-        getStarted: "Book free automation consultation",
+        getStarted: "Get free consultation",
       },
       hero: {
         badge: "Digital routines that relieve your daily life",
         title: "AI-powered automation for businesses",
         subtitle: "Automation that adapts to your daily life.",
         description: "Less paperwork, less follow-up – more time for your actual work",
-        cta: "Book free automation consultation",
+        cta: "Get free consultation",
         secondary: "Discover features",
         subtext: "Less paperwork, less follow-up – more time for your actual work",
       },
@@ -2933,6 +3076,149 @@ The right tool selection is important. With the right criteria and a structured 
           },
         },
       },
+      documentation: {
+        breadcrumb: {
+          home: "Home",
+          documentation: "Documentation",
+        },
+        hero: {
+          title: "Documentation & Help",
+          description: "Here you'll find guides, feature documentation, integration descriptions, and answers to frequently asked questions. Everything you need to become more productive with Arvo Labs.",
+          searchPlaceholder: "Search for topics, e.g. 'automate emails'",
+          searchTip: "Tip: Start with \"Getting Started\" if you're new to Arvo Labs.",
+        },
+        gettingStarted: {
+          title: "Getting Started",
+          subtitle: "This section is ideal for new users. Here you'll learn the basics of Arvo Labs and can get started quickly.",
+          whatIsArvoLabs: {
+            title: "What is Arvo Labs?",
+            description: "Learn about Arvo Labs: An all-in-one tool for automation and AI support in everyday life. Perfect for teams and solo freelancers who want to save time and work more efficiently.",
+            button: "Read article",
+          },
+          firstWorkspace: {
+            title: "Your first workspace",
+            items: {
+              create: "Create workspace",
+              invite: "Invite team",
+              settings: "Basic settings",
+            },
+            button: "Step-by-step guide",
+          },
+          firstAutomation: {
+            title: "Create your first automation",
+            description: "In just a few minutes, you can build your first automation. Example: Automatic email reminders for recurring tasks.",
+            button: "Open guide",
+          },
+        },
+        features: {
+          title: "Features in Detail",
+          subtitle: "Learn about the most important areas of Arvo Labs – from the dashboard to email automation.",
+          dashboard: {
+            title: "Dashboard & Workspaces",
+            items: {
+              overview: "Overview of tasks",
+              structure: "Structure for teams",
+              control: "Central control of your AI workflows",
+            },
+            button: "To documentation",
+          },
+          aiChat: {
+            title: "AI Chat & Assistants",
+            items: {
+              context: "Context-aware responses",
+              knowledge: "Use document knowledge",
+              delegate: "Delegate recurring tasks",
+            },
+            button: "To documentation",
+          },
+          documents: {
+            title: "Documents & Knowledge Base",
+            items: {
+              storage: "Knowledge storage for your team",
+              versioning: "Versioning & updates",
+              search: "Search across all content",
+            },
+            button: "To documentation",
+          },
+          email: {
+            title: "Email & Communication",
+            items: {
+              autoReply: "Automatically reply to emails",
+              templates: "Templates & sequences",
+              tracking: "Tracking and follow-up",
+            },
+            button: "To documentation",
+          },
+          automations: {
+            title: "Automations & Workflows",
+            items: {
+              logic: "If-this-then-that logic",
+              recurring: "Automate recurring tasks",
+              integration: "Integration of external systems",
+            },
+            button: "To documentation",
+          },
+        },
+        integrations: {
+          title: "Integrations & API",
+          subtitle: "Arvo Labs seamlessly connects with email, calendar, CRM, and other tools to extend your automations and optimize your workflow.",
+          whyImportant: {
+            title: "Why integrations are important",
+            text1: "Integrations allow you to control all your tools in one place. Instead of switching between different applications, you can manage and automate emails, appointments, and data directly in Arvo Labs.",
+            text2: "By connecting with external systems, you not only save time but also reduce sources of error and create a central knowledge base for your team.",
+          },
+          emailBoxes: {
+            title: "Email inboxes",
+            description: "Setup, sync, automatic replies, and intelligent categorization of your emails.",
+          },
+          calendar: {
+            title: "Calendar & Appointments",
+            description: "Meetings, reminders, follow-ups, and automatic scheduling directly from Arvo Labs.",
+          },
+          moreIntegrations: {
+            title: "More integrations",
+            description: "More connections coming soon – tell us which tools you need.",
+          },
+          api: {
+            title: "API & Developer Area",
+            description: "Technical details, authentication, and example requests for developers. Extend Arvo Labs according to your needs.",
+          },
+        },
+        faq: {
+          title: "FAQ & Troubleshooting",
+          subtitle: "Here you'll find answers to the most common questions and can solve smaller problems yourself.",
+          loginIssue: {
+            question: "I can't log in – what should I do?",
+            answer1: "If you can't log in, first check your browser cache and try reloading the page. If that doesn't help, you can reset your password by clicking \"Forgot password\".",
+            answer2: "Also check if there are any current maintenance activities by visiting our status page. If the problem persists, contact our support – we're happy to help.",
+          },
+          planChange: {
+            question: "How do I change my plan or subscription?",
+            answer1: "You can change your plan at any time in the settings under \"Billing\". There you'll see all available plans and can switch between monthly and annual billing.",
+            answer2: "Important: Changes to the billing cycle take effect at the next billing date. A downgrade change will only become active after your current billing period expires.",
+          },
+          support: {
+            question: "How do I reach support?",
+            answer1: "You can reach us via the contact form on our website or send an email to support@arvo-labs.de. We typically respond within 24 hours.",
+            answer2: "For urgent technical issues, please use our support ticket system, which you can find directly in your Arvo Labs dashboard.",
+          },
+          contactButton: "Contact support",
+          contactText: "Didn't find a suitable answer? Write to us – we typically respond within 24 hours.",
+        },
+        resources: {
+          title: "Resources & Updates",
+          updates: {
+            title: "Product Updates & Changelog",
+            description: "Stay up to date on new features, improvements, and bug fixes. We document all changes transparently and traceably.",
+            button: "To updates",
+          },
+          guides: {
+            title: "Guides & Best Practices",
+            description: "Learn how other users successfully use Arvo Labs. From tips for beginners to advanced automation strategies.",
+            button: "To guides",
+          },
+        },
+      },
       privacy: {
         title: "Privacy Policy",
         lastUpdated: "Last updated: {date}",
@@ -3057,7 +3343,7 @@ The right tool selection is important. With the right criteria and a structured 
       cta: {
         title: "Ready to relieve your daily life?",
         description: "Let's check in a short conversation which processes we can automate for you.",
-        primary: "Book free automation consultation",
+        primary: "Get free consultation",
         secondary: "Learn more about the features",
       },
       auth: {

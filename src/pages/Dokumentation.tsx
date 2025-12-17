@@ -30,8 +30,10 @@ import {
   FileCode,
   Lightbulb,
 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Dokumentation() {
+  const { t } = useLanguage();
   return (
     <Layout>
       {/* Breadcrumb */}
@@ -41,12 +43,12 @@ export default function Dokumentation() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to="/">Startseite</Link>
+                  <Link to="/">{t.documentation.breadcrumb.home}</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Dokumentation</BreadcrumbPage>
+                <BreadcrumbPage>{t.documentation.breadcrumb.documentation}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -59,11 +61,10 @@ export default function Dokumentation() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground mb-6 leading-tight">
-                Dokumentation & Hilfe
+                {t.documentation.hero.title}
               </h1>
               <p className="text-muted-foreground text-lg md:text-xl mb-8 leading-relaxed">
-                Hier findest du Anleitungen, Feature-Guides, Integrationsbeschreibungen und Antworten auf häufige Fragen. 
-                Alles, was du brauchst, um mit Arvo Labs produktiver zu werden.
+                {t.documentation.hero.description}
               </p>
 
               {/* Suchfeld */}
@@ -71,12 +72,12 @@ export default function Dokumentation() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Suche nach Themen, z.B. 'E-Mails automatisieren'"
+                  placeholder={t.documentation.hero.searchPlaceholder}
                   className="pl-10 h-12 text-base"
                 />
               </div>
               <p className="text-sm text-muted-foreground">
-                Tipp: Starte mit „Erste Schritte", wenn du neu bei Arvo Labs bist.
+                {t.documentation.hero.searchTip}
               </p>
             </div>
 
@@ -97,10 +98,10 @@ export default function Dokumentation() {
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
-              Erste Schritte
+              {t.documentation.gettingStarted.title}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Dieser Bereich ist ideal für neue Nutzer:innen. Hier lernst du die Grundlagen von Arvo Labs kennen und kannst schnell loslegen.
+              {t.documentation.gettingStarted.subtitle}
             </p>
           </div>
 
@@ -111,10 +112,9 @@ export default function Dokumentation() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <BookOpen className="w-6 h-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Was ist Arvo Labs?</CardTitle>
+                <CardTitle className="text-xl">{t.documentation.gettingStarted.whatIsArvoLabs.title}</CardTitle>
                 <CardDescription>
-                  Lerne Arvo Labs kennen: Ein All-in-One-Tool für Automatisierung und KI-Unterstützung im Alltag. 
-                  Perfekt für Teams und Solo-Selbstständige, die Zeit sparen und effizienter arbeiten wollen.
+                  {t.documentation.gettingStarted.whatIsArvoLabs.description}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -127,7 +127,7 @@ export default function Dokumentation() {
               <CardFooter>
                 <Button variant="opux" className="w-full" asChild>
                   <Link to="/dokumentation/was-ist-arvo-labs">
-                    Artikel lesen
+                    {t.documentation.gettingStarted.whatIsArvoLabs.button}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
@@ -140,12 +140,12 @@ export default function Dokumentation() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Rocket className="w-6 h-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Dein erster Workspace</CardTitle>
+                <CardTitle className="text-xl">{t.documentation.gettingStarted.firstWorkspace.title}</CardTitle>
                 <CardDescription>
                   <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    <li>Workspace anlegen</li>
-                    <li>Team einladen</li>
-                    <li>Grundlegende Einstellungen</li>
+                    <li>{t.documentation.gettingStarted.firstWorkspace.items.create}</li>
+                    <li>{t.documentation.gettingStarted.firstWorkspace.items.invite}</li>
+                    <li>{t.documentation.gettingStarted.firstWorkspace.items.settings}</li>
                   </ul>
                 </CardDescription>
               </CardHeader>
@@ -159,7 +159,7 @@ export default function Dokumentation() {
               <CardFooter>
                 <Button variant="opux" className="w-full" asChild>
                   <Link to="/dokumentation/erster-workspace">
-                    Schritt-für-Schritt Anleitung
+                    {t.documentation.gettingStarted.firstWorkspace.button}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
@@ -172,10 +172,9 @@ export default function Dokumentation() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Zap className="w-6 h-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Erste Automatisierung erstellen</CardTitle>
+                <CardTitle className="text-xl">{t.documentation.gettingStarted.firstAutomation.title}</CardTitle>
                 <CardDescription>
-                  In wenigen Minuten kannst du deine erste Automatisierung bauen. 
-                  Beispiel: Automatische E-Mail-Reminder für wiederkehrende Aufgaben.
+                  {t.documentation.gettingStarted.firstAutomation.description}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -188,7 +187,7 @@ export default function Dokumentation() {
               <CardFooter>
                 <Button variant="opux" className="w-full" asChild>
                   <Link to="/dokumentation/erste-automatisierung">
-                    Guide öffnen
+                    {t.documentation.gettingStarted.firstAutomation.button}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
@@ -203,10 +202,10 @@ export default function Dokumentation() {
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
-              Features im Detail
+              {t.documentation.features.title}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Lerne die wichtigsten Bereiche von Arvo Labs kennen – vom Dashboard bis zur E-Mail-Automatisierung.
+              {t.documentation.features.subtitle}
             </p>
           </div>
 
@@ -217,18 +216,18 @@ export default function Dokumentation() {
                 <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center mb-4">
                   <LayoutDashboard className="w-5 h-5 text-foreground" />
                 </div>
-                <CardTitle className="text-lg">Dashboard & Workspaces</CardTitle>
+                <CardTitle className="text-lg">{t.documentation.features.dashboard.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Überblick über Aufgaben</li>
-                  <li>• Struktur für Teams</li>
-                  <li>• Zentrale Steuerung deiner KI-Workflows</li>
+                  <li>• {t.documentation.features.dashboard.items.overview}</li>
+                  <li>• {t.documentation.features.dashboard.items.structure}</li>
+                  <li>• {t.documentation.features.dashboard.items.control}</li>
                 </ul>
               </CardContent>
               <CardFooter>
                 <Button variant="opuxOutline" className="w-full" asChild>
-                  <Link to="/dokumentation/dashboard-workspaces">Zur Doku</Link>
+                  <Link to="/dokumentation/dashboard-workspaces">{t.documentation.features.dashboard.button}</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -239,18 +238,18 @@ export default function Dokumentation() {
                 <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center mb-4">
                   <MessageSquare className="w-5 h-5 text-foreground" />
                 </div>
-                <CardTitle className="text-lg">KI-Chat & Assistenten</CardTitle>
+                <CardTitle className="text-lg">{t.documentation.features.aiChat.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Kontextbezogene Antworten</li>
-                  <li>• Dokumentenwissen nutzen</li>
-                  <li>• Wiederkehrende Aufgaben delegieren</li>
+                  <li>• {t.documentation.features.aiChat.items.context}</li>
+                  <li>• {t.documentation.features.aiChat.items.knowledge}</li>
+                  <li>• {t.documentation.features.aiChat.items.delegate}</li>
                 </ul>
               </CardContent>
               <CardFooter>
                 <Button variant="opuxOutline" className="w-full" asChild>
-                  <Link to="/dokumentation/ki-chat-assistenten">Zur Doku</Link>
+                  <Link to="/dokumentation/ki-chat-assistenten">{t.documentation.features.aiChat.button}</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -261,18 +260,18 @@ export default function Dokumentation() {
                 <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center mb-4">
                   <FileText className="w-5 h-5 text-foreground" />
                 </div>
-                <CardTitle className="text-lg">Dokumente & Wissensbasis</CardTitle>
+                <CardTitle className="text-lg">{t.documentation.features.documents.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Wissensspeicher für dein Team</li>
-                  <li>• Versionierung & Updates</li>
-                  <li>• Suche über alle Inhalte</li>
+                  <li>• {t.documentation.features.documents.items.storage}</li>
+                  <li>• {t.documentation.features.documents.items.versioning}</li>
+                  <li>• {t.documentation.features.documents.items.search}</li>
                 </ul>
               </CardContent>
               <CardFooter>
                 <Button variant="opuxOutline" className="w-full" asChild>
-                  <Link to="/dokumentation/dokumente-wissensbasis">Zur Doku</Link>
+                  <Link to="/dokumentation/dokumente-wissensbasis">{t.documentation.features.documents.button}</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -283,18 +282,18 @@ export default function Dokumentation() {
                 <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center mb-4">
                   <Mail className="w-5 h-5 text-foreground" />
                 </div>
-                <CardTitle className="text-lg">E-Mail & Kommunikation</CardTitle>
+                <CardTitle className="text-lg">{t.documentation.features.email.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• E-Mails automatisiert beantworten</li>
-                  <li>• Vorlagen & Sequenzen</li>
-                  <li>• Tracking und Nachverfolgung</li>
+                  <li>• {t.documentation.features.email.items.autoReply}</li>
+                  <li>• {t.documentation.features.email.items.templates}</li>
+                  <li>• {t.documentation.features.email.items.tracking}</li>
                 </ul>
               </CardContent>
               <CardFooter>
                 <Button variant="opuxOutline" className="w-full" asChild>
-                  <Link to="/dokumentation/email-kommunikation">Zur Doku</Link>
+                  <Link to="/dokumentation/email-kommunikation">{t.documentation.features.email.button}</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -305,18 +304,18 @@ export default function Dokumentation() {
                 <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center mb-4">
                   <Workflow className="w-5 h-5 text-foreground" />
                 </div>
-                <CardTitle className="text-lg">Automationen & Workflows</CardTitle>
+                <CardTitle className="text-lg">{t.documentation.features.automations.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• If-this-then-that Logik</li>
-                  <li>• Wiederkehrende Tasks automatisieren</li>
-                  <li>• Integration externer Systeme</li>
+                  <li>• {t.documentation.features.automations.items.logic}</li>
+                  <li>• {t.documentation.features.automations.items.recurring}</li>
+                  <li>• {t.documentation.features.automations.items.integration}</li>
                 </ul>
               </CardContent>
               <CardFooter>
                 <Button variant="opuxOutline" className="w-full" asChild>
-                  <Link to="/dokumentation/automationen-workflows">Zur Doku</Link>
+                  <Link to="/dokumentation/automationen-workflows">{t.documentation.features.automations.button}</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -329,11 +328,10 @@ export default function Dokumentation() {
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
-              Integrationen & API
+              {t.documentation.integrations.title}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Arvo Labs verbindet sich nahtlos mit E-Mail, Kalender, CRM und anderen Tools, 
-              um deine Automatisierungen zu erweitern und deinen Workflow zu optimieren.
+              {t.documentation.integrations.subtitle}
             </p>
           </div>
 
@@ -341,16 +339,13 @@ export default function Dokumentation() {
             {/* Linke Spalte: Textblock */}
             <div className="space-y-4">
               <h3 className="text-2xl font-semibold text-foreground mb-4">
-                Warum Integrationen wichtig sind
+                {t.documentation.integrations.whyImportant.title}
               </h3>
               <p className="text-muted-foreground leading-relaxed">
-                Integrationen ermöglichen es dir, alle deine Tools an einem Ort zu steuern. 
-                Statt zwischen verschiedenen Anwendungen zu wechseln, kannst du E-Mails, Termine und Daten 
-                direkt in Arvo Labs verwalten und automatisieren.
+                {t.documentation.integrations.whyImportant.text1}
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Durch die Verbindung mit externen Systemen sparst du nicht nur Zeit, sondern reduzierst 
-                auch Fehlerquellen und schaffst eine zentrale Wissensbasis für dein Team.
+                {t.documentation.integrations.whyImportant.text2}
               </p>
             </div>
 
@@ -363,12 +358,12 @@ export default function Dokumentation() {
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Mail className="w-5 h-5 text-primary" />
                     </div>
-                    <CardTitle className="text-lg">E-Mail-Postfächer</CardTitle>
+                    <CardTitle className="text-lg">{t.documentation.integrations.emailBoxes.title}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Einrichtung, Sync, automatische Antworten und intelligente Kategorisierung deiner E-Mails.
+                    {t.documentation.integrations.emailBoxes.description}
                   </p>
                 </CardContent>
               </Card>
@@ -380,12 +375,12 @@ export default function Dokumentation() {
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Calendar className="w-5 h-5 text-primary" />
                     </div>
-                    <CardTitle className="text-lg">Kalender & Termine</CardTitle>
+                    <CardTitle className="text-lg">{t.documentation.integrations.calendar.title}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Meetings, Erinnerungen, Follow-ups und automatische Terminplanung direkt aus Arvo Labs.
+                    {t.documentation.integrations.calendar.description}
                   </p>
                 </CardContent>
               </Card>
@@ -397,12 +392,12 @@ export default function Dokumentation() {
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Plug className="w-5 h-5 text-primary" />
                     </div>
-                    <CardTitle className="text-lg">Weitere Integrationen</CardTitle>
+                    <CardTitle className="text-lg">{t.documentation.integrations.moreIntegrations.title}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Weitere Verbindungen folgen – sag uns, welche Tools du brauchst.
+                    {t.documentation.integrations.moreIntegrations.description}
                   </p>
                 </CardContent>
               </Card>
@@ -414,13 +409,12 @@ export default function Dokumentation() {
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Code className="w-5 h-5 text-primary" />
                     </div>
-                    <CardTitle className="text-lg">API & Entwicklerbereich</CardTitle>
+                    <CardTitle className="text-lg">{t.documentation.integrations.api.title}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Technische Details, Authentifizierung und Beispiel-Requests für Entwickler:innen. 
-                    Erweitere Arvo Labs nach deinen Bedürfnissen.
+                    {t.documentation.integrations.api.description}
                   </p>
                 </CardContent>
               </Card>
@@ -434,10 +428,10 @@ export default function Dokumentation() {
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
-              FAQ & Troubleshooting
+              {t.documentation.faq.title}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Hier findest du Antworten auf die häufigsten Fragen und kannst kleinere Probleme selbst lösen.
+              {t.documentation.faq.subtitle}
             </p>
           </div>
 
@@ -445,18 +439,15 @@ export default function Dokumentation() {
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
                 <AccordionTrigger className="text-left">
-                  Ich kann mich nicht einloggen – was tun?
+                  {t.documentation.faq.loginIssue.question}
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-2 text-muted-foreground">
                     <p>
-                      Wenn du dich nicht einloggen kannst, prüfe zuerst deinen Browser-Cache und versuche, 
-                      die Seite neu zu laden. Falls das nicht hilft, kannst du dein Passwort zurücksetzen, 
-                      indem du auf „Passwort vergessen" klickst.
+                      {t.documentation.faq.loginIssue.answer1}
                     </p>
                     <p>
-                      Überprüfe auch, ob es aktuelle Wartungsarbeiten gibt, indem du unsere Status-Seite besuchst. 
-                      Falls das Problem weiterhin besteht, kontaktiere unseren Support – wir helfen dir gerne weiter.
+                      {t.documentation.faq.loginIssue.answer2}
                     </p>
                   </div>
                 </AccordionContent>
@@ -464,17 +455,15 @@ export default function Dokumentation() {
 
               <AccordionItem value="item-2">
                 <AccordionTrigger className="text-left">
-                  Wie ändere ich meinen Plan oder mein Abo?
+                  {t.documentation.faq.planChange.question}
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-2 text-muted-foreground">
                     <p>
-                      Du kannst deinen Plan jederzeit in den Einstellungen unter „Abrechnung" ändern. 
-                      Dort siehst du alle verfügbaren Pläne und kannst zwischen monatlicher und jährlicher Abrechnung wechseln.
+                      {t.documentation.faq.planChange.answer1}
                     </p>
                     <p>
-                      Wichtig: Änderungen am Abrechnungszyklus werden zum nächsten Abrechnungszeitpunkt wirksam. 
-                      Eine Downgrade-Änderung wird erst nach Ablauf deines aktuellen Abrechnungszeitraums aktiv.
+                      {t.documentation.faq.planChange.answer2}
                     </p>
                   </div>
                 </AccordionContent>
@@ -482,17 +471,15 @@ export default function Dokumentation() {
 
               <AccordionItem value="item-3">
                 <AccordionTrigger className="text-left">
-                  Wie erreiche ich den Support?
+                  {t.documentation.faq.support.question}
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-2 text-muted-foreground">
                     <p>
-                      Du kannst uns über das Kontaktformular auf unserer Website erreichen oder eine E-Mail 
-                      an support@arvo-labs.de senden. Wir melden uns in der Regel innerhalb von 24 Stunden zurück.
+                      {t.documentation.faq.support.answer1}
                     </p>
                     <p>
-                      Für dringende technische Probleme nutze bitte unser Support-Ticket-System, 
-                      das du direkt in deinem Arvo Labs Dashboard findest.
+                      {t.documentation.faq.support.answer2}
                     </p>
                   </div>
                 </AccordionContent>
@@ -503,12 +490,12 @@ export default function Dokumentation() {
           <div className="max-w-3xl mx-auto text-center">
             <Button variant="opux" size="lg" asChild className="mb-4">
               <Link to="/kontakt">
-                Support kontaktieren
+                {t.documentation.faq.contactButton}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </Button>
             <p className="text-sm text-muted-foreground">
-              Du hast keine passende Antwort gefunden? Schreib uns – wir melden uns in der Regel innerhalb von 24 Stunden.
+              {t.documentation.faq.contactText}
             </p>
           </div>
         </div>
@@ -519,7 +506,7 @@ export default function Dokumentation() {
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
-              Ressourcen & Updates
+              {t.documentation.resources.title}
             </h2>
           </div>
 
@@ -530,16 +517,15 @@ export default function Dokumentation() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <FileCode className="w-6 h-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Produkt-Updates & Changelog</CardTitle>
+                <CardTitle className="text-xl">{t.documentation.resources.updates.title}</CardTitle>
                 <CardDescription>
-                  Bleib auf dem Laufenden über neue Features, Verbesserungen und Bugfixes. 
-                  Wir dokumentieren alle Änderungen transparent und nachvollziehbar.
+                  {t.documentation.resources.updates.description}
                 </CardDescription>
               </CardHeader>
               <CardFooter>
                 <Button variant="opuxOutline" className="w-full" asChild>
                   <Link to="/dokumentation/updates">
-                    Zu den Updates
+                    {t.documentation.resources.updates.button}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
@@ -552,16 +538,15 @@ export default function Dokumentation() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Lightbulb className="w-6 h-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Guides & Best Practices</CardTitle>
+                <CardTitle className="text-xl">{t.documentation.resources.guides.title}</CardTitle>
                 <CardDescription>
-                  Erfahre, wie andere Nutzer:innen Arvo Labs erfolgreich einsetzen. 
-                  Von Tipps für Einsteiger bis zu fortgeschrittenen Automatisierungsstrategien.
+                  {t.documentation.resources.guides.description}
                 </CardDescription>
               </CardHeader>
               <CardFooter>
                 <Button variant="opuxOutline" className="w-full" asChild>
                   <Link to="/dokumentation/guides">
-                    Zu den Guides
+                    {t.documentation.resources.guides.button}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
