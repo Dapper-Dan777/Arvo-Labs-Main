@@ -63,7 +63,7 @@ export function SupportModal() {
         >
           <div
             className={cn(
-              "bg-card rounded-lg shadow-2xl max-w-md w-full p-6 relative",
+              "bg-card rounded-lg shadow-2xl max-w-sm w-full p-5 relative",
               "border border-border",
               "animate-fadeIn"
             )}
@@ -79,19 +79,19 @@ export function SupportModal() {
             </button>
 
             {/* Header */}
-            <h2 className="text-2xl font-bold text-foreground mb-6 pr-8">
+            <h2 className="text-xl font-bold text-foreground mb-5 pr-8">
               {t.support.modal.title}
             </h2>
 
             {/* Kontakt-Infos */}
-            <div className="space-y-3 mb-6">
+            <div className="space-y-2.5 mb-5">
               {/* Telefon */}
               <a
                 href="tel:+49123456789"
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors group"
+                className="flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-secondary transition-colors group"
               >
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div className="w-9 h-9 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">{t.support.modal.phone}</p>
@@ -104,10 +104,10 @@ export function SupportModal() {
               {/* E-Mail */}
               <a
                 href="mailto:support@arvolabs.de"
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors group"
+                className="flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-secondary transition-colors group"
               >
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div className="w-9 h-9 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">{t.support.modal.email}</p>
@@ -118,9 +118,9 @@ export function SupportModal() {
               </a>
 
               {/* Öffnungszeiten */}
-              <div className="flex items-center gap-3 p-3">
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="flex items-center gap-2.5 p-2.5">
+                <div className="w-9 h-9 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">{t.support.modal.hours}</p>
@@ -132,17 +132,17 @@ export function SupportModal() {
             </div>
 
             {/* Divider */}
-            <div className="border-t border-border my-6"></div>
+            <div className="border-t border-border my-5"></div>
 
             {/* CTA */}
             <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-xs text-muted-foreground mb-3">
                 {t.support.modal.cta}
               </p>
               <Link
                 to="/support"
                 onClick={() => setIsOpen(false)}
-                className="inline-block w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="inline-block w-full px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 {t.support.modal.ctaButton}
               </Link>

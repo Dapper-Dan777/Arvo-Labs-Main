@@ -21,6 +21,17 @@ import Datenschutz from "./pages/Datenschutz.tsx";
 import Impressum from "./pages/Impressum.tsx";
 import AGB from "./pages/AGB.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Dokumentation from "./pages/Dokumentation.tsx";
+import WasIstArvoLabs from "./pages/dokumentation/WasIstArvoLabs.tsx";
+import ErsterWorkspace from "./pages/dokumentation/ErsterWorkspace.tsx";
+import ErsteAutomatisierung from "./pages/dokumentation/ErsteAutomatisierung.tsx";
+import DashboardWorkspaces from "./pages/dokumentation/DashboardWorkspaces.tsx";
+import KiChatAssistenten from "./pages/dokumentation/KiChatAssistenten.tsx";
+import DokumenteWissensbasis from "./pages/dokumentation/DokumenteWissensbasis.tsx";
+import EmailKommunikation from "./pages/dokumentation/EmailKommunikation.tsx";
+import AutomationenWorkflows from "./pages/dokumentation/AutomationenWorkflows.tsx";
+import Updates from "./pages/dokumentation/Updates.tsx";
+import Guides from "./pages/dokumentation/Guides.tsx";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +58,17 @@ const App = () => (
               <Route path="/datenschutz" element={<Datenschutz />} />
               <Route path="/impressum" element={<Impressum />} />
               <Route path="/agb" element={<AGB />} />
+              <Route path="/dokumentation" element={<Dokumentation />} />
+              <Route path="/dokumentation/was-ist-arvo-labs" element={<WasIstArvoLabs />} />
+              <Route path="/dokumentation/erster-workspace" element={<ErsterWorkspace />} />
+              <Route path="/dokumentation/erste-automatisierung" element={<ErsteAutomatisierung />} />
+              <Route path="/dokumentation/dashboard-workspaces" element={<DashboardWorkspaces />} />
+              <Route path="/dokumentation/ki-chat-assistenten" element={<KiChatAssistenten />} />
+              <Route path="/dokumentation/dokumente-wissensbasis" element={<DokumenteWissensbasis />} />
+              <Route path="/dokumentation/email-kommunikation" element={<EmailKommunikation />} />
+              <Route path="/dokumentation/automationen-workflows" element={<AutomationenWorkflows />} />
+              <Route path="/dokumentation/updates" element={<Updates />} />
+              <Route path="/dokumentation/guides" element={<Guides />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

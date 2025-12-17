@@ -17,11 +17,10 @@ export function Footer() {
   const { t } = useLanguage();
 
   // Footer-Links entsprechend der vorhandenen Routen
-  // TODO: Dokumentation-Route ersetzen, sobald Docs live sind
   const productLinks: FooterLink[] = [
     { label: t.footer.product.links.features, href: "/funktionen" },
     { label: t.footer.product.links.pricing, href: "/preise" },
-    { label: t.footer.product.links.documentation, href: "#" },
+    { label: t.footer.product.links.documentation, href: "/dokumentation" },
   ];
 
   const companyLinks: FooterLink[] = [
