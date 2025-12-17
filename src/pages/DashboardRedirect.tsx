@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SignedIn, SignedOut, RedirectToSignIn, useUser, useOrganizationList } from '@clerk/clerk-react';
 import { useUserPlan } from '@/hooks/useUserPlan';
+import { usePlanChangeRedirect } from '@/hooks/usePlanChangeRedirect';
 import { PlanType } from '@/config/access';
 
 export default function DashboardRedirect() {
@@ -10,6 +11,12 @@ export default function DashboardRedirect() {
   const { organizationList, isLoaded: orgListLoaded } = useOrganizationList();
   const navigate = useNavigate();
   const [isRedirecting, setIsRedirecting] = useState(false);
+
+  // Plan-Change-Redirect aktivieren (für automatische Weiterleitung nach Plan-Wechsel)
+  usePlanChangeRedirect({
+    enabled: true,
+    redirectDelay: 1000,
+  });
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;

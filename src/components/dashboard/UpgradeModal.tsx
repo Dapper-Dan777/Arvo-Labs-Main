@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -9,6 +10,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useUser } from '@clerk/clerk-react';
+import { getUserCheckoutUrl, getOrgCheckoutUrl } from '@/lib/clerk-billing';
 import { PlanType } from '@/config/access';
 import { ArrowRight, Lock } from 'lucide-react';
 
@@ -27,10 +30,46 @@ export function UpgradeModal({
 }: UpgradeModalProps) {
   const { t } = useLanguage();
   const { plan, accountType } = useAccessControl();
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const [isRedirecting, setIsRedirecting] = useState(false);
   
   const handleUpgrade = () => {
-    // TODO: Link zu Upgrade-Seite oder Checkout
-    window.location.href = '/pricing';
+    if (!requiredPlan || requiredPlan === 'team') {
+      // Für Team-Upgrades oder wenn kein Plan spezifiziert ist, zur Pricing-Seite
+      navigate('/pricing');
+      return;
+    }
+
+    // Für Individual-Pläne: Direkt zu Clerk Checkout
+    try {
+      const checkoutUrl = getUserCheckoutUrl(requiredPlan);
+      
+      // Öffne Checkout in neuem Tab oder redirect
+      // Nach Checkout-Completion wird der Webhook den Plan aktualisieren
+      // und der User wird automatisch weitergeleitet
+      window.location.href = checkoutUrl;
+      setIsRedirecting(true);
+    } catch (error) {
+      console.error('Error opening checkout:', error);
+      // Fallback zur Pricing-Seite
+      navigate('/pricing');
+    }
+  };
+  
+  const getDashboardPath = (plan: PlanType): string => {
+    switch (plan) {
+      case 'starter':
+        return '/dashboard/starter';
+      case 'pro':
+        return '/dashboard/pro';
+      case 'enterprise':
+        return '/dashboard/enterprise';
+      case 'individual':
+        return '/dashboard/individual';
+      default:
+        return '/dashboard/starter';
+    }
   };
   
   const getUpgradeText = () => {

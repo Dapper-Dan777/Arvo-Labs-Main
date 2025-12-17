@@ -1,18 +1,44 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUser, useOrganizationList, useClerk } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/dashboard-layout/DashboardLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUserPlan } from '@/hooks/useUserPlan';
+import { usePlanChangeRedirect, usePlanPolling } from '@/hooks/usePlanChangeRedirect';
 import { CreditCard, Building2 } from 'lucide-react';
+import { PlanType } from '@/config/access';
 
 function DashboardBillingContent() {
   const { user } = useUser();
   const { organizationList, isLoaded: orgListLoaded } = useOrganizationList();
-  const { accountType } = useUserPlan();
+  const { accountType, plan } = useUserPlan();
   const { t } = useLanguage();
   const clerk = useClerk();
+  const navigate = useNavigate();
+  const [isWaitingForPlan, setIsWaitingForPlan] = useState(false);
+
+  // Polling aktivieren, wenn wir auf Plan-Änderung warten
+  usePlanPolling({
+    enabled: isWaitingForPlan,
+    interval: 2000,
+    onPlanChange: (newPlan: PlanType) => {
+      setIsWaitingForPlan(false);
+      // Weiterleitung zum richtigen Dashboard
+      const dashboardPath = getDashboardPath(newPlan);
+      navigate(dashboardPath, { replace: true });
+    },
+  });
+
+  // Plan-Change-Redirect aktivieren
+  usePlanChangeRedirect({
+    enabled: true,
+    redirectDelay: 1500,
+    onRedirect: () => {
+      setIsWaitingForPlan(false);
+    },
+  });
 
   useEffect(() => {
     // Prüfe URL-Parameter für Organization Creation
@@ -52,19 +78,53 @@ function DashboardBillingContent() {
 
   const handleOpenUserBilling = () => {
     // Öffne Clerk User Profile Modal
+    setIsWaitingForPlan(true);
     try {
-      clerk.openUserProfile();
+      clerk.openUserProfile({
+        afterSignOutUrl: '/',
+      });
+      
+      // Nach 3 Sekunden prüfen, ob Plan sich geändert hat
+      setTimeout(async () => {
+        await user?.reload();
+        const currentPlan = user?.publicMetadata?.plan as PlanType | undefined;
+        const hasPlan = currentPlan && currentPlan !== 'starter' && currentPlan !== plan;
+        
+        if (hasPlan && currentPlan) {
+          const dashboardPath = getDashboardPath(currentPlan);
+          navigate(dashboardPath, { replace: true });
+          setIsWaitingForPlan(false);
+        }
+      }, 3000);
     } catch (error) {
       console.error('Error opening user profile:', error);
+      setIsWaitingForPlan(false);
     }
   };
 
   const handleOpenOrgBilling = (orgId: string) => {
     // Öffne Organization Profile Modal
+    setIsWaitingForPlan(true);
     try {
-      clerk.openOrganizationProfile({ organizationId: orgId });
+      clerk.openOrganizationProfile({ 
+        organizationId: orgId,
+      });
+      
+      // Nach 3 Sekunden prüfen, ob Plan sich geändert hat
+      setTimeout(async () => {
+        await user?.reload();
+        const currentPlan = user?.publicMetadata?.plan as PlanType | undefined;
+        const hasPlan = currentPlan && currentPlan !== 'starter' && currentPlan !== plan;
+        
+        if (hasPlan && currentPlan) {
+          const dashboardPath = getDashboardPath(currentPlan);
+          navigate(dashboardPath, { replace: true });
+          setIsWaitingForPlan(false);
+        }
+      }, 3000);
     } catch (error) {
       console.error('Error opening organization profile:', error);
+      setIsWaitingForPlan(false);
     }
   };
 
@@ -79,8 +139,31 @@ function DashboardBillingContent() {
     }
   };
 
+  // Helper-Funktion für Dashboard-Pfad
+  const getDashboardPath = (plan: PlanType): string => {
+    switch (plan) {
+      case 'starter':
+        return '/dashboard/starter';
+      case 'pro':
+        return '/dashboard/pro';
+      case 'enterprise':
+        return '/dashboard/enterprise';
+      case 'individual':
+        return '/dashboard/individual';
+      default:
+        return '/dashboard/starter';
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
+      {isWaitingForPlan && (
+        <div className="p-4 bg-indigo-50 dark:bg-indigo-950 border border-indigo-200 dark:border-indigo-800 rounded-lg">
+          <p className="text-sm text-indigo-700 dark:text-indigo-300">
+            {t.dashboard.billing?.waitingForPlan || 'Warte auf Plan-Aktualisierung... Du wirst automatisch weitergeleitet.'}
+          </p>
+        </div>
+      )}
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
           {t.dashboard.billing?.title || 'Plan auswählen'}
@@ -96,9 +179,9 @@ function DashboardBillingContent() {
             <div className="flex items-center gap-3">
               <CreditCard className="w-6 h-6 text-primary" />
               <div>
-                <CardTitle>Individual Plan</CardTitle>
+                <CardTitle>{t.dashboard.billing?.individualTitle || 'Individual Plan'}</CardTitle>
                 <CardDescription>
-                  Wähle einen Plan für dein persönliches Konto
+                  {t.dashboard.billing?.individualDescription || 'Wähle einen Plan für dein persönliches Konto'}
                 </CardDescription>
               </div>
             </div>
@@ -106,11 +189,11 @@ function DashboardBillingContent() {
           <CardContent>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Um einen Plan auszuwählen, öffne dein Benutzerprofil in Clerk.
+                {t.dashboard.billing?.individualPrompt || 'Um einen Plan auszuwählen, öffne dein Benutzerprofil in Clerk.'}
               </p>
               <Button onClick={handleOpenUserBilling} className="w-full">
                 <CreditCard className="w-4 h-4 mr-2" />
-                Benutzerprofil öffnen
+                {t.dashboard.billing?.openBilling || 'Benutzerprofil öffnen'}
               </Button>
             </div>
           </CardContent>
@@ -121,9 +204,9 @@ function DashboardBillingContent() {
             <div className="flex items-center gap-3">
               <Building2 className="w-6 h-6 text-primary" />
               <div>
-                <CardTitle>Team Plan</CardTitle>
+                <CardTitle>{t.dashboard.billing?.teamTitle || 'Team Plan'}</CardTitle>
                 <CardDescription>
-                  Wähle einen Plan für dein Team
+                  {t.dashboard.billing?.teamDescription || 'Wähle einen Plan für dein Team'}
                 </CardDescription>
               </div>
             </div>
@@ -133,7 +216,7 @@ function DashboardBillingContent() {
               {orgListLoaded && organizationList && organizationList.length > 0 ? (
                 <>
                   <p className="text-sm text-muted-foreground">
-                    Wähle einen Plan für deine Organization:
+                    {t.dashboard.billing?.teamBillingPrompt || 'Wähle einen Plan für deine Organization:'}
                   </p>
                   {organizationList.map((org) => (
                     <div key={org.id} className="p-4 border rounded-lg">
@@ -141,7 +224,7 @@ function DashboardBillingContent() {
                         <div>
                           <p className="font-medium">{org.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {org.membersCount} Mitglieder
+                            {org.membersCount} {t.dashboard.billing?.members || 'Mitglieder'}
                           </p>
                         </div>
                         <Button
@@ -149,7 +232,7 @@ function DashboardBillingContent() {
                           onClick={() => handleOpenOrgBilling(org.id)}
                         >
                           <Building2 className="w-4 h-4 mr-2" />
-                          Plan verwalten
+                          {t.dashboard.billing?.openTeamBilling || 'Plan verwalten'}
                         </Button>
                       </div>
                     </div>
@@ -158,14 +241,14 @@ function DashboardBillingContent() {
               ) : (
                 <>
                   <p className="text-sm text-muted-foreground">
-                    Du hast noch keine Organization erstellt. Erstelle zuerst ein Team.
+                    {t.dashboard.billing?.teamCreationPrompt || 'Du hast noch keine Organization erstellt. Erstelle zuerst ein Team.'}
                   </p>
                   <Button
                     onClick={handleCreateOrganization}
                     className="w-full"
                   >
                     <Building2 className="w-4 h-4 mr-2" />
-                    Team erstellen
+                    {t.dashboard.billing?.createTeam || 'Team erstellen'}
                   </Button>
                 </>
               )}
