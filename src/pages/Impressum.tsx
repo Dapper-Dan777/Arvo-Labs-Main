@@ -1,12 +1,14 @@
 import React from "react";
 import { Layout } from "@/components/layout/Layout";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { ProtectedPageLayout } from "@/components/ProtectedPageLayout";
 
 export default function Impressum() {
   const { t } = useLanguage();
 
   return (
     <Layout>
+      <ProtectedPageLayout isProtected={true}>
       {/* Hero */}
       <section className="py-20 md:py-28">
         <div className="container mx-auto">
@@ -73,6 +75,7 @@ export default function Impressum() {
           </div>
         </div>
       </section>
+      </ProtectedPageLayout>
     </Layout>
   );
 }
