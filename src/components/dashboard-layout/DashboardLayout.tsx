@@ -3,6 +3,8 @@ import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { LayoutShell } from './LayoutShell';
 import { WidgetProvider } from '@/contexts/WidgetContext';
 import { useUser } from '@clerk/clerk-react';
+import { useUserPlan } from '@/hooks/useUserPlan';
+import { PlanDebugInfo } from '@/components/dashboard/PlanDebugInfo';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -10,8 +12,19 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user } = useUser();
+  const { plan, accountType } = useUserPlan();
   
   useEffect(() => {
+    // Debug: Zeige Plan-Info in Console (IMMER, auch wenn user noch nicht geladen)
+    if (import.meta.env.DEV) {
+      console.log('🔍 [DashboardLayout] Current Plan Info:', {
+        hasUser: !!user,
+        plan,
+        accountType,
+        rawPlan: user?.publicMetadata?.plan,
+        publicMetadata: user?.publicMetadata,
+      });
+    }
     // Theme nach dem Login sicherstellen
     const root = document.documentElement;
     const saved = localStorage.getItem('arvo-theme') || 'light';
@@ -36,6 +49,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <SignedIn>
         <WidgetProvider userId={user?.id}>
           <LayoutShell>
+            {import.meta.env.DEV && <PlanDebugInfo />}
             {children}
           </LayoutShell>
         </WidgetProvider>

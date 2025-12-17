@@ -1,18 +1,24 @@
-// Unterdrücke Clerk Development-Keys Warnung in Development (MUSS ganz am Anfang stehen!)
+// Unterdrücke Clerk Development-Keys Warnung in Development (Backup, falls index.html nicht greift)
 if (import.meta.env.DEV) {
   const originalWarn = console.warn;
-  console.warn = (...args: any[]) => {
-    // Filtere Clerk Development-Keys Warnung
-    const message = args[0];
-    if (
-      typeof message === 'string' && 
-      (message.includes('Clerk has been loaded with development keys') ||
-       (message.includes('development keys') && message.includes('Clerk')))
-    ) {
+  const originalError = console.error;
+  
+  console.warn = function(...args: any[]) {
+    const message = String(args[0] || '');
+    if (message.includes('Clerk has been loaded with development keys') ||
+        (message.includes('development keys') && message.includes('Clerk'))) {
       return; // Unterdrücke diese spezifische Warnung
     }
-    // Alle anderen Warnungen normal ausgeben
     originalWarn.apply(console, args);
+  };
+  
+  console.error = function(...args: any[]) {
+    const message = String(args[0] || '');
+    if (message.includes('Clerk has been loaded with development keys') ||
+        (message.includes('development keys') && message.includes('Clerk'))) {
+      return; // Unterdrücke diese spezifische Warnung
+    }
+    originalError.apply(console, args);
   };
 }
 

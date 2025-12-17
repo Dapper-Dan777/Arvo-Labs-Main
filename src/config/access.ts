@@ -203,14 +203,26 @@ export function hasFeatureAccess(
   feature: FeatureId
 ): boolean {
   // Normalisiere Plan (lowercase) für konsistente Prüfung
-  const normalizedPlan = plan.toLowerCase() as PlanType;
+  const normalizedPlan = plan.toLowerCase().trim() as PlanType;
   const configKey = `${normalizedPlan}_${accountType}` as keyof typeof ACCESS_CONFIG;
   const config = ACCESS_CONFIG[configKey];
+  
+  // Debug-Logging (immer in Development)
+  if (import.meta.env.DEV) {
+    console.log(`🔍 [hasFeatureAccess] Checking access for "${feature}":`, {
+      plan,
+      normalizedPlan,
+      accountType,
+      configKey,
+      configExists: !!config,
+      availableKeys: Object.keys(ACCESS_CONFIG),
+    });
+  }
   
   if (!config) {
     // Debug-Logging wenn Config nicht gefunden
     if (import.meta.env.DEV) {
-      console.warn(`[hasFeatureAccess] Config nicht gefunden für:`, {
+      console.error(`[hasFeatureAccess] ❌ Config nicht gefunden für:`, {
         plan,
         normalizedPlan,
         accountType,
@@ -219,19 +231,28 @@ export function hasFeatureAccess(
       });
     }
     // Fallback: Starter Individual als Standard
-    return ACCESS_CONFIG.starter_individual.features[feature] ?? false;
+    const fallbackAccess = ACCESS_CONFIG.starter_individual.features[feature] ?? false;
+    if (import.meta.env.DEV) {
+      console.warn(`[hasFeatureAccess] Using fallback (starter_individual):`, {
+        feature,
+        fallbackAccess,
+      });
+    }
+    return fallbackAccess;
   }
   
   const hasAccess = config.features[feature] ?? false;
   
   // Debug-Logging (nur in Development)
   if (import.meta.env.DEV) {
-    console.log(`[hasFeatureAccess] Feature "${feature}":`, {
+    const status = hasAccess ? '✅' : '❌';
+    console.log(`🔍 [hasFeatureAccess] ${status} Feature "${feature}":`, {
       plan,
       normalizedPlan,
       accountType,
       configKey,
       hasAccess,
+      featureConfig: config.features[feature],
     });
   }
   

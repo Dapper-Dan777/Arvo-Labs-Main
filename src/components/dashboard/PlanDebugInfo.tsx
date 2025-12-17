@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useUserPlan } from '@/hooks/useUserPlan';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { getPlanAccessConfig } from '@/config/access';
@@ -13,12 +13,25 @@ export function PlanDebugInfo() {
     return null;
   }
 
-  const { plan, accountType, user, isLoaded } = useUserPlan();
+  const { plan, accountType, user, isLoaded, isSignedIn } = useUserPlan();
   const { canAccess } = useAccessControl();
   const config = getPlanAccessConfig(plan, accountType);
 
   const rawPlan = user?.publicMetadata?.plan;
   const rawAccountType = user?.publicMetadata?.accountType;
+  
+  // Debug-Log in Console (immer ausgeben)
+  useEffect(() => {
+    console.log('🔍 [PlanDebugInfo] ============================================');
+    console.log('🔍 [PlanDebugInfo] Plan Debug Information:');
+    console.log('🔍 [PlanDebugInfo] - isLoaded:', isLoaded);
+    console.log('🔍 [PlanDebugInfo] - isSignedIn:', isSignedIn);
+    console.log('🔍 [PlanDebugInfo] - Raw Plan from Metadata:', rawPlan);
+    console.log('🔍 [PlanDebugInfo] - Normalized Plan:', plan);
+    console.log('🔍 [PlanDebugInfo] - AccountType:', accountType);
+    console.log('🔍 [PlanDebugInfo] - Full publicMetadata:', user?.publicMetadata);
+    console.log('🔍 [PlanDebugInfo] ============================================');
+  }, [isLoaded, isSignedIn, plan, accountType, rawPlan, user]);
 
   return (
     <Card className="mb-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-950">

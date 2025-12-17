@@ -32,20 +32,38 @@ export function useUserPlan() {
   
   // Validiere, dass der Plan ein gültiger PlanType ist
   const validPlans: PlanType[] = ['starter', 'pro', 'enterprise', 'individual'];
-  const plan: PlanType = (validPlans.includes(normalizedPlan as PlanType) 
-    ? normalizedPlan 
-    : 'starter') as PlanType;
   
-  // Debug-Logging (nur in Development)
-  if (import.meta.env.DEV && user) {
-    console.log('[useUserPlan] Debug Info:', {
+  // Erweiterte Plan-Erkennung: Prüfe auch auf Varianten
+  let finalPlan: PlanType = 'starter';
+  if (normalizedPlan) {
+    if (normalizedPlan.includes('enterprise')) {
+      finalPlan = 'enterprise';
+    } else if (normalizedPlan.includes('pro')) {
+      finalPlan = 'pro';
+    } else if (normalizedPlan.includes('individual')) {
+      finalPlan = 'individual';
+    } else if (normalizedPlan.includes('starter')) {
+      finalPlan = 'starter';
+    } else if (validPlans.includes(normalizedPlan as PlanType)) {
+      finalPlan = normalizedPlan as PlanType;
+    }
+  }
+  
+  const plan: PlanType = finalPlan;
+  
+  // Debug-Logging (IMMER in Development, auch wenn user noch nicht geladen)
+  if (import.meta.env.DEV) {
+    console.log('🔍 [useUserPlan] Debug Info:', {
+      isLoaded,
+      isSignedIn,
+      hasUser: !!user,
       rawPlan,
       normalizedPlan,
       plan,
       isValidPlan: validPlans.includes(plan),
-      accountType: user.publicMetadata?.accountType,
-      organizationMemberships: user.organizationMemberships?.length || 0,
-      publicMetadata: user.publicMetadata,
+      accountType: user?.publicMetadata?.accountType,
+      organizationMemberships: user?.organizationMemberships?.length || 0,
+      publicMetadata: user?.publicMetadata,
       fullUserObject: user,
     });
   }

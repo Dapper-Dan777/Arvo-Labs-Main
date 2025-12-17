@@ -6,8 +6,13 @@
 export const USER_PLAN_IDS = {
   starter: "cplan_36wBO5cFvWQO0wk0scQFdkxTKIA",
   pro: "cplan_36wBaMbKGVXAr0axyDtzrL9IpL0",
-  enterprise: "cplan_36wBjAYcrxMq3hFreVm5Lil4jSu",
+  enterprise: "cplan_36wBjAYcrxMq3hFreVm5Lil4jSu", // Enterprise Plan ID (korrekt mit Großbuchstaben)
 } as const;
+
+// Validiere Plan IDs beim Import
+if (import.meta.env.DEV) {
+  console.log('🔍 [clerk-billing] Plan IDs:', USER_PLAN_IDS);
+}
 
 export const ORG_PLAN_IDS = {
   team_starter: "cplan_36wCRSd1BPN9poL5zFMdmSmkoa6",
@@ -31,7 +36,21 @@ export function getUserCheckoutUrl(planKey: keyof typeof USER_PLAN_IDS): string 
     ? "https://accounts.clerk.dev" 
     : "https://accounts.clerk.com";
   
-  return `${baseUrl}/subscribe/${planId}`;
+  // Stelle sicher, dass die Plan-ID korrekt ist (keine Lowercase-Konvertierung)
+  const checkoutUrl = `${baseUrl}/subscribe/${planId}`;
+  
+  // Debug-Logging in Development
+  if (import.meta.env.DEV) {
+    console.log('🔍 [getUserCheckoutUrl]', {
+      planKey,
+      planId,
+      isTest,
+      baseUrl,
+      checkoutUrl,
+    });
+  }
+  
+  return checkoutUrl;
 }
 
 /**

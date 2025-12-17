@@ -18,6 +18,23 @@ export function useAccessControl() {
    */
   const canAccess = (feature: FeatureId): boolean => {
     if (!isLoaded) return false;
+    
+    // Prüfe ob Plan "enterprise" ist (case-insensitive)
+    const isEnterprise = plan.toLowerCase() === 'enterprise' || 
+                        plan.toLowerCase().includes('enterprise');
+    
+    // Sonderbehandlung für Enterprise-Plan: Alle Features außer Team-spezifische sind verfügbar
+    if (isEnterprise) {
+      // Team-Features nur für Team-Accounts
+      if (feature === 'teamActions' || feature === 'teamManagement') {
+        return accountType === 'team';
+      }
+      // Alle anderen Features sind für Enterprise verfügbar
+      console.log(`✅ [useAccessControl] Enterprise Plan - Feature "${feature}" granted`);
+      return true;
+    }
+    
+    // Für andere Pläne: Normale Prüfung
     const hasAccess = hasFeatureAccess(plan, accountType, feature);
     
     // Debug-Logging (nur in Development)
@@ -26,6 +43,7 @@ export function useAccessControl() {
         plan,
         accountType,
         hasAccess,
+        isEnterprise,
       });
     }
     
