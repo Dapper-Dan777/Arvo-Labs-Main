@@ -1,3 +1,21 @@
+// Unterdrücke Clerk Development-Keys Warnung in Development (MUSS ganz am Anfang stehen!)
+if (import.meta.env.DEV) {
+  const originalWarn = console.warn;
+  console.warn = (...args: any[]) => {
+    // Filtere Clerk Development-Keys Warnung
+    const message = args[0];
+    if (
+      typeof message === 'string' && 
+      (message.includes('Clerk has been loaded with development keys') ||
+       (message.includes('development keys') && message.includes('Clerk')))
+    ) {
+      return; // Unterdrücke diese spezifische Warnung
+    }
+    // Alle anderen Warnungen normal ausgeben
+    originalWarn.apply(console, args);
+  };
+}
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ClerkProvider } from "@clerk/clerk-react";
@@ -12,9 +30,6 @@ if (!PUBLISHABLE_KEY) {
     "⚠️ VITE_CLERK_PUBLISHABLE_KEY ist nicht gesetzt. Clerk-Funktionen funktionieren möglicherweise nicht."
   );
 }
-
-// Hinweis: Die Clerk "Development keys" Warnung ist in Development normal und kann ignoriert werden.
-// In Production wird sie automatisch verschwinden, wenn Production-Keys verwendet werden.
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

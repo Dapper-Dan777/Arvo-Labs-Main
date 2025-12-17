@@ -4,6 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
+      // Unterdrücke Clerk Development-Keys Warnung in Development (muss VOR Clerk geladen wird)
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const originalWarn = console.warn;
+        console.warn = function(...args) {
+          const message = args[0];
+          if (
+            typeof message === 'string' && 
+            (message.includes('Clerk has been loaded with development keys') ||
+             (message.includes('development keys') && message.includes('Clerk')))
+          ) {
+            return; // Unterdrücke diese spezifische Warnung
+          }
+          originalWarn.apply(console, args);
+        };
+      }
+      
       // Theme sofort setzen, bevor React rendert
       (function() {
         // Standard: light (heller Hintergrund)
