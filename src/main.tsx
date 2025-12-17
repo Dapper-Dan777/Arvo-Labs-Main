@@ -18,9 +18,8 @@ createRoot(document.getElementById("root")!).render(
     {PUBLISHABLE_KEY ? (
       <ClerkProvider 
         publishableKey={PUBLISHABLE_KEY} 
-        afterSignInUrl="/dashboard"
-        afterSignUpUrl="/dashboard"
-        afterSignOutUrl="/"
+        signInFallbackRedirectUrl="/dashboard"
+        signUpFallbackRedirectUrl="/dashboard"
       >
         <App />
       </ClerkProvider>

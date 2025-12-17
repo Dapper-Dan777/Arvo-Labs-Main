@@ -8,11 +8,12 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-// Check if Supabase is configured
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+// Check if Supabase is configured (nur in Development warnen)
+if (import.meta.env.DEV && (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY)) {
   console.warn(
     '⚠️ Supabase ist nicht konfiguriert. Bitte setze die Umgebungsvariablen:\n' +
-    'VITE_SUPABASE_URL und VITE_SUPABASE_PUBLISHABLE_KEY in einer .env Datei.'
+    'VITE_SUPABASE_URL und VITE_SUPABASE_PUBLISHABLE_KEY in einer .env Datei.\n' +
+    '(Diese Warnung wird nur in Development angezeigt)'
   );
 }
 
