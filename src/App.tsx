@@ -54,7 +54,7 @@ import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 import SignIn from "./pages/auth/SignIn.tsx";
 import SignUp from "./pages/auth/SignUp.tsx";
 import AuthCallback from "./pages/auth/AuthCallback.tsx";
-import { ProtectedRoute } from "./components/auth/ProtectedRoute.tsx";
+import { ProtectedRoute } from "./components/Auth/ProtectedRoute.tsx";
 
 const queryClient = new QueryClient();
 
