@@ -9,8 +9,8 @@ import {
   SignUpButton,
   SignedIn,
   SignedOut,
-  UserButton,
-} from "@clerk/clerk-react";
+} from "@/components/Auth";
+import { UserButton } from "@/components/Auth/UserButton";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

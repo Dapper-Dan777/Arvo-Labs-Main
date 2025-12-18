@@ -11,13 +11,11 @@ import { toast } from '@/hooks/use-toast';
 // ============================================================================
 
 /**
- * Get current user ID from Clerk or localStorage
- * TODO: Integrate with Clerk when available
+ * Get current user ID from Supabase Auth
  */
-function getCurrentUserId(): string {
-  // For now, use a mock user ID
-  // In production, get this from Clerk: const { userId } = useUser();
-  return localStorage.getItem('userId') || 'demo-user-123';
+async function getCurrentUserId(): Promise<string | null> {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.id || null;
 }
 
 // ============================================================================
@@ -37,7 +35,8 @@ export interface Document {
 
 export async function getDocuments(userId?: string): Promise<Document[]> {
   try {
-    const uid = userId || getCurrentUserId();
+    const uid = userId || await getCurrentUserId();
+    if (!uid) return [];
     const { data, error } = await supabase
       .from('documents')
       .select('*')
@@ -59,10 +58,24 @@ export async function getDocuments(userId?: string): Promise<Document[]> {
 
 export async function createDocument(document: Omit<Document, 'id' | 'created_at' | 'updated_at'>): Promise<Document | null> {
   try {
-    const uid = getCurrentUserId();
-    const { data, error } = await supabase
-      .from('documents')
-      .insert([{ ...document, user_id: uid }])
+    const uid = await getCurrentUserId();
+    if (!uid) {
+      toast({
+        title: 'Fehler',
+        description: 'Du musst angemeldet sein, um Dokumente zu erstellen.',
+        variant: 'destructive',
+      });
+      return null;
+    }
+    const { data, error } = await (supabase
+      .from('documents') as any)
+      .insert([{ 
+        title: document.title,
+        type: document.type,
+        date: document.date,
+        status: document.status,
+        user_id: uid 
+      }])
       .select()
       .single();
 
@@ -87,7 +100,8 @@ export async function createDocument(document: Omit<Document, 'id' | 'created_at
 
 export async function deleteDocument(documentId: string): Promise<boolean> {
   try {
-    const uid = getCurrentUserId();
+    const uid = await getCurrentUserId();
+    if (!uid) return false;
     const { error } = await supabase
       .from('documents')
       .delete()
@@ -189,7 +203,8 @@ export async function getTimeEntries(userId?: string): Promise<TimeEntry[]> {
       return MOCK_TIME_ENTRIES;
     }
 
-    const uid = userId || getCurrentUserId();
+    const uid = userId || await getCurrentUserId();
+    if (!uid) return [];
     const { data, error } = await supabase
       .from('time_entries')
       .select('*')
@@ -237,10 +252,25 @@ export async function getTimeEntries(userId?: string): Promise<TimeEntry[]> {
 
 export async function createTimeEntry(entry: Omit<TimeEntry, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'status'>): Promise<TimeEntry | null> {
   try {
-    const uid = getCurrentUserId();
-    const { data, error } = await supabase
-      .from('time_entries')
-      .insert([{ ...entry, user_id: uid, status: 'Erfasst' }])
+    const uid = await getCurrentUserId();
+    if (!uid) {
+      toast({
+        title: 'Fehler',
+        description: 'Du musst angemeldet sein, um Zeitbuchungen zu erstellen.',
+        variant: 'destructive',
+      });
+      return null;
+    }
+    const { data, error } = await (supabase
+      .from('time_entries') as any)
+      .insert([{ 
+        date: entry.date,
+        project: entry.project,
+        duration: entry.duration,
+        description: entry.description,
+        user_id: uid, 
+        status: 'Erfasst' 
+      }])
       .select()
       .single();
 
@@ -265,7 +295,8 @@ export async function createTimeEntry(entry: Omit<TimeEntry, 'id' | 'user_id' | 
 
 export async function deleteTimeEntry(entryId: string): Promise<boolean> {
   try {
-    const uid = getCurrentUserId();
+    const uid = await getCurrentUserId();
+    if (!uid) return false;
     const { error } = await supabase
       .from('time_entries')
       .delete()
@@ -308,7 +339,8 @@ export interface Notification {
 
 export async function getNotifications(userId?: string): Promise<Notification[]> {
   try {
-    const uid = userId || getCurrentUserId();
+    const uid = userId || await getCurrentUserId();
+    if (!uid) return [];
     const { data, error } = await supabase
       .from('notifications')
       .select('*')
@@ -325,9 +357,10 @@ export async function getNotifications(userId?: string): Promise<Notification[]>
 
 export async function markNotificationAsRead(notificationId: string): Promise<boolean> {
   try {
-    const uid = getCurrentUserId();
-    const { error } = await supabase
-      .from('notifications')
+    const uid = await getCurrentUserId();
+    if (!uid) return false;
+    const { error } = await (supabase
+      .from('notifications') as any)
       .update({ unread: false })
       .eq('id', notificationId)
       .eq('user_id', uid);

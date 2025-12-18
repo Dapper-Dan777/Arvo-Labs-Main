@@ -9,29 +9,30 @@ import { BillingToggle } from "@/components/pricing/BillingToggle";
 import { PlanTypeToggle } from "@/components/pricing/PlanTypeToggle";
 import { PricingCard, type PricingPlan } from "@/components/pricing/PricingCard";
 import { FeatureComparisonTable } from "@/components/pricing/FeatureComparisonTable";
-import { useUser, useOrganization, useClerk } from "@clerk/clerk-react";
+import { useUser } from "@/contexts/AuthContext";
+import { PlanType } from "@/config/access";
 
 export default function Preise() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { user, isSignedIn } = useUser();
-  const { organization, membership } = useOrganization();
-  const clerk = useClerk();
   const [isYearly, setIsYearly] = useState(false);
   const [planType, setPlanType] = useState<"user" | "team">("user");
+  
+  // Für Supabase: Organisationen werden über user_metadata verwaltet
+  const organization = null; // Vereinfacht
+  const membership = null;
 
   // Handler für User Subscriptions
   const handleUserSubscribe = (planKey: string) => {
     if (!isSignedIn) {
-      clerk.openSignIn({
-        redirectUrl: window.location.href,
-      });
+      navigate("/auth/sign-in", { state: { redirectUrl: window.location.href } });
       return;
     }
 
     if (planKey === "starter" || planKey === "free") {
       // Free Plan - direkt zum Dashboard
-      navigate("/");
+      navigate("/dashboard");
       return;
     }
 
@@ -48,37 +49,45 @@ export default function Preise() {
       return;
     }
 
-    // Öffne User Profile Modal direkt zum Billing Tab
-    // Dies ist die offizielle Methode für React-Anwendungen
-    try {
-      clerk.openUserProfile();
-    } catch (error) {
-      console.error("Error opening user profile:", error);
-      // Fallback: Öffne Account Modal (User kann dann zu Billing navigieren)
-      clerk.openUserProfile();
+    // Erstelle Checkout Session für den Plan
+    handleCreateCheckout(planKey as PlanType);
+  };
+
+  const handleCreateCheckout = (targetPlan: PlanType) => {
+    if (!isSignedIn || !user?.id) {
+      navigate("/auth/sign-in", { state: { redirectUrl: window.location.href } });
+      return;
     }
+
+    const priceId = getStripePriceId(targetPlan, 'individual');
+    
+    if (!priceId || !isValidPriceId(priceId)) {
+      // Fallback: Weiterleitung zur Billing-Seite
+      navigate("/dashboard/billing");
+      return;
+    }
+
+    // Weiterleitung zur Billing-Seite mit Checkout
+    // Die Billing-Seite zeigt dann das Payment Element
+    navigate(`/dashboard/billing?checkout=${targetPlan}`);
   };
 
   // Handler für Team Subscriptions
   const handleTeamSubscribe = (planKey: string) => {
     if (!isSignedIn) {
-      clerk.openSignIn({
-        redirectUrl: window.location.href,
-      });
+      navigate("/auth/sign-in", { state: { redirectUrl: window.location.href } });
       return;
     }
 
     if (!organization) {
       // User muss erst ein Team erstellen
-      clerk.openCreateOrganization({
-        afterCreateOrganizationUrl: window.location.href,
-      });
+      navigate("/kontakt?subject=team-creation");
       return;
     }
 
     if (planKey === "team_starter" || planKey === "free") {
       // Free Team Plan
-      navigate("/");
+      navigate("/dashboard");
       return;
     }
 
@@ -95,14 +104,8 @@ export default function Preise() {
       return;
     }
 
-    // Öffne Organization Profile Modal direkt zum Billing Tab
-    try {
-      clerk.openOrganizationProfile();
-    } catch (error) {
-      console.error("Error opening organization profile:", error);
-      // Fallback: Öffne Members Tab (User kann dann zu Billing navigieren)
-      clerk.openOrganizationProfile();
-    }
+    // Für Supabase: Weiterleitung zur Billing-Seite für Team-Plan-Auswahl
+    navigate("/dashboard/billing?type=team");
   };
 
   // User Plans

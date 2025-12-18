@@ -10,8 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAccessControl } from '@/hooks/useAccessControl';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useUser } from '@clerk/clerk-react';
-import { getUserCheckoutUrl, getOrgCheckoutUrl } from '@/lib/clerk-billing';
+import { useUser } from '@/contexts/AuthContext';
 import { PlanType } from '@/config/access';
 import { ArrowRight, Lock } from 'lucide-react';
 
@@ -41,20 +40,8 @@ export function UpgradeModal({
       return;
     }
 
-    // Für Individual-Pläne: Direkt zu Clerk Checkout
-    try {
-      const checkoutUrl = getUserCheckoutUrl(requiredPlan);
-      
-      // Öffne Checkout in neuem Tab oder redirect
-      // Nach Checkout-Completion wird der Webhook den Plan aktualisieren
-      // und der User wird automatisch weitergeleitet
-      window.location.href = checkoutUrl;
-      setIsRedirecting(true);
-    } catch (error) {
-      console.error('Error opening checkout:', error);
-      // Fallback zur Pricing-Seite
-      navigate('/pricing');
-    }
+    // Für Supabase: Weiterleitung zur Preisseite
+    navigate('/preise');
   };
   
   const getDashboardPath = (plan: PlanType): string => {

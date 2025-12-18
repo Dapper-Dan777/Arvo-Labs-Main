@@ -50,6 +50,9 @@ import DashboardWhiteboards from "./pages/dashboard/DashboardWhiteboards.tsx";
 import DashboardForms from "./pages/dashboard/DashboardForms.tsx";
 import DashboardMore from "./pages/dashboard/DashboardMore.tsx";
 import DashboardBilling from "./pages/dashboard/DashboardBilling.tsx";
+import PaymentSuccess from "./pages/PaymentSuccess.tsx";
+import SignIn from "./pages/auth/SignIn.tsx";
+import SignUp from "./pages/auth/SignUp.tsx";
 
 const queryClient = new QueryClient();
 
@@ -87,8 +90,11 @@ const App = () => (
               <Route path="/dokumentation/automationen-workflows" element={<AutomationenWorkflows />} />
               <Route path="/dokumentation/updates" element={<Updates />} />
               <Route path="/dokumentation/guides" element={<Guides />} />
+              <Route path="/auth/sign-in" element={<SignIn />} />
+              <Route path="/auth/sign-up" element={<SignUp />} />
               <Route path="/dashboard" element={<DashboardRedirect />} />
               <Route path="/dashboard/billing" element={<DashboardBilling />} />
+              <Route path="/payment/success" element={<PaymentSuccess />} />
               <Route path="/dashboard/starter" element={<DashboardStarter />} />
               <Route path="/dashboard/pro" element={<DashboardPro />} />
               <Route path="/dashboard/enterprise" element={<DashboardEnterprise />} />

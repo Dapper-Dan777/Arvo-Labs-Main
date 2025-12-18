@@ -4,62 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-      // Unterdrücke Clerk Development-Keys Warnung in Development (muss VOR Clerk geladen wird)
-      (function() {
-        const isDev = window.location.hostname === 'localhost' || 
-                     window.location.hostname === '127.0.0.1' ||
-                     window.location.hostname.includes('localhost') ||
-                     window.location.port !== '';
-        
-        if (isDev) {
-          // Speichere originale Funktionen
-          const originalWarn = console.warn.bind(console);
-          const originalError = console.error.bind(console);
-          const originalLog = console.log.bind(console);
-          
-          // Erstelle eine Filter-Funktion
-          function shouldSuppress(message) {
-            const msg = String(message || '');
-            return msg.includes('Clerk has been loaded with development keys') ||
-                   (msg.includes('development keys') && msg.includes('Clerk')) ||
-                   (msg.includes('Clerk:') && msg.includes('development'));
-          }
-          
-          // Überschreibe console.warn mit Proxy-ähnlichem Verhalten
-          console.warn = function(...args) {
-            if (args.length > 0 && shouldSuppress(args[0])) {
-              return; // Unterdrücke diese spezifische Warnung
-            }
-            originalWarn.apply(console, args);
-          };
-          
-          // Überschreibe console.error
-          console.error = function(...args) {
-            if (args.length > 0 && shouldSuppress(args[0])) {
-              return; // Unterdrücke diese spezifische Warnung
-            }
-            originalError.apply(console, args);
-          };
-          
-          // Überschreibe auch console.log (falls Clerk das verwendet)
-          console.log = function(...args) {
-            if (args.length > 0 && shouldSuppress(args[0])) {
-              return; // Unterdrücke diese spezifische Warnung
-            }
-            originalLog.apply(console, args);
-          };
-          
-          // Überschreibe auch console.info
-          const originalInfo = console.info.bind(console);
-          console.info = function(...args) {
-            if (args.length > 0 && shouldSuppress(args[0])) {
-              return;
-            }
-            originalInfo.apply(console, args);
-          };
-        }
-      })();
-      
       // Theme sofort setzen, bevor React rendert
       (function() {
         // Standard: light (heller Hintergrund)

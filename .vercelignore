@@ -1,0 +1,9 @@
+# Ignoriere Dateien für Vercel Deployment
+node_modules
+.git
+.env.local
+.env*.local
+dist
+*.log
+
+

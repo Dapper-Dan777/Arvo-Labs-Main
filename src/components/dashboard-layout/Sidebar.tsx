@@ -21,7 +21,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useUserPlan } from '@/hooks/useUserPlan';
 import { useAccessControl } from '@/hooks/useAccessControl';
-import { useUser, UserButton } from '@clerk/clerk-react';
+import { useUser } from '@/contexts/AuthContext';
+import { UserButton } from '@/components/Auth/UserButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { UpgradeModal } from '@/components/dashboard/UpgradeModal';
 import { FeatureId } from '@/config/access';
@@ -288,7 +289,7 @@ export function Sidebar({ isOpen, onClose, isMobile, plan }: SidebarProps) {
           {sidebarExpanded && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
-                {user?.fullName || user?.emailAddresses?.[0]?.emailAddress || t.dashboard.user}
+                {user?.publicMetadata?.full_name || user?.emailAddresses?.[0]?.emailAddress || t.dashboard.user}
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                 {getPlanName()}

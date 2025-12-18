@@ -1,23 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useUser, useOrganizationList, useClerk } from '@clerk/clerk-react';
-import { useNavigate } from 'react-router-dom';
+import { useUser } from '@/contexts/AuthContext';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DashboardLayout } from '@/components/dashboard-layout/DashboardLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUserPlan } from '@/hooks/useUserPlan';
 import { usePlanChangeRedirect, usePlanPolling } from '@/hooks/usePlanChangeRedirect';
-import { CreditCard, Building2 } from 'lucide-react';
+import { CreditCard, Building2, Loader2, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react';
 import { PlanType } from '@/config/access';
+import { supabase } from '@/Integrations/supabase/client';
+import { getStripePriceId, isValidPriceId } from '@/config/stripe';
+import { toast } from '@/hooks/use-toast';
+import { CheckoutProvider } from '@/components/Checkout/CheckoutProvider';
 
 function DashboardBillingContent() {
   const { user } = useUser();
-  const { organizationList, isLoaded: orgListLoaded } = useOrganizationList();
   const { accountType, plan } = useUserPlan();
   const { t } = useLanguage();
-  const clerk = useClerk();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isWaitingForPlan, setIsWaitingForPlan] = useState(false);
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<{ plan: PlanType; priceId: string } | null>(null);
+  
+  // Für Supabase: Organisationen werden über user_metadata oder eine separate Tabelle verwaltet
+  const orgListLoaded = true; // Vereinfacht
+  const organizationList: any[] = []; // Leer, da Supabase keine direkte Organisation-Funktionalität hat
 
   // Polling aktivieren, wenn wir auf Plan-Änderung warten
   usePlanPolling({
@@ -41,102 +51,111 @@ function DashboardBillingContent() {
   });
 
   useEffect(() => {
-    // Prüfe URL-Parameter für Organization Creation
-    const urlParams = new URLSearchParams(window.location.search);
-    const createOrg = urlParams.get('createOrganization');
+    // Prüfe URL-Parameter für Checkout-Ergebnis
+    const success = searchParams.get('success');
+    const canceled = searchParams.get('canceled');
+    const sessionId = searchParams.get('session_id');
+    const checkoutPlan = searchParams.get('checkout') as PlanType | null;
     
-    if (createOrg === 'true') {
-      // Öffne Organization Creation Modal
-      const timer = setTimeout(() => {
-        try {
-          clerk.openCreateOrganization({
-            afterCreateOrganizationUrl: '/dashboard/billing',
-          });
-        } catch (error) {
-          console.error('Error opening create organization:', error);
-        }
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-    
-    // Versuche automatisch das Clerk User Profile Modal zu öffnen, wenn kein Plan vorhanden
-    if (accountType === 'individual' && user) {
-      const userPlan = user.publicMetadata?.plan;
-      if (!userPlan || userPlan === 'starter') {
-        // Öffne User Profile Modal nach kurzer Verzögerung
-        const timer = setTimeout(() => {
-          try {
-            clerk.openUserProfile();
-          } catch (error) {
-            console.error('Error opening user profile:', error);
-          }
-        }, 500);
-        return () => clearTimeout(timer);
+    // Wenn Checkout-Plan in URL, öffne Checkout
+    if (checkoutPlan && user?.id) {
+      const priceId = getStripePriceId(checkoutPlan, accountType);
+      if (priceId && isValidPriceId(priceId)) {
+        setSelectedPlan({ plan: checkoutPlan, priceId });
+        // URL-Parameter entfernen
+        navigate('/dashboard/billing', { replace: true });
       }
     }
-  }, [accountType, user, clerk]);
+    
+    if (success === 'true' && sessionId) {
+      toast({
+        title: 'Erfolgreich!',
+        description: 'Dein Plan wurde erfolgreich aktualisiert. Die Änderungen werden in Kürze sichtbar.',
+      });
+      setIsWaitingForPlan(true);
+      // URL-Parameter entfernen
+      navigate('/dashboard/billing', { replace: true });
+    }
+    
+    if (canceled === 'true') {
+      toast({
+        title: 'Abgebrochen',
+        description: 'Der Checkout wurde abgebrochen.',
+        variant: 'destructive',
+      });
+      navigate('/dashboard/billing', { replace: true });
+    }
+    
+    // Prüfe URL-Parameter für Organization Creation
+    const createOrg = searchParams.get('createOrganization');
+    if (createOrg === 'true') {
+      console.log('Organization creation requested');
+    }
+  }, [searchParams, navigate, user?.id, accountType]);
 
   const handleOpenUserBilling = () => {
-    // Öffne Clerk User Profile Modal
-    setIsWaitingForPlan(true);
-    try {
-      clerk.openUserProfile({
-        afterSignOutUrl: '/',
+    // Weiterleitung zur Preisseite für Plan-Auswahl
+    navigate('/preise');
+  };
+
+  const handleCreateCheckout = (targetPlan: PlanType) => {
+    if (!user?.id) {
+      toast({
+        title: 'Fehler',
+        description: 'Du musst angemeldet sein, um einen Plan zu abonnieren.',
+        variant: 'destructive',
       });
-      
-      // Nach 3 Sekunden prüfen, ob Plan sich geändert hat
-      setTimeout(async () => {
-        await user?.reload();
-        const currentPlan = user?.publicMetadata?.plan as PlanType | undefined;
-        const hasPlan = currentPlan && currentPlan !== 'starter' && currentPlan !== plan;
-        
-        if (hasPlan && currentPlan) {
-          const dashboardPath = getDashboardPath(currentPlan);
-          navigate(dashboardPath, { replace: true });
-          setIsWaitingForPlan(false);
-        }
-      }, 3000);
-    } catch (error) {
-      console.error('Error opening user profile:', error);
-      setIsWaitingForPlan(false);
+      return;
     }
+
+    const priceId = getStripePriceId(targetPlan, accountType);
+    
+    if (!priceId || !isValidPriceId(priceId)) {
+      toast({
+        title: 'Konfigurationsfehler',
+        description: `Stripe Price ID für Plan "${targetPlan}" ist nicht konfiguriert. Bitte kontaktiere den Support.`,
+        variant: 'destructive',
+      });
+      console.error('Invalid or missing Stripe Price ID for plan:', targetPlan);
+      return;
+    }
+
+    // Zeige Checkout-Formular (Custom UI)
+    setSelectedPlan({ plan: targetPlan, priceId });
+  };
+
+  const handleCheckoutSuccess = () => {
+    setSelectedPlan(null);
+    setIsWaitingForPlan(true);
+    toast({
+      title: 'Erfolgreich!',
+      description: 'Dein Plan wurde erfolgreich aktiviert. Die Änderungen werden in Kürze sichtbar.',
+    });
+  };
+
+  const handleCheckoutCancel = () => {
+    setSelectedPlan(null);
+  };
+
+  const getPlanName = (plan: PlanType): string => {
+    const planNames: Record<PlanType, string> = {
+      starter: t.dashboard.plans.starter,
+      pro: t.dashboard.plans.pro,
+      enterprise: t.dashboard.plans.enterprise,
+      individual: t.dashboard.plans.individual,
+    };
+    return planNames[plan] || plan;
   };
 
   const handleOpenOrgBilling = (orgId: string) => {
-    // Öffne Organization Profile Modal
-    setIsWaitingForPlan(true);
-    try {
-      clerk.openOrganizationProfile({ 
-        organizationId: orgId,
-      });
-      
-      // Nach 3 Sekunden prüfen, ob Plan sich geändert hat
-      setTimeout(async () => {
-        await user?.reload();
-        const currentPlan = user?.publicMetadata?.plan as PlanType | undefined;
-        const hasPlan = currentPlan && currentPlan !== 'starter' && currentPlan !== plan;
-        
-        if (hasPlan && currentPlan) {
-          const dashboardPath = getDashboardPath(currentPlan);
-          navigate(dashboardPath, { replace: true });
-          setIsWaitingForPlan(false);
-        }
-      }, 3000);
-    } catch (error) {
-      console.error('Error opening organization profile:', error);
-      setIsWaitingForPlan(false);
-    }
+    // Für Supabase: Weiterleitung zur Plan-Auswahl-Seite für Teams
+    navigate('/preise?type=team');
   };
 
   const handleCreateOrganization = () => {
-    // Öffne Organization Creation Modal
-    try {
-      clerk.openCreateOrganization({
-        afterCreateOrganizationUrl: '/dashboard/billing',
-      });
-    } catch (error) {
-      console.error('Error opening create organization:', error);
-    }
+    // Für Supabase: Organisation-Erstellung würde hier über eine separate Seite/Modal erfolgen
+    // Hier können wir eine Info-Nachricht anzeigen oder zur Kontaktseite weiterleiten
+    navigate('/kontakt?subject=team-creation');
   };
 
   // Helper-Funktion für Dashboard-Pfad
@@ -154,6 +173,38 @@ function DashboardBillingContent() {
         return '/dashboard/starter';
     }
   };
+
+  // Wenn ein Plan für Checkout ausgewählt wurde, zeige Checkout-Formular
+  if (selectedPlan && user?.id) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div>
+          <Button
+            variant="ghost"
+            onClick={handleCheckoutCancel}
+            className="mb-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Zurück
+          </Button>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            {getPlanName(selectedPlan.plan)} abonnieren
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Vervollständige deine Zahlung, um den Plan zu aktivieren.
+          </p>
+        </div>
+        
+        <CheckoutProvider
+          priceId={selectedPlan.priceId}
+          planName={getPlanName(selectedPlan.plan)}
+          userId={user.id}
+          onSuccess={handleCheckoutSuccess}
+          onCancel={handleCheckoutCancel}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -189,11 +240,86 @@ function DashboardBillingContent() {
           <CardContent>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                {t.dashboard.billing?.individualPrompt || 'Um einen Plan auszuwählen, öffne dein Benutzerprofil in Clerk.'}
+                {t.dashboard.billing?.individualPrompt || 'Wähle einen Plan, um alle Features freizuschalten.'}
               </p>
-              <Button onClick={handleOpenUserBilling} className="w-full">
-                <CreditCard className="w-4 h-4 mr-2" />
-                {t.dashboard.billing?.openBilling || 'Benutzerprofil öffnen'}
+              
+              {checkoutError && (
+                <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <p className="text-sm text-destructive">{checkoutError}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {plan !== 'pro' && (
+                  <Button
+                    onClick={() => handleCreateCheckout('pro')}
+                    disabled={isCreatingCheckout}
+                    className="w-full"
+                    variant={plan === 'pro' ? 'outline' : 'default'}
+                  >
+                    {isCreatingCheckout ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Lädt...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Pro Plan abonnieren
+                      </>
+                    )}
+                  </Button>
+                )}
+                
+                {plan !== 'enterprise' && (
+                  <Button
+                    onClick={() => handleCreateCheckout('enterprise')}
+                    disabled={isCreatingCheckout}
+                    className="w-full"
+                    variant={plan === 'enterprise' ? 'outline' : 'default'}
+                  >
+                    {isCreatingCheckout ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Lädt...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Enterprise Plan abonnieren
+                      </>
+                    )}
+                  </Button>
+                )}
+
+                {plan !== 'individual' && (
+                  <Button
+                    onClick={() => handleCreateCheckout('individual')}
+                    disabled={isCreatingCheckout}
+                    className="w-full"
+                    variant={plan === 'individual' ? 'outline' : 'default'}
+                  >
+                    {isCreatingCheckout ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Lädt...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Individual Plan abonnieren
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+
+              <Button
+                onClick={handleOpenUserBilling}
+                variant="outline"
+                className="w-full"
+              >
+                Alle Pläne anzeigen
               </Button>
             </div>
           </CardContent>

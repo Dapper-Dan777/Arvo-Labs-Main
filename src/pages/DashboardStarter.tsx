@@ -9,16 +9,15 @@ import { StatsCard } from '@/components/dashboard/StatsCard';
 import { SettingsDialog } from '@/components/dashboard/SettingsDialog';
 import { CheckCircle2, Clock, TrendingUp, Users } from 'lucide-react';
 import { DashboardLayout } from '@/components/dashboard-layout/DashboardLayout';
-import { useUser } from '@clerk/clerk-react';
+import { useUser } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 function DashboardStarterContent() {
   const { user } = useUser();
   const { t } = useLanguage();
-  const userName = user?.firstName || t.dashboard.user;
-  const userFullName = user?.firstName && user?.lastName 
-    ? `${user.firstName} ${user.lastName}` 
-    : user?.emailAddresses?.[0]?.emailAddress || t.dashboard.user;
+  const userName = user?.publicMetadata?.full_name?.split(' ')[0] || user?.emailAddresses?.[0]?.emailAddress?.split('@')[0] || t.dashboard.user;
+  const userFullName = user?.publicMetadata?.full_name 
+    || user?.emailAddresses?.[0]?.emailAddress || t.dashboard.user;
 
   return (
     <div className="space-y-6 animate-fade-in">

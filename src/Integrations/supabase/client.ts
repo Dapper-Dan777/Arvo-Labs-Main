@@ -3,16 +3,17 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Unterstütze beide Variablennamen für Kompatibilität
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
 // Check if Supabase is configured (nur in Development warnen)
-if (import.meta.env.DEV && (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY)) {
+if (import.meta.env.DEV && (!SUPABASE_URL || !SUPABASE_KEY)) {
   console.warn(
     '⚠️ Supabase ist nicht konfiguriert. Bitte setze die Umgebungsvariablen:\n' +
-    'VITE_SUPABASE_URL und VITE_SUPABASE_PUBLISHABLE_KEY in einer .env Datei.\n' +
+    'VITE_SUPABASE_URL und VITE_SUPABASE_ANON_KEY (oder VITE_SUPABASE_PUBLISHABLE_KEY) in einer .env Datei.\n' +
     '(Diese Warnung wird nur in Development angezeigt)'
   );
 }
@@ -20,7 +21,7 @@ if (import.meta.env.DEV && (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY)) {
 // Create client with fallback values to prevent runtime errors
 export const supabase = createClient<Database>(
   SUPABASE_URL || 'https://placeholder.supabase.co',
-  SUPABASE_PUBLISHABLE_KEY || 'placeholder-key',
+  SUPABASE_KEY || 'placeholder-key',
   {
     auth: {
       storage: localStorage,

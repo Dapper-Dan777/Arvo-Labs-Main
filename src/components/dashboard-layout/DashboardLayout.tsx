@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, RedirectToSignIn } from '@/contexts/AuthContext';
 import { LayoutShell } from './LayoutShell';
 import { WidgetProvider } from '@/contexts/WidgetContext';
-import { useUser } from '@clerk/clerk-react';
+import { useUser } from '@/contexts/AuthContext';
 import { useUserPlan } from '@/hooks/useUserPlan';
 import { PlanDebugInfo } from '@/components/dashboard/PlanDebugInfo';
+import { supabase } from '@/Integrations/supabase/client';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -22,7 +23,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         plan,
         accountType,
         rawPlan: user?.publicMetadata?.plan,
-        publicMetadata: user?.publicMetadata,
+        userMetadata: user?.publicMetadata,
       });
     }
     // Theme nach dem Login sicherstellen
@@ -36,9 +37,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       document.body.style.backgroundColor = saved === 'dark' ? 'hsl(240 10% 6%)' : 'hsl(0 0% 100%)';
     }
     
-    // User-Objekt neu laden, um sicherzustellen, dass publicMetadata aktuell ist
+    // User-Objekt neu laden, um sicherzustellen, dass user_metadata aktuell ist
     if (user) {
-      user.reload().catch((error) => {
+      supabase.auth.getUser().catch((error) => {
         console.error('Error reloading user:', error);
       });
     }

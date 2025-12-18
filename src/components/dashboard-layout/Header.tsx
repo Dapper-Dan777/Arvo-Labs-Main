@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu, Bell, Search } from 'lucide-react';
-import { useUser, UserButton } from '@clerk/clerk-react';
+import { useUser } from '@/contexts/AuthContext';
+import { UserButton } from '@/components/Auth/UserButton';
 import { useUserPlan } from '@/hooks/useUserPlan';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -79,7 +80,7 @@ export function Header({ onMenuClick, isMobile }: HeaderProps) {
             />
             <div className="hidden sm:flex flex-col min-w-0">
               <p className="text-sm font-medium text-foreground truncate max-w-[120px]">
-                {user?.fullName || user?.emailAddresses?.[0]?.emailAddress || t.dashboard.user}
+                {user?.publicMetadata?.full_name || user?.emailAddresses?.[0]?.emailAddress || t.dashboard.user}
               </p>
               <p className="text-xs text-muted-foreground truncate max-w-[120px]">
                 {getPlanName()}

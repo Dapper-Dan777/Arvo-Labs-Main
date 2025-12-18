@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SignedIn, SignedOut, RedirectToSignIn, useUser, useOrganizationList } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, RedirectToSignIn, useUser } from '@/contexts/AuthContext';
 import { useUserPlan } from '@/hooks/useUserPlan';
 import { usePlanChangeRedirect } from '@/hooks/usePlanChangeRedirect';
 import { PlanType } from '@/config/access';
@@ -8,9 +8,13 @@ import { PlanType } from '@/config/access';
 export default function DashboardRedirect() {
   const { plan, accountType, isLoaded, isSignedIn } = useUserPlan();
   const { user } = useUser();
-  const { organizationList, isLoaded: orgListLoaded } = useOrganizationList();
   const navigate = useNavigate();
   const [isRedirecting, setIsRedirecting] = useState(false);
+  
+  // Für Supabase: Organisationen werden über user_metadata oder eine separate Tabelle verwaltet
+  // Hier verwenden wir user_metadata für accountType
+  const orgListLoaded = isLoaded; // Vereinfacht, da wir keine separate Organisation-Liste haben
+  const organizationList: any[] = []; // Leer, da Supabase keine direkte Organisation-Funktionalität hat
 
   // Plan-Change-Redirect aktivieren (für automatische Weiterleitung nach Plan-Wechsel)
   usePlanChangeRedirect({
@@ -22,14 +26,10 @@ export default function DashboardRedirect() {
     if (!isLoaded || !isSignedIn) return;
     if (isRedirecting) return;
 
-    // User-Objekt neu laden, um sicherzustellen, dass publicMetadata aktuell ist
-    if (user && !user.publicMetadata?.plan) {
-      user.reload().catch((error) => {
-        console.error('Error reloading user:', error);
-      });
-    }
+    // User-Objekt neu laden, um sicherzustellen, dass user_metadata aktuell ist
+    // (wird automatisch durch AuthContext aktualisiert)
 
-    // Prüfe ob ein Plan gesetzt ist - direkt aus publicMetadata lesen und normalisieren
+    // Prüfe ob ein Plan gesetzt ist - direkt aus user_metadata lesen und normalisieren
     const rawPlan = user?.publicMetadata?.plan;
     let normalizedUserPlan: PlanType | undefined;
     
@@ -56,7 +56,7 @@ export default function DashboardRedirect() {
         normalizedUserPlan,
         planFromHook: plan,
         accountType,
-        publicMetadata: user?.publicMetadata,
+        userMetadata: user?.publicMetadata,
       });
     }
     
@@ -73,7 +73,7 @@ export default function DashboardRedirect() {
 
       if (!hasOrganization) {
         // Keine Organization vorhanden → Team-Erstellung
-        // Weiterleitung zur Billing-Seite, die das Organization Creation Modal öffnet
+        // Weiterleitung zur Billing-Seite für Team-Erstellung
         setIsRedirecting(true);
         navigate('/dashboard/billing?createOrganization=true', { replace: true });
         return;

@@ -1,12 +1,39 @@
-import { useUser } from '@clerk/clerk-react';
+import { useEffect, useState } from 'react';
+import { useUser } from '@/contexts/AuthContext';
 import { PlanType, AccountType } from '@/config/access';
+import { getUserProfile, type UserProfile } from '@/lib/user-profile';
 
 export function useUserPlan() {
   const { user, isLoaded, isSignedIn } = useUser();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
   
-  // Plan aus publicMetadata lesen
-  // Normalisiere den Plan-String (lowercase) um Case-Sensitivity-Probleme zu vermeiden
-  const rawPlan = user?.publicMetadata?.plan;
+  // Lade User-Profil aus der Datenbank
+  useEffect(() => {
+    if (!isLoaded || !user?.id) {
+      setProfileLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadProfile() {
+      const profile = await getUserProfile(user.id);
+      if (!cancelled) {
+        setUserProfile(profile);
+        setProfileLoading(false);
+      }
+    }
+
+    loadProfile();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoaded, user?.id]);
+
+  // Plan aus profiles Tabelle lesen
+  const rawPlan = userProfile?.plan;
   
   // Normalisiere den Plan-String
   let normalizedPlan: string | undefined;
@@ -62,35 +89,41 @@ export function useUserPlan() {
       plan,
       isValidPlan: validPlans.includes(plan),
       accountType: user?.publicMetadata?.accountType,
-      organizationMemberships: user?.organizationMemberships?.length || 0,
-      publicMetadata: user?.publicMetadata,
+      userMetadata: user?.publicMetadata,
       fullUserObject: user,
     });
   }
   
-  // AccountType aus publicMetadata lesen (individual oder team)
-  // Falls nicht gesetzt, prüfe ob user zu einer Organization gehört
-  const accountType: AccountType = (() => {
-    const metadataAccountType = user?.publicMetadata?.accountType as AccountType | undefined;
-    if (metadataAccountType === 'team' || metadataAccountType === 'individual') {
-      return metadataAccountType;
-    }
-    
-    // Fallback: Prüfe ob user zu einer Organization gehört (Clerk Organizations)
-    // Wenn user.organizationMemberships existiert und nicht leer ist, dann ist es ein Team
-    if (user?.organizationMemberships && user.organizationMemberships.length > 0) {
-      return 'team';
-    }
-    
-    return 'individual';
-  })();
+  // AccountType aus profiles Tabelle lesen
+  const accountType: AccountType = userProfile?.account_type || 'individual';
+  
+  // Kombiniere Loading-States
+  const fullyLoaded = isLoaded && !profileLoading;
+  
+  // Debug-Logging (IMMER in Development)
+  if (import.meta.env.DEV) {
+    console.log('🔍 [useUserPlan] Debug Info:', {
+      isLoaded,
+      profileLoading,
+      fullyLoaded,
+      isSignedIn,
+      hasUser: !!user,
+      userId: user?.id,
+      rawPlan,
+      normalizedPlan,
+      plan,
+      accountType,
+      userProfile,
+    });
+  }
   
   return {
     user,
     plan,
     accountType,
-    isLoaded,
+    isLoaded: fullyLoaded,
     isSignedIn,
+    userProfile, // Expose für direkten Zugriff
   };
 }
 

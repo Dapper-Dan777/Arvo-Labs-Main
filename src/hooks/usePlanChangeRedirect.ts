@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '@clerk/clerk-react';
+import { useUser } from '@/contexts/AuthContext';
 import { useUserPlan } from './useUserPlan';
 import { PlanType } from '@/config/access';
+import { supabase } from '@/Integrations/supabase/client';
 
 /**
  * Hook, der auf Plan-Änderungen reagiert und automatisch zum richtigen Dashboard weiterleitet
@@ -118,9 +119,10 @@ export function usePlanPolling(options?: {
 
     const pollingInterval = setInterval(async () => {
       // User neu laden, um aktuelle Metadata zu bekommen
-      await user?.reload();
+      const { data: { user: updatedUser } } = await supabase.auth.getUser();
+      if (!updatedUser) return;
 
-      const currentPlan = user?.publicMetadata?.plan as PlanType | undefined;
+      const currentPlan = updatedUser.user_metadata?.plan as PlanType | undefined;
       const hasPlan = currentPlan && currentPlan !== 'starter';
 
       if (currentPlan && currentPlan !== previousPlanRef.current && hasPlan) {
