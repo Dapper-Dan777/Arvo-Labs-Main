@@ -13,15 +13,15 @@ import { supabase } from '@/Integrations/supabase/client';
 import { Link } from 'react-router-dom';
 
 export default function SignIn() {
-  const [email, setEmail] = useState('');
+  const location = useLocation();
+  const [email, setEmail] = useState((location.state as any)?.email || '');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>((location.state as any)?.error || null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, isSignedIn, user } = useAuth();
   const { plan, isLoaded: planLoaded } = useUserPlan();
   const navigate = useNavigate();
-  const location = useLocation();
 
   // Prüfe ob Info-Meldung im State vorhanden ist
   useEffect(() => {
@@ -59,10 +59,29 @@ export default function SignIn() {
     setIsLoading(true);
 
     try {
-      const { error } = await signIn(email, password);
+      const { error, data } = await signIn(email, password);
       
       if (error) {
-        setError(error.message || 'Anmeldung fehlgeschlagen');
+        // Bessere Fehlermeldungen
+        let errorMessage = 'Anmeldung fehlgeschlagen';
+        
+        if (error.message?.includes('Invalid login credentials')) {
+          errorMessage = 'Ungültige E-Mail-Adresse oder Passwort';
+        } else if (error.message?.includes('Email not confirmed')) {
+          errorMessage = 'Bitte bestätige zuerst deine E-Mail-Adresse';
+        } else if (error.message?.includes('NetworkError') || error.message?.includes('Failed to fetch')) {
+          errorMessage = 'Netzwerkfehler. Bitte prüfe deine Internetverbindung und die Supabase-Konfiguration.';
+        } else {
+          errorMessage = error.message || 'Anmeldung fehlgeschlagen';
+        }
+        
+        setError(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+      
+      if (!data) {
+        setError('Keine Daten erhalten. Bitte versuche es erneut.');
         setIsLoading(false);
         return;
       }

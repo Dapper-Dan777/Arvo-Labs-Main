@@ -53,6 +53,8 @@ import DashboardBilling from "./pages/dashboard/DashboardBilling.tsx";
 import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 import SignIn from "./pages/auth/SignIn.tsx";
 import SignUp from "./pages/auth/SignUp.tsx";
+import AuthCallback from "./pages/auth/AuthCallback.tsx";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute.tsx";
 
 const queryClient = new QueryClient();
 
@@ -92,26 +94,29 @@ const App = () => (
               <Route path="/dokumentation/guides" element={<Guides />} />
               <Route path="/auth/sign-in" element={<SignIn />} />
               <Route path="/auth/sign-up" element={<SignUp />} />
-              <Route path="/dashboard" element={<DashboardRedirect />} />
-              <Route path="/dashboard/billing" element={<DashboardBilling />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/payment/success" element={<PaymentSuccess />} />
-              <Route path="/dashboard/starter" element={<DashboardStarter />} />
-              <Route path="/dashboard/pro" element={<DashboardPro />} />
-              <Route path="/dashboard/enterprise" element={<DashboardEnterprise />} />
-              <Route path="/dashboard/individual" element={<DashboardIndividual />} />
-              <Route path="/dashboard/chat" element={<DashboardChat />} />
-              <Route path="/dashboard/inbox" element={<DashboardInbox />} />
-              <Route path="/dashboard/documents" element={<DashboardDocuments />} />
-              <Route path="/dashboard/mail" element={<DashboardMail />} />
-              <Route path="/dashboard/goals" element={<DashboardGoals />} />
-              <Route path="/dashboard/timesheets" element={<DashboardTimesheets />} />
-              <Route path="/dashboard/teams" element={<DashboardTeams />} />
-              <Route path="/dashboard/dashboards" element={<DashboardDashboards />} />
-              <Route path="/dashboard/assistant" element={<DashboardAssistant />} />
-              <Route path="/dashboard/whiteboards" element={<DashboardWhiteboards />} />
-              <Route path="/dashboard/forms" element={<DashboardForms />} />
-              <Route path="/dashboard/more" element={<DashboardMore />} />
-              <Route path="/dashboard/more/:sectionId" element={<DashboardMore />} />
+              
+              {/* Protected Routes - Require Authentication */}
+              <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />
+              <Route path="/dashboard/billing" element={<ProtectedRoute><DashboardBilling /></ProtectedRoute>} />
+              <Route path="/dashboard/starter" element={<ProtectedRoute><DashboardStarter /></ProtectedRoute>} />
+              <Route path="/dashboard/pro" element={<ProtectedRoute><DashboardPro /></ProtectedRoute>} />
+              <Route path="/dashboard/enterprise" element={<ProtectedRoute><DashboardEnterprise /></ProtectedRoute>} />
+              <Route path="/dashboard/individual" element={<ProtectedRoute><DashboardIndividual /></ProtectedRoute>} />
+              <Route path="/dashboard/chat" element={<ProtectedRoute><DashboardChat /></ProtectedRoute>} />
+              <Route path="/dashboard/inbox" element={<ProtectedRoute><DashboardInbox /></ProtectedRoute>} />
+              <Route path="/dashboard/documents" element={<ProtectedRoute><DashboardDocuments /></ProtectedRoute>} />
+              <Route path="/dashboard/mail" element={<ProtectedRoute><DashboardMail /></ProtectedRoute>} />
+              <Route path="/dashboard/goals" element={<ProtectedRoute><DashboardGoals /></ProtectedRoute>} />
+              <Route path="/dashboard/timesheets" element={<ProtectedRoute><DashboardTimesheets /></ProtectedRoute>} />
+              <Route path="/dashboard/teams" element={<ProtectedRoute><DashboardTeams /></ProtectedRoute>} />
+              <Route path="/dashboard/dashboards" element={<ProtectedRoute><DashboardDashboards /></ProtectedRoute>} />
+              <Route path="/dashboard/assistant" element={<ProtectedRoute><DashboardAssistant /></ProtectedRoute>} />
+              <Route path="/dashboard/whiteboards" element={<ProtectedRoute><DashboardWhiteboards /></ProtectedRoute>} />
+              <Route path="/dashboard/forms" element={<ProtectedRoute><DashboardForms /></ProtectedRoute>} />
+              <Route path="/dashboard/more" element={<ProtectedRoute><DashboardMore /></ProtectedRoute>} />
+              <Route path="/dashboard/more/:sectionId" element={<ProtectedRoute><DashboardMore /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

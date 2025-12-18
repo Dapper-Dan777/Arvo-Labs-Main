@@ -34,3 +34,5 @@ Nach dem Deaktivieren der Email-Bestätigung:
 2. Du solltest **automatisch eingeloggt** sein
 3. Weiterleitung zum **Dashboard** sollte funktionieren
 
+
+

@@ -11,6 +11,12 @@ import { PricingCard, type PricingPlan } from "@/components/pricing/PricingCard"
 import { FeatureComparisonTable } from "@/components/pricing/FeatureComparisonTable";
 import { useUser } from "@/contexts/AuthContext";
 import { PlanType } from "@/config/access";
+import { loadStripe } from "@stripe/stripe-js";
+import { getStripePriceId, isValidPriceId } from "@/config/stripe";
+import { toast } from "@/hooks/use-toast";
+
+// Stripe initialisieren
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
 export default function Preise() {
   const { t } = useLanguage();
@@ -18,6 +24,7 @@ export default function Preise() {
   const { user, isSignedIn } = useUser();
   const [isYearly, setIsYearly] = useState(false);
   const [planType, setPlanType] = useState<"user" | "team">("user");
+  const [loading, setLoading] = useState<string | null>(null);
   
   // Für Supabase: Organisationen werden über user_metadata verwaltet
   const organization = null; // Vereinfacht
@@ -53,7 +60,7 @@ export default function Preise() {
     handleCreateCheckout(planKey as PlanType);
   };
 
-  const handleCreateCheckout = (targetPlan: PlanType) => {
+  const handleCreateCheckout = async (targetPlan: PlanType) => {
     if (!isSignedIn || !user?.id) {
       navigate("/auth/sign-in", { state: { redirectUrl: window.location.href } });
       return;
@@ -62,14 +69,58 @@ export default function Preise() {
     const priceId = getStripePriceId(targetPlan, 'individual');
     
     if (!priceId || !isValidPriceId(priceId)) {
-      // Fallback: Weiterleitung zur Billing-Seite
-      navigate("/dashboard/billing");
+      console.error(`Invalid or missing Stripe Price ID for plan: ${targetPlan}`);
+      toast({
+        title: 'Konfigurationsfehler',
+        description: `Stripe Price ID für Plan "${targetPlan}" ist nicht konfiguriert.`,
+        variant: 'destructive',
+      });
       return;
     }
 
-    // Weiterleitung zur Billing-Seite mit Checkout
-    // Die Billing-Seite zeigt dann das Payment Element
-    navigate(`/dashboard/billing?checkout=${targetPlan}`);
+    setLoading(targetPlan);
+
+    try {
+      // API-Call: Checkout Session erstellen
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          priceId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Fehler beim Erstellen der Checkout-Session');
+      }
+
+      // Stripe Checkout öffnen
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error('Stripe konnte nicht initialisiert werden');
+      }
+
+      const { error: redirectError } = await stripe.redirectToCheckout({
+        sessionId: data.sessionId,
+      });
+
+      if (redirectError) {
+        throw redirectError;
+      }
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      toast({
+        title: 'Fehler',
+        description: error.message || 'Fehler beim Starten des Checkouts',
+        variant: 'destructive',
+      });
+      setLoading(null);
+    }
   };
 
   // Handler für Team Subscriptions

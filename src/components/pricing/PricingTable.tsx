@@ -340,3 +340,5 @@ export function PricingTable({ accountType: initialAccountType = 'individual', o
   );
 }
 
+
+

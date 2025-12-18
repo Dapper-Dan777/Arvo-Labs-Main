@@ -139,3 +139,5 @@ Die folgenden Dateien enthalten noch Clerk-Erwähnungen, sind aber **nicht kriti
 Die Anwendung ist jetzt **vollständig auf Supabase umgestellt**. Alle Clerk-Abhängigkeiten wurden entfernt und durch Supabase-Funktionalität ersetzt.
 
 
+
+

@@ -251,3 +251,5 @@ Falls du bereits `user_profiles` verwendest, kannst du:
 - [Supabase Auth Documentation](https://supabase.com/docs/guides/auth)
 - [Vercel Serverless Functions](https://vercel.com/docs/functions)
 
+
+

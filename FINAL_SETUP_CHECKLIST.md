@@ -116,3 +116,5 @@ Wenn alle Tests erfolgreich sind, ist deine SaaS-Plattform vollständig eingeric
 
 Bei Problemen: Prüfe zuerst die Vercel Logs und Supabase Logs.
 
+
+

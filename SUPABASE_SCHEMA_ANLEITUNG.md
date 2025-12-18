@@ -115,3 +115,5 @@ Wenn du die Tabellen siehst, ist das Schema erfolgreich ausgeführt!
 
 Jetzt kannst du mit dem Testen beginnen (siehe `FINAL_SETUP_CHECKLIST.md`).
 
+
+

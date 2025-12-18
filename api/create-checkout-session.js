@@ -109,41 +109,22 @@ export default async function handler(req, res) {
       }
     }
 
-    // Checkout Session erstellen (Custom UI Mode für eingebettetes Payment Element)
-    const appUrl = process.env.APP_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:5173';
+    // Checkout Session erstellen
+    const origin = req.headers.origin || req.headers.host 
+      ? `https://${req.headers.host}` 
+      : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
 
     try {
       const session = await stripe.checkout.sessions.create({
-        mode: 'subscription', // Standard Checkout Mode (nicht custom)
-        customer: stripeCustomerId,
-        line_items: [
-          {
-            price: priceId, // z.B. 'price_12345' von Stripe Dashboard
-            quantity: 1,
-          },
-        ],
-        success_url: `${appUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${appUrl}/dashboard/billing?canceled=true`,
-        // Metadata für spätere Zuordnung
-        metadata: { 
-          user_id: userId,
-          supabase_user_id: userId,
-          account_type: accountType,
-        },
-        // Subscription-Metadata (wird an Subscription weitergegeben)
-        subscription_data: {
-          metadata: {
-            user_id: userId,
-            supabase_user_id: userId,
-            account_type: accountType,
-          },
-        },
-        // Erlaube Promotion Codes
+        customer_email: authUser?.email,
+        mode: 'subscription',
+        payment_method_types: ['card'],
+        line_items: [{ price: priceId, quantity: 1 }],
+        success_url: `${origin}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/preise?cancelled=true`,
+        metadata: { userId },
+        customer: stripeCustomerId, // Verwende existierenden Customer falls vorhanden
         allow_promotion_codes: true,
-        // Automatisches Billing
-        billing_address_collection: 'required',
       });
 
       console.log(`✅ Created checkout session ${session.id} for user ${userId}`);

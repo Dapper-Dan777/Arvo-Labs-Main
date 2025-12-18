@@ -193,3 +193,5 @@ Wenn alle Tests erfolgreich sind, ist deine SaaS-Plattform vollständig funktion
 
 Bei Problemen: Prüfe zuerst die Vercel Logs und Supabase Logs.
 
+
+

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Lock, User, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/Integrations/supabase/client';
 import { Link } from 'react-router-dom';
 
 export default function SignUp() {
@@ -29,25 +30,38 @@ export default function SignUp() {
     }
   }, [isSignedIn, success, navigate]);
 
-  // Prüfe Auth-Status nach Registrierung
+  // Prüfe Auth-Status nach Registrierung (nur als Fallback)
+  // Wenn E-Mail-Bestätigung deaktiviert ist, sollte der User bereits eingeloggt sein
   useEffect(() => {
     if (success && !isSignedIn) {
-      // Wenn nach 3 Sekunden noch nicht eingeloggt, prüfe ob Email-Bestätigung nötig ist
+      // Warte etwas länger, damit Supabase Session setzen kann
       const timer = setTimeout(() => {
         if (!isSignedIn) {
-          // Email-Bestätigung erforderlich
-          navigate('/auth/sign-in', { 
-            replace: true,
-            state: { 
-              message: 'Bitte bestätige deine E-Mail-Adresse, um dich anzumelden.' 
+          // Prüfe nochmal direkt bei Supabase
+          supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+              // Session existiert, aber AuthContext hat sie noch nicht erkannt
+              // Warte noch etwas
+              console.log('Session gefunden, warte auf AuthContext-Update...');
+            } else {
+              // Keine Session - E-Mail-Bestätigung könnte erforderlich sein
+              console.log('⚠️ Keine Session gefunden - möglicherweise E-Mail-Bestätigung erforderlich');
+              // Zeige nur eine Info, keine Fehlermeldung
+              navigate('/auth/sign-in', { 
+                replace: true,
+                state: { 
+                  message: 'Bitte melde dich mit deinen Zugangsdaten an.',
+                  email: email
+                }
+              });
             }
           });
         }
-      }, 3000);
+      }, 2000); // Reduziert von 3 auf 2 Sekunden
       
       return () => clearTimeout(timer);
     }
-  }, [success, isSignedIn, navigate]);
+  }, [success, isSignedIn, navigate, email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,13 +87,46 @@ export default function SignUp() {
       });
       
       if (error) {
-        setError(error.message || 'Registrierung fehlgeschlagen');
+        // Bessere Fehlermeldungen
+        let errorMessage = 'Registrierung fehlgeschlagen';
+        
+        if (error.message?.includes('User already registered')) {
+          errorMessage = 'Diese E-Mail-Adresse ist bereits registriert';
+        } else if (error.message?.includes('Password')) {
+          errorMessage = 'Das Passwort erfüllt nicht die Anforderungen';
+        } else if (error.message?.includes('NetworkError') || error.message?.includes('Failed to fetch')) {
+          errorMessage = 'Netzwerkfehler. Bitte prüfe deine Internetverbindung und die Supabase-Konfiguration.';
+        } else {
+          errorMessage = error.message || 'Registrierung fehlgeschlagen';
+        }
+        
+        setError(errorMessage);
         setIsLoading(false);
         return;
       }
 
       // Prüfe, ob User bereits eingeloggt ist (wenn Email-Bestätigung deaktiviert)
       if (data?.user && data?.session) {
+        console.log('✅ User direkt eingeloggt (E-Mail-Bestätigung deaktiviert)');
+        
+        // User ist bereits eingeloggt → erstelle Stripe Customer
+        try {
+          await fetch('/api/create-stripe-customer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: data.user.id,
+              email: email,
+              fullName: fullName || email.split('@')[0],
+            }),
+          });
+          // Ignoriere Fehler bei Customer-Erstellung (kann später nachgeholt werden)
+        } catch (err) {
+          console.error('Error creating Stripe customer:', err);
+        }
+
         // User ist bereits eingeloggt → direkt zum Dashboard
         setSuccess(true);
         setIsLoading(false);
@@ -88,21 +135,28 @@ export default function SignUp() {
         setTimeout(() => {
           navigate('/dashboard', { replace: true });
         }, 1500);
-      } else {
-        // Email-Bestätigung erforderlich
+      } else if (data?.user && !data?.session) {
+        // Keine Session zurückgegeben - E-Mail-Bestätigung ist erforderlich
+        console.log('📧 E-Mail-Bestätigung erforderlich - User muss E-Mail bestätigen');
         setSuccess(true);
         setIsLoading(false);
         setError(null);
         
-        // Zeige Info-Meldung und leite zur Login-Seite weiter
+        // Zeige Erfolgsmeldung mit Hinweis auf E-Mail-Bestätigung
         setTimeout(() => {
           navigate('/auth/sign-in', { 
             replace: true,
             state: { 
-              message: 'Bitte bestätige deine E-Mail-Adresse, um dich anzumelden.' 
+              message: 'Registrierung erfolgreich! Bitte prüfe deine E-Mail-Adresse und klicke auf den Bestätigungs-Link, um dein Konto zu aktivieren.',
+              email: email
             }
           });
         }, 2000);
+      } else {
+        // Unerwarteter Fall
+        console.error('Unerwarteter SignUp-Status:', data);
+        setError('Registrierung erfolgreich, aber Login fehlgeschlagen. Bitte versuche dich anzumelden.');
+        setIsLoading(false);
       }
     } catch (err: any) {
       setError(err.message || 'Ein Fehler ist aufgetreten');

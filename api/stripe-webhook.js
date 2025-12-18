@@ -216,17 +216,40 @@ export default async function handler(req, res) {
       case 'checkout.session.completed': {
         const session = event.data.object;
         const stripeCustomerId = session.customer;
-        const userId = session.metadata?.user_id || session.metadata?.supabase_user_id;
+        const userId = session.metadata?.userId || session.metadata?.user_id || session.metadata?.supabase_user_id;
         const accountType = session.metadata?.account_type || 'individual';
+
+        console.log(`✅ Checkout session completed: ${session.id}, userId: ${userId}, customer: ${stripeCustomerId}`);
 
         // Hole Subscription, um Plan zu bestimmen
         if (session.subscription) {
           const subscription = await stripe.subscriptions.retrieve(session.subscription);
           const plan = getPlanFromSubscription(subscription);
+          const priceId = subscription.items?.data[0]?.price?.id || 'unknown';
 
           if (userId) {
+            // Update subscriptions Tabelle
+            const { error: subError } = await supabase
+              .from('subscriptions')
+              .upsert({
+                user_id: userId,
+                stripe_subscription_id: session.subscription,
+                stripe_customer_id: stripeCustomerId,
+                status: 'active',
+                plan_id: priceId,
+                current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+                current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+                cancel_at_period_end: subscription.cancel_at_period_end || false,
+              }, { onConflict: 'user_id' });
+
+            if (subError) {
+              console.error('Error upserting subscription:', subError);
+            } else {
+              console.log(`✅ Subscription upserted for user ${userId}`);
+            }
+
             // Update profiles mit Plan und Account Type
-            await supabase
+            const { error: profileError } = await supabase
               .from('profiles')
               .upsert({
                 id: userId,
@@ -234,6 +257,10 @@ export default async function handler(req, res) {
                 plan,
                 account_type: accountType,
               }, { onConflict: 'id' });
+
+            if (profileError) {
+              console.error('Error updating profile:', profileError);
+            }
           } else if (stripeCustomerId) {
             // Fallback: Finde User über Email
             const customer = await stripe.customers.retrieve(stripeCustomerId);
@@ -241,6 +268,23 @@ export default async function handler(req, res) {
               const { data: { users } } = await supabase.auth.admin.listUsers();
               const matchingUser = users?.find(u => u.email === customer.email);
               if (matchingUser) {
+                const { error: subError } = await supabase
+                  .from('subscriptions')
+                  .upsert({
+                    user_id: matchingUser.id,
+                    stripe_subscription_id: session.subscription,
+                    stripe_customer_id: stripeCustomerId,
+                    status: 'active',
+                    plan_id: priceId,
+                    current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+                    current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+                    cancel_at_period_end: subscription.cancel_at_period_end || false,
+                  }, { onConflict: 'user_id' });
+
+                if (subError) {
+                  console.error('Error upserting subscription (fallback):', subError);
+                }
+
                 await supabase
                   .from('profiles')
                   .upsert({

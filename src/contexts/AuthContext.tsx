@@ -39,10 +39,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Höre auf Auth-Änderungen
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
+
+      // Bei E-Mail-Bestätigung: Session ist bereits gesetzt
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        // Session ist aktiv
+        if (session?.user) {
+          console.log('✅ User eingeloggt:', session.user.email);
+        }
+      }
     });
 
     return () => {
@@ -51,22 +60,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        console.error('SignIn error:', error);
+        return { error };
+      }
+      
+      return { error: null, data };
+    } catch (err: any) {
+      console.error('SignIn exception:', err);
+      return { 
+        error: { 
+          message: err.message || 'Netzwerkfehler. Bitte prüfe deine Internetverbindung.',
+          name: 'NetworkError'
+        } as AuthError 
+      };
+    }
   };
 
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata,
-      },
-    });
-    return { data, error };
+    try {
+      // Setze Redirect-URL für E-Mail-Bestätigung
+      const redirectUrl = `${window.location.origin}/auth/callback`;
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata,
+          emailRedirectTo: redirectUrl,
+        },
+      });
+      
+      if (error) {
+        console.error('SignUp error:', error);
+        return { data: null, error };
+      }
+      
+      console.log('SignUp successful, redirect URL:', redirectUrl);
+      return { data, error: null };
+    } catch (err: any) {
+      console.error('SignUp exception:', err);
+      return { 
+        data: null,
+        error: { 
+          message: err.message || 'Netzwerkfehler. Bitte prüfe deine Internetverbindung.',
+          name: 'NetworkError'
+        } as AuthError 
+      };
+    }
   };
 
   const signOut = async () => {
