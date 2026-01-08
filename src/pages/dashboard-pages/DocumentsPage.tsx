@@ -7,7 +7,9 @@ import { FilterSheet, type DocumentFilters } from '@/components/documents/Filter
 import { ExportButton } from '@/components/documents/ExportButton';
 import { DocumentActionsMenu } from '@/components/documents/DocumentActionsMenu';
 import { DocumentViewDialog } from '@/components/documents/DocumentViewDialog';
+import { AIAnalysisDialog } from '@/components/documents/AIAnalysisDialog';
 import { toast } from '@/hooks/use-toast';
+import { useDebounce } from '@/hooks/useDebounce';
 
 // ============================================================
 // DOCUMENTS PAGE
@@ -55,15 +57,20 @@ const DocumentsPage = () => {
   });
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isAIAnalysisOpen, setIsAIAnalysisOpen] = useState(false);
+  const [documentForAnalysis, setDocumentForAnalysis] = useState<Document | null>(null);
+
+  // Debounce search query für bessere Performance
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // Filter and search documents
   const filteredDocs = useMemo(() => {
     let result = [...DOCUMENTS];
 
-    // Search filter
-    if (searchQuery) {
+    // Search filter (mit debounced query)
+    if (debouncedSearchQuery) {
       result = result.filter(doc =>
-        doc.title.toLowerCase().includes(searchQuery.toLowerCase())
+        doc.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
       );
     }
 
@@ -101,7 +108,7 @@ const DocumentsPage = () => {
     }
 
     return result;
-  }, [searchQuery, filters]);
+  }, [debouncedSearchQuery, filters]);
 
   const handleViewDocument = (document: Document) => {
     setSelectedDocument(document);
@@ -109,11 +116,8 @@ const DocumentsPage = () => {
   };
 
   const handleAIAnalyze = (document: Document) => {
-    toast({
-      title: 'KI-Analyse gestartet',
-      description: `Analysiere "${document.title}"...`,
-    });
-    // TODO: Implement AI analysis
+    setDocumentForAnalysis(document);
+    setIsAIAnalysisOpen(true);
   };
 
   const handleDeleteDocument = (document: Document) => {
@@ -139,7 +143,7 @@ const DocumentsPage = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in pb-20">
+    <div className="space-y-6 animate-fade-in pt-4 pb-20">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Dokumente</h1>
@@ -257,6 +261,16 @@ const DocumentsPage = () => {
           open={isViewDialogOpen}
           onOpenChange={setIsViewDialogOpen}
           document={selectedDocument}
+        />
+      )}
+
+      {/* AI Analysis Dialog */}
+      {documentForAnalysis && (
+        <AIAnalysisDialog
+          open={isAIAnalysisOpen}
+          onOpenChange={setIsAIAnalysisOpen}
+          documentTitle={documentForAnalysis.title}
+          documentType={documentForAnalysis.type}
         />
       )}
     </div>

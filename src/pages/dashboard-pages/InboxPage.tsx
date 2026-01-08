@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Bell, FileText, CheckCircle2, Bot, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getNotifications, markNotificationAsRead, type Notification } from '@/lib/supabase-queries';
 import { NotificationDetailDialog } from '@/components/inbox/NotificationDetailDialog';
 
@@ -65,12 +65,42 @@ const InboxPage = () => {
   const [activeFilter, setActiveFilter] = useState<FilterType>('Alle');
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   // Fetch notifications from Supabase
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ['notifications'],
     queryFn: () => getNotifications(),
     retry: false,
+  });
+
+  // Mutation für markNotificationAsRead mit Optimistic Update
+  const markAsReadMutation = useMutation({
+    mutationFn: markNotificationAsRead,
+    onMutate: async (notificationId) => {
+      await queryClient.cancelQueries({ queryKey: ['notifications'] });
+      const previousNotifications = queryClient.getQueryData<Notification[]>(['notifications']);
+
+      // Optimistic Update
+      queryClient.setQueryData<Notification[]>(['notifications'], (old) => {
+        if (!old) return old;
+        return old.map(notification =>
+          notification.id === notificationId
+            ? { ...notification, unread: false }
+            : notification
+        );
+      });
+
+      return { previousNotifications };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousNotifications) {
+        queryClient.setQueryData(['notifications'], context.previousNotifications);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
   });
 
   // Use fallback data if no data from Supabase
@@ -108,12 +138,7 @@ const InboxPage = () => {
     setIsDetailOpen(true);
     
     if (notification.unread) {
-      await markNotificationAsRead(notification.id);
-      // Optimistic update
-      const index = allNotifications.findIndex(n => n.id === notification.id);
-      if (index !== -1) {
-        allNotifications[index].unread = false;
-      }
+      markAsReadMutation.mutate(notification.id);
     }
   };
 
@@ -148,7 +173,7 @@ const InboxPage = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 animate-fade-in pb-20">
+      <div className="space-y-6 animate-fade-in pt-4 pb-20">
         <div className="flex items-center justify-center py-12">
           <Bell className="w-8 h-8 animate-spin text-muted-foreground" />
         </div>
@@ -158,7 +183,7 @@ const InboxPage = () => {
 
   return (
     <>
-      <div className="space-y-6 animate-fade-in pb-20">
+      <div className="space-y-6 animate-fade-in pt-4 pb-20">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Posteingang</h1>

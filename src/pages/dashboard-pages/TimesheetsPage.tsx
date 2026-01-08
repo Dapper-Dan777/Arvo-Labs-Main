@@ -14,6 +14,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTimeEntries, createTimeEntry, type TimeEntry } from '@/lib/supabase-queries';
 import { toast } from '@/hooks/use-toast';
 import { TimeChart } from '@/components/timesheets/TimeChart';
+import { validateDuration, validateProjectName } from '@/lib/validation';
+import { queryKeys } from '@/lib/query-keys';
+import { getTodayISO } from '@/lib/date-utils';
+import { parseDurationToMinutes, formatMinutesToDuration } from '@/lib/time-utils';
+import { useMemo } from 'react';
 
 // ============================================================
 // TIMESHEETS PAGE
@@ -34,70 +39,129 @@ const TimesheetsPage = () => {
 
   // Fetch time entries
   const { data: timeEntries = [], isLoading, refetch, error } = useQuery({
-    queryKey: ['timeEntries'],
+    queryKey: queryKeys.timeEntries.list(),
     queryFn: () => getTimeEntries(),
-    retry: 1, // Only retry once
-    retryOnMount: false, // Don't retry on mount if it failed before
+    retry: 1,
+    retryOnMount: false,
+    staleTime: 30000,
   });
 
-  // Create time entry mutation
+  // Create time entry mutation mit Optimistic Update
   const createMutation = useMutation({
     mutationFn: createTimeEntry,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['timeEntries'] });
+    onMutate: async (newEntry) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: queryKeys.timeEntries.list() });
+
+      // Snapshot des vorherigen Werts
+      const previousEntries = queryClient.getQueryData<TimeEntry[]>(queryKeys.timeEntries.list());
+
+      // Optimistic Update - erstelle temporären Eintrag
+      const optimisticEntry: TimeEntry = {
+        id: `temp-${Date.now()}`,
+        date: newEntry.date,
+        project: newEntry.project,
+        duration: newEntry.duration,
+        description: newEntry.description,
+        status: 'Erfasst',
+        user_id: 'current-user',
+        created_at: new Date().toISOString(),
+      };
+
+      queryClient.setQueryData<TimeEntry[]>(queryKeys.timeEntries.list(), (old) => {
+        return old ? [optimisticEntry, ...old] : [optimisticEntry];
+      });
+
+      return { previousEntries };
+    },
+    onError: (err, variables, context) => {
+      // Rollback bei Fehler
+      if (context?.previousEntries) {
+        queryClient.setQueryData(queryKeys.timeEntries.list(), context.previousEntries);
+      }
+    },
+    onSuccess: (data) => {
+      // Ersetze temporären Eintrag mit echtem Eintrag
+      queryClient.setQueryData<TimeEntry[]>(queryKeys.timeEntries.list(), (old) => {
+        if (!old) return data ? [data] : [];
+        // Entferne temporären Eintrag und füge echten ein
+        return old.map(entry => 
+          entry.id.startsWith('temp-') ? data : entry
+        ).filter(entry => entry.id !== `temp-${Date.now()}`);
+      });
       setIsDialogOpen(false);
       setNewEntry({ project: '', duration: '', description: '' });
+    },
+    onSettled: () => {
+      // Immer refetch für Konsistenz
+      queryClient.invalidateQueries({ queryKey: queryKeys.timeEntries.list() });
     },
   });
 
   const handleSubmit = async () => {
-    if (!newEntry.project.trim() || !newEntry.duration.trim()) {
+    // Validierung: Projektname
+    const projectValidation = validateProjectName(newEntry.project);
+    if (!projectValidation.valid) {
       toast({
-        title: 'Fehlende Angaben',
-        description: 'Bitte fülle alle Pflichtfelder aus.',
+        title: 'Ungültiger Projektname',
+        description: projectValidation.error,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validierung: Dauer
+    const durationValidation = validateDuration(newEntry.duration);
+    if (!durationValidation.valid) {
+      toast({
+        title: 'Ungültige Dauer',
+        description: durationValidation.error,
         variant: 'destructive',
       });
       return;
     }
 
     createMutation.mutate({
-      date: new Date().toISOString().split('T')[0],
-      project: newEntry.project,
-      duration: newEntry.duration,
-      description: newEntry.description || undefined,
+      date: getTodayISO(),
+      project: newEntry.project.trim(),
+      duration: newEntry.duration.trim(),
+      description: newEntry.description?.trim() || undefined,
     });
   };
 
-  // Calculate stats
-  const todayEntries = timeEntries.filter(
-    entry => entry.date === new Date().toISOString().split('T')[0]
-  );
-  const todayTotal = todayEntries.reduce((sum, entry) => {
-    const match = entry.duration.match(/(\d+)h\s*(\d+)m?/);
-    if (match) {
-      const hours = parseInt(match[1]) || 0;
-      const minutes = parseInt(match[2]) || 0;
-      return sum + hours * 60 + minutes;
-    }
-    return sum;
-  }, 0);
+  // Calculate stats (memoized für Performance)
+  const { todayHours, todayMinutes, weekHours, weekMinutes } = useMemo(() => {
+    const today = getTodayISO();
+    const todayEntries = timeEntries.filter(entry => entry.date === today);
+    const todayTotal = todayEntries.reduce((sum, entry) => {
+      return sum + parseDurationToMinutes(entry.duration);
+    }, 0);
 
-  const todayHours = Math.floor(todayTotal / 60);
-  const todayMinutes = todayTotal % 60;
+    const todayH = Math.floor(todayTotal / 60);
+    const todayM = todayTotal % 60;
 
-  // Week calculation (simplified)
-  const weekTotal = timeEntries.slice(0, 7).reduce((sum, entry) => {
-    const match = entry.duration.match(/(\d+)h\s*(\d+)m?/);
-    if (match) {
-      const hours = parseInt(match[1]) || 0;
-      const minutes = parseInt(match[2]) || 0;
-      return sum + hours * 60 + minutes;
-    }
-    return sum;
-  }, 0);
+    // Week calculation (letzte 7 Tage)
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const weekEntries = timeEntries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      return entryDate >= weekAgo;
+    });
+    
+    const weekTotal = weekEntries.reduce((sum, entry) => {
+      return sum + parseDurationToMinutes(entry.duration);
+    }, 0);
 
-  const weekHours = Math.floor(weekTotal / 60);
-  const weekMinutes = weekTotal % 60;
+    const weekH = Math.floor(weekTotal / 60);
+    const weekM = weekTotal % 60;
+
+    return {
+      todayHours: todayH,
+      todayMinutes: todayM,
+      weekHours: weekH,
+      weekMinutes: weekM,
+    };
+  }, [timeEntries]);
 
   // Group entries by date
   const groupedEntries = timeEntries.reduce((acc, entry) => {
@@ -118,7 +182,7 @@ const TimesheetsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 animate-fade-in pb-20">
+      <div className="space-y-6 animate-fade-in pt-4 pb-20">
         <div className="flex items-center justify-center py-12">
           <Clock className="w-8 h-8 animate-spin text-muted-foreground" />
         </div>
@@ -129,7 +193,7 @@ const TimesheetsPage = () => {
   // Show error state only for critical errors (not for missing table - we use mock data)
   if (error && !error.message?.includes('time_entries') && !error.message?.includes('schema cache')) {
     return (
-      <div className="space-y-6 animate-fade-in pb-20">
+      <div className="space-y-6 animate-fade-in pt-4 pb-20">
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <Clock className="w-12 h-12 mb-4 text-destructive" />
           <h2 className="text-lg font-semibold text-foreground mb-2">Fehler beim Laden</h2>
@@ -153,7 +217,7 @@ const TimesheetsPage = () => {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in pb-20">
+    <div className="space-y-6 animate-fade-in pt-4 pb-20">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Zeiterfassung</h1>

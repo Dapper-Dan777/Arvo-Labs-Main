@@ -217,34 +217,103 @@ export default function Index() {
 
 function ProblemCard({ title, description }: { title: string; description: string }) {
   return (
-    <div className="p-6 rounded-xl bg-card border border-border">
-      <h3 className="font-semibold text-foreground mb-3">{title}</h3>
-      <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+    <div className="animated-card p-6 rounded-[15px] border border-border bg-transparent" 
+         style={{
+           boxShadow: '0px var(--card-box-shadow-1-y) var(--card-box-shadow-1-blur) var(--card-box-shadow-1), 0px var(--card-box-shadow-2-y) var(--card-box-shadow-2-blur) var(--card-box-shadow-2), 0 0 0 1px var(--card-border-color)'
+         }}>
+      <div className="card-shine"></div>
+      <div className="card-background">
+        <div className="tiles">
+          <div className="tile tile-1"></div>
+          <div className="tile tile-2"></div>
+          <div className="tile tile-3"></div>
+          <div className="tile tile-4"></div>
+          <div className="tile tile-5"></div>
+          <div className="tile tile-6"></div>
+          <div className="tile tile-7"></div>
+          <div className="tile tile-8"></div>
+          <div className="tile tile-9"></div>
+          <div className="tile tile-10"></div>
+        </div>
+        <div className="line line-1"></div>
+        <div className="line line-2"></div>
+        <div className="line line-3"></div>
+      </div>
+      <div className="card-content">
+        <h3 className="font-semibold mb-3" style={{ color: 'hsl(var(--card-label-color))' }}>{title}</h3>
+        <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+      </div>
     </div>
   );
 }
 
 function StepCard({ icon, step, title, description }: { icon: React.ReactNode; step: string; title: string; description: string }) {
   return (
-    <div className="text-center">
-      <div className="w-14 h-14 rounded-xl bg-secondary border border-border flex items-center justify-center mx-auto mb-4 text-foreground">
-        {icon}
+    <div className="animated-card text-center p-6 rounded-[15px] border border-border bg-transparent"
+         style={{
+           boxShadow: '0px var(--card-box-shadow-1-y) var(--card-box-shadow-1-blur) var(--card-box-shadow-1), 0px var(--card-box-shadow-2-y) var(--card-box-shadow-2-blur) var(--card-box-shadow-2), 0 0 0 1px var(--card-border-color)'
+         }}>
+      <div className="card-shine"></div>
+      <div className="card-background">
+        <div className="tiles">
+          <div className="tile tile-1"></div>
+          <div className="tile tile-2"></div>
+          <div className="tile tile-3"></div>
+          <div className="tile tile-4"></div>
+          <div className="tile tile-5"></div>
+          <div className="tile tile-6"></div>
+          <div className="tile tile-7"></div>
+          <div className="tile tile-8"></div>
+          <div className="tile tile-9"></div>
+          <div className="tile tile-10"></div>
+        </div>
+        <div className="line line-1"></div>
+        <div className="line line-2"></div>
+        <div className="line line-3"></div>
       </div>
-      <span className="text-xs text-muted-foreground font-medium">{step}</span>
-      <h3 className="font-semibold text-foreground mt-2 mb-3">{title}</h3>
-      <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+      <div className="card-content">
+        <span className="card-icon mx-auto mb-4 block w-14 h-14 rounded-xl bg-secondary border border-border flex items-center justify-center text-foreground">
+          {icon}
+        </span>
+        <span className="text-xs text-muted-foreground font-medium">{step}</span>
+        <h3 className="font-semibold mt-2 mb-3" style={{ color: 'hsl(var(--card-label-color))' }}>{title}</h3>
+        <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+      </div>
     </div>
   );
 }
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className="p-6 rounded-xl bg-card border border-border hover:border-foreground/20 transition-colors">
-      <div className="w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center mb-4 text-foreground">
-        {icon}
+    <div className="animated-card p-6 rounded-[15px] border border-border bg-transparent"
+         style={{
+           boxShadow: '0px var(--card-box-shadow-1-y) var(--card-box-shadow-1-blur) var(--card-box-shadow-1), 0px var(--card-box-shadow-2-y) var(--card-box-shadow-2-blur) var(--card-box-shadow-2), 0 0 0 1px var(--card-border-color)'
+         }}>
+      <div className="card-shine"></div>
+      <div className="card-background">
+        <div className="tiles">
+          <div className="tile tile-1"></div>
+          <div className="tile tile-2"></div>
+          <div className="tile tile-3"></div>
+          <div className="tile tile-4"></div>
+          <div className="tile tile-5"></div>
+          <div className="tile tile-6"></div>
+          <div className="tile tile-7"></div>
+          <div className="tile tile-8"></div>
+          <div className="tile tile-9"></div>
+          <div className="tile tile-10"></div>
+        </div>
+        <div className="line line-1"></div>
+        <div className="line line-2"></div>
+        <div className="line line-3"></div>
       </div>
-      <h3 className="font-semibold text-foreground mb-2">{title}</h3>
-      <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+      <div className="card-content">
+        <span className="card-icon mb-4 block w-10 h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-foreground">
+          {icon}
+        </span>
+        <h3 className="font-semibold mb-2" style={{ color: 'hsl(var(--card-label-color))' }}>{title}</h3>
+        <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+      </div>
     </div>
   );
 }

@@ -192,7 +192,7 @@ const MailPage = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] pb-20 lg:pb-0">
+    <div className="flex h-[calc(100vh-8rem)] pt-4 pb-20 lg:pb-0">
       {/* Sidebar */}
       <div className="w-64 border-r border-border p-4 space-y-2 hidden lg:block">
         <Dialog open={isComposeOpen} onOpenChange={setIsComposeOpen}>

@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { LayoutDashboard, TrendingUp, ArrowUp, ArrowDown, RefreshCw, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ExportButton } from '@/components/documents/ExportButton';
 import { toast } from '@/hooks/use-toast';
+import { useQuery } from '@tanstack/react-query';
+import { getTasks, getTimeEntries, getDocuments } from '@/lib/supabase-queries';
+import { useUser } from '@/contexts/AuthContext';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { queryKeys } from '@/lib/query-keys';
+import { getDateDaysAgo, getLast7Days, isInLastWeek } from '@/lib/date-utils';
+import { parseDurationToHours, calculateTotalDuration } from '@/lib/time-utils';
 
 // ============================================================
 // DASHBOARDS PAGE
@@ -19,60 +26,208 @@ interface KPICard {
   period: string;
 }
 
-// ANPASSEN: Dummy-Daten, später durch Supabase-Query ersetzen
-const KPI_CARDS: KPICard[] = [
-  {
-    id: '1',
-    title: 'Automatisierte Tasks',
-    value: '156',
-    change: 23,
-    isPositive: true,
-    period: 'Diese Woche',
-  },
-  {
-    id: '2',
-    title: 'Durchschnittliche Zeit',
-    value: '2.4h',
-    change: 12,
-    isPositive: true,
-    period: 'Pro Task',
-  },
-  {
-    id: '3',
-    title: 'Fehlerquote',
-    value: '0.8%',
-    change: 5,
-    isPositive: false,
-    period: 'Diese Woche',
-  },
-  {
-    id: '4',
-    title: 'Team-Produktivität',
-    value: '94%',
-    change: 8,
-    isPositive: true,
-    period: 'Durchschnitt',
-  },
-];
-
-const CHART_PLACEHOLDER_DATA = [40, 65, 45, 80, 55, 90, 70];
-
 const DashboardsPage = () => {
+  const { isLoaded } = useUser();
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Lade Daten aus Supabase mit Error-Handling
+  const { data: tasks = [], refetch: refetchTasks, error: tasksError, isLoading: tasksLoading } = useQuery({
+    queryKey: queryKeys.tasks.list(),
+    queryFn: () => getTasks(),
+    enabled: isLoaded,
+    retry: 1,
+    staleTime: 30000,
+  });
+
+  const { data: timeEntries = [], refetch: refetchTimeEntries, error: timeEntriesError, isLoading: timeEntriesLoading } = useQuery({
+    queryKey: queryKeys.timeEntries.list(),
+    queryFn: () => getTimeEntries(),
+    enabled: isLoaded,
+    retry: 1,
+    staleTime: 30000,
+  });
+
+  const { data: documents = [], refetch: refetchDocuments, error: documentsError, isLoading: documentsLoading } = useQuery({
+    queryKey: queryKeys.documents.list(),
+    queryFn: () => getDocuments(),
+    enabled: isLoaded,
+    retry: 1,
+    staleTime: 30000,
+  });
+
+  const isLoading = tasksLoading || timeEntriesLoading || documentsLoading;
+  const hasError = tasksError || timeEntriesError || documentsError;
+
+  // Berechne KPIs aus echten Daten
+  const kpiCards = useMemo(() => {
+    const weekAgo = getDateDaysAgo(7);
+    const twoWeeksAgo = getDateDaysAgo(14);
+
+    // Erledigte Tasks diese Woche
+    const completedThisWeek = tasks.filter(task => {
+      if (!task.completed || !task.updated_at) return false;
+      return isInLastWeek(task.updated_at);
+    }).length;
+
+    const completedLastWeek = tasks.filter(task => {
+      if (!task.completed || !task.updated_at) return false;
+      const completedDate = new Date(task.updated_at);
+      return completedDate >= twoWeeksAgo && completedDate < weekAgo;
+    }).length;
+
+    const tasksChange = completedLastWeek > 0 
+      ? Math.round(((completedThisWeek - completedLastWeek) / completedLastWeek) * 100)
+      : completedThisWeek > 0 ? 100 : 0;
+
+    // Durchschnittliche Zeit pro Task (basierend auf TimeEntries)
+    const durations = timeEntries.map(entry => entry.duration);
+    const totalHours = calculateTotalDuration(durations) / 60;
+    const avgTime = tasks.length > 0 ? (totalHours / tasks.length).toFixed(1) : '0.0';
+    
+    // Berechne Änderung der durchschnittlichen Zeit (Vergleich letzte 2 Wochen)
+    const thisWeekEntries = timeEntries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      return entryDate >= weekAgo;
+    });
+    const lastWeekEntries = timeEntries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      return entryDate >= twoWeeksAgo && entryDate < weekAgo;
+    });
+    
+    const thisWeekHours = calculateTotalDuration(thisWeekEntries.map(e => e.duration)) / 60;
+    const lastWeekHours = calculateTotalDuration(lastWeekEntries.map(e => e.duration)) / 60;
+    const thisWeekAvg = thisWeekEntries.length > 0 ? thisWeekHours / thisWeekEntries.length : 0;
+    const lastWeekAvg = lastWeekEntries.length > 0 ? lastWeekHours / lastWeekEntries.length : 0;
+    const avgTimeChange = lastWeekAvg > 0 
+      ? Math.round(((thisWeekAvg - lastWeekAvg) / lastWeekAvg) * 100)
+      : thisWeekAvg > 0 ? 100 : 0;
+
+    // Dokumente Status
+    const totalDocs = documents.length;
+    const completedDocs = documents.filter(doc => doc.status === 'Fertig').length;
+    const openDocsRate = totalDocs > 0 ? ((totalDocs - completedDocs) / totalDocs * 100).toFixed(1) : '0.0';
+    
+    // Berechne Änderung der Dokumente-Status
+    const thisWeekDocs = documents.filter(doc => {
+      if (!doc.created_at) return false;
+      return isInLastWeek(doc.created_at);
+    });
+    const lastWeekDocs = documents.filter(doc => {
+      if (!doc.created_at) return false;
+      const docDate = new Date(doc.created_at);
+      return docDate >= twoWeeksAgo && docDate < weekAgo;
+    });
+    
+    const thisWeekOpenRate = thisWeekDocs.length > 0 
+      ? ((thisWeekDocs.filter(d => d.status !== 'Fertig').length / thisWeekDocs.length) * 100).toFixed(1)
+      : '0.0';
+    const lastWeekOpenRate = lastWeekDocs.length > 0
+      ? ((lastWeekDocs.filter(d => d.status !== 'Fertig').length / lastWeekDocs.length) * 100).toFixed(1)
+      : '0.0';
+    const openDocsChange = parseFloat(lastWeekOpenRate) > 0
+      ? Math.round(((parseFloat(thisWeekOpenRate) - parseFloat(lastWeekOpenRate)) / parseFloat(lastWeekOpenRate)) * 100)
+      : parseFloat(thisWeekOpenRate) > 0 ? 100 : 0;
+
+    // Produktivität (basierend auf erledigten Tasks)
+    const productivity = tasks.length > 0
+      ? Math.min(100, Math.round((completedThisWeek / Math.max(1, tasks.length)) * 100))
+      : 0;
+    
+    const lastWeekProductivity = tasks.length > 0 && completedLastWeek > 0
+      ? Math.min(100, Math.round((completedLastWeek / Math.max(1, tasks.length)) * 100))
+      : 0;
+    const productivityChange = lastWeekProductivity > 0
+      ? Math.round(((productivity - lastWeekProductivity) / lastWeekProductivity) * 100)
+      : productivity > 0 ? 100 : 0;
+
+    return [
+      {
+        id: '1',
+        title: 'Erledigte Tasks',
+        value: completedThisWeek.toString(),
+        change: tasksChange,
+        isPositive: tasksChange >= 0,
+        period: 'Diese Woche',
+      },
+      {
+        id: '2',
+        title: 'Durchschnittliche Zeit',
+        value: `${avgTime}h`,
+        change: avgTimeChange,
+        isPositive: avgTimeChange <= 0, // Weniger Zeit = besser
+        period: 'Pro Task',
+      },
+      {
+        id: '3',
+        title: 'Offene Dokumente',
+        value: `${openDocsRate}%`,
+        change: Math.abs(openDocsChange),
+        isPositive: openDocsChange < 0, // Weniger offene Docs = besser
+        period: 'Gesamt',
+      },
+      {
+        id: '4',
+        title: 'Produktivität',
+        value: `${productivity}%`,
+        change: productivityChange,
+        isPositive: productivityChange >= 0,
+        period: 'Durchschnitt',
+      },
+    ];
+  }, [tasks, timeEntries, documents]);
+
+  // Bereite Chart-Daten vor (letzte 7 Tage)
+  const chartData = useMemo(() => {
+    const last7Days = getLast7Days();
+    
+    return last7Days.map(({ date, dayShort }) => {
+      const dayTasks = tasks.filter(task => {
+        if (!task.due_date) return false;
+        return task.due_date === date;
+      }).length;
+
+      const dayCompleted = tasks.filter(task => {
+        if (!task.completed || !task.updated_at) return false;
+        const taskDate = new Date(task.updated_at).toISOString().split('T')[0];
+        return taskDate === date;
+      }).length;
+
+      const dayTimeEntries = timeEntries.filter(entry => entry.date === date).length;
+
+      return {
+        day: dayShort,
+        tasks: dayTasks,
+        completed: dayCompleted,
+        timeEntries: dayTimeEntries,
+      };
+    });
+  }, [tasks, timeEntries]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsRefreshing(false);
-    toast({
-      title: 'Aktualisiert',
-      description: 'Dashboard-Daten wurden aktualisiert.',
-    });
+    try {
+      await Promise.all([
+        refetchTasks(),
+        refetchTimeEntries(),
+        refetchDocuments(),
+      ]);
+      toast({
+        title: 'Aktualisiert',
+        description: 'Dashboard-Daten wurden aktualisiert.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Fehler',
+        description: 'Daten konnten nicht aktualisiert werden.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   // Prepare export data
-  const exportData = KPI_CARDS.map(kpi => ({
+  const exportData = kpiCards.map(kpi => ({
     Titel: kpi.title,
     Wert: kpi.value,
     Änderung: `${kpi.change}%`,
@@ -80,16 +235,33 @@ const DashboardsPage = () => {
     Zeitraum: kpi.period,
   }));
 
+  if (isLoading && !tasks.length && !timeEntries.length && !documents.length) {
+    return (
+      <div className="space-y-6 animate-fade-in pt-4 pb-20">
+        <div className="flex items-center justify-center py-12">
+          <RefreshCw className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6 animate-fade-in pb-20">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-fade-in pt-4 pb-20">
+      {hasError && (
+        <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+          <p className="text-sm text-destructive">
+            Einige Daten konnten nicht geladen werden. Bitte versuche es später erneut.
+          </p>
+        </div>
+      )}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboards</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Dashboards</h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
             Deine wichtigsten Kennzahlen
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             variant="outline"
             size="icon"
@@ -110,11 +282,11 @@ const DashboardsPage = () => {
       </div>
       
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 gap-3">
-        {KPI_CARDS.map((kpi) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        {kpiCards.map((kpi) => (
           <div
             key={kpi.id}
-            className="p-4 rounded-xl bg-card border border-border"
+            className="p-4 md:p-6 rounded-xl bg-card border border-border"
           >
             <p className="text-xs text-muted-foreground">{kpi.title}</p>
             <p className="text-2xl font-bold text-foreground mt-1">{kpi.value}</p>
@@ -136,41 +308,129 @@ const DashboardsPage = () => {
         ))}
       </div>
       
-      {/* Chart Placeholder */}
-      <div className="p-4 rounded-xl bg-card border border-border">
-        <div className="flex items-center justify-between mb-4">
+      {/* Activity Chart */}
+      <div className="p-4 md:p-6 rounded-xl bg-card border border-border">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
           <div>
-            <h3 className="font-semibold">Workflow-Aktivität</h3>
-            <p className="text-sm text-muted-foreground">Letzte 7 Tage</p>
+            <h3 className="font-semibold text-base md:text-lg">Aktivität</h3>
+            <p className="text-xs md:text-sm text-muted-foreground">Letzte 7 Tage</p>
           </div>
           <TrendingUp className="w-5 h-5 text-primary" />
         </div>
         
-        {/* Simple Bar Chart Placeholder */}
-        <div className="flex items-end justify-between h-32 gap-2">
-          {CHART_PLACEHOLDER_DATA.map((value, index) => (
-            <div 
-              key={index}
-              className="flex-1 bg-primary/20 rounded-t-md transition-all hover:bg-primary/30"
-              style={{ height: `${value}%` }}
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <XAxis 
+              dataKey="day" 
+              className="text-xs"
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
             />
-          ))}
-        </div>
-        <div className="flex justify-between mt-2">
-          {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((day) => (
-            <span key={day} className="text-xs text-muted-foreground flex-1 text-center">
-              {day}
-            </span>
-          ))}
-        </div>
+            <YAxis 
+              className="text-xs"
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px'
+              }}
+            />
+            <Legend />
+            <Bar dataKey="tasks" fill="hsl(var(--primary))" name="Tasks" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="completed" fill="hsl(var(--green-500))" name="Erledigt" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="timeEntries" fill="hsl(var(--blue-500))" name="Zeitbuchungen" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
       
-      {/* Charts Placeholder */}
-      <div className="grid gap-4">
-        <div className="p-6 rounded-xl bg-card border border-border text-center">
-          <p className="text-muted-foreground text-sm">
-            📊 Weitere Charts und Grafiken kommen bald...
-          </p>
+      {/* Additional Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Tasks Trend */}
+        <div className="p-4 md:p-6 rounded-xl bg-card border border-border">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-semibold text-base md:text-lg">Tasks Trend</h3>
+              <p className="text-xs md:text-sm text-muted-foreground">Letzte 7 Tage</p>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={250}>
+            <AreaChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis 
+                dataKey="day" 
+                className="text-xs"
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              />
+              <YAxis 
+                className="text-xs"
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px'
+                }}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="tasks" 
+                stroke="hsl(var(--primary))" 
+                fill="hsl(var(--primary))" 
+                fillOpacity={0.2}
+                name="Tasks"
+              />
+              <Area 
+                type="monotone" 
+                dataKey="completed" 
+                stroke="hsl(var(--green-500))" 
+                fill="hsl(var(--green-500))" 
+                fillOpacity={0.2}
+                name="Erledigt"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Time Entries Trend */}
+        <div className="p-4 md:p-6 rounded-xl bg-card border border-border">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-semibold text-base md:text-lg">Zeitbuchungen</h3>
+              <p className="text-xs md:text-sm text-muted-foreground">Letzte 7 Tage</p>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis 
+                dataKey="day" 
+                className="text-xs"
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              />
+              <YAxis 
+                className="text-xs"
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px'
+                }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="timeEntries" 
+                stroke="hsl(var(--blue-500))" 
+                strokeWidth={2}
+                name="Zeitbuchungen"
+                dot={{ fill: 'hsl(var(--blue-500))', r: 4 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>

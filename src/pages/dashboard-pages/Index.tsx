@@ -9,6 +9,10 @@ import { StatsCard } from '@/components/dashboard/StatsCard';
 import { WidgetManager } from '@/components/widgets/WidgetManager';
 import { SettingsDialog } from '@/components/dashboard/SettingsDialog';
 import { CheckCircle2, Clock, TrendingUp, Users } from 'lucide-react';
+import { useUser } from '@/contexts/AuthContext';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
+import { getTodayISO } from '@/lib/date-utils';
+import { useMemo } from 'react';
 
 /**
  * ============================================================================
@@ -73,13 +77,24 @@ import { CheckCircle2, Clock, TrendingUp, Users } from 'lucide-react';
  * ============================================================================
  */
 
-// ANPASSEN: Benutzerdaten hier ändern oder aus Context/API laden
-const userName = 'Max';
-const userFullName = 'Max Kowalski';
-
 const Index = () => {
+  const { user } = useUser();
+  const { stats, timeEntries } = useDashboardStats();
+
+  // Extrahiere Benutzernamen (memoized)
+  const { userName, userFullName } = useMemo(() => {
+    const firstName = user?.firstName || user?.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 'Benutzer';
+    const fullName = user?.fullName || user?.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 'Benutzer';
+    return { userName: firstName, userFullName: fullName };
+  }, [user]);
+
+  // Berechne Team-Aktivität (basierend auf TimeEntries)
+  const teamActivity = useMemo(() => {
+    return timeEntries.length > 0 ? Math.min(100, Math.round((timeEntries.length / 10) * 100)) : 0;
+  }, [timeEntries.length]);
+
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pt-4">
       {/* Welcome Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -90,25 +105,29 @@ const Index = () => {
             Willkommen zurück, {userName}. Hier ist deine Übersicht.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <SettingsDialog
             trigger={
               <Button 
                 variant="outline" 
-                className="gap-2 border-border hover:border-primary hover:text-primary transition-all"
+                size="sm"
+                className="gap-2 border-border hover:border-primary hover:text-primary transition-all text-xs sm:text-sm"
               >
                 <Settings2 className="w-4 h-4" />
-                Einstellungen
+                <span className="hidden sm:inline">Einstellungen</span>
+                <span className="sm:hidden">Einst.</span>
               </Button>
             }
           />
           <WidgetManager>
             <Button 
               variant="outline" 
-              className="gap-2 border-border hover:border-primary hover:text-primary transition-all"
+              size="sm"
+              className="gap-2 border-border hover:border-primary hover:text-primary transition-all text-xs sm:text-sm"
             >
               <Settings2 className="w-4 h-4" />
-              Karten verwalten
+              <span className="hidden sm:inline">Karten verwalten</span>
+              <span className="sm:hidden">Karten</span>
             </Button>
           </WidgetManager>
         </div>
@@ -118,42 +137,42 @@ const Index = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Erledigte Tasks"
-          value={12}
+          value={stats.completedTasksThisWeek}
           description="Diese Woche"
           icon={CheckCircle2}
-          trend={{ value: 15, isPositive: true }}
+          trend={stats.tasksChange !== 0 ? { value: Math.abs(stats.tasksChange), isPositive: stats.tasksChange >= 0 } : undefined}
         />
         <StatsCard
           title="Ausstehend"
-          value={5}
+          value={stats.pendingTasksToday}
           description="Heute fällig"
           icon={Clock}
         />
         <StatsCard
           title="Team-Aktivität"
-          value="87%"
+          value={`${teamActivity}%`}
           description="Engagement-Rate"
           icon={TrendingUp}
-          trend={{ value: 3, isPositive: true }}
+          trend={teamActivity > 50 ? { value: 3, isPositive: true } : undefined}
         />
         <StatsCard
-          title="Aktive Mitglieder"
-          value={24}
-          description="In deinem Workspace"
+          title="Zeitbuchungen"
+          value={stats.totalTimeEntries}
+          description="Gesamt erfasst"
           icon={Users}
         />
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Left Column - Today Card + Tasks */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="md:col-span-2 lg:col-span-2 space-y-4 md:space-y-6">
           <TodayCard userName={userName} />
           <TasksCard />
         </div>
 
         {/* Right Column - Activity + Quick Actions */}
-        <div className="space-y-6">
+        <div className="md:col-span-2 lg:col-span-1 space-y-4 md:space-y-6">
           <QuickActionsCard />
           <ActivityCard />
         </div>

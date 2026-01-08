@@ -48,7 +48,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
           isMobile={isMobile}
         />
 
-        <main className="flex-1 p-4 lg:p-6 pb-24 lg:pb-6">
+        <main className="flex-1 p-4 lg:p-6 pt-6 lg:pt-8 pb-24 lg:pb-6">
           {children}
         </main>
       </div>

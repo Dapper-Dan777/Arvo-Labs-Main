@@ -38,7 +38,7 @@ const MoreSectionPage = () => {
   
   if (!section) {
     return (
-      <div className="space-y-6 animate-fade-in pb-20">
+      <div className="space-y-6 animate-fade-in pt-4 pb-20">
         <Link to="/more" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-4 h-4" />
           Zurück
@@ -51,7 +51,7 @@ const MoreSectionPage = () => {
   const Icon = section.icon;
   
   return (
-    <div className="space-y-6 animate-fade-in pb-20">
+    <div className="space-y-6 animate-fade-in pt-4 pb-20">
       {/* Header */}
       <div>
         <Link to="/more" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4">

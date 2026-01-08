@@ -373,3 +373,186 @@ export async function markNotificationAsRead(notificationId: string): Promise<bo
   }
 }
 
+// ============================================================================
+// TASKS
+// ============================================================================
+
+export interface Task {
+  id: string;
+  title: string;
+  due_date?: string;
+  due_time?: string;
+  completed: boolean;
+  priority: 'high' | 'medium' | 'low';
+  user_id: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Mock data for development when database is not available
+const MOCK_TASKS: Task[] = [
+  {
+    id: '1',
+    title: 'Projektplanung abschließen',
+    due_date: new Date().toISOString().split('T')[0],
+    due_time: '10:00',
+    completed: false,
+    priority: 'high',
+    user_id: 'demo-user-123',
+  },
+  {
+    id: '2',
+    title: 'Meeting mit Team',
+    due_date: new Date().toISOString().split('T')[0],
+    due_time: '14:00',
+    completed: false,
+    priority: 'medium',
+    user_id: 'demo-user-123',
+  },
+  {
+    id: '3',
+    title: 'Dokumentation aktualisieren',
+    due_date: new Date().toISOString().split('T')[0],
+    due_time: '16:00',
+    completed: true,
+    priority: 'low',
+    user_id: 'demo-user-123',
+  },
+];
+
+export async function getTasks(userId?: string): Promise<Task[]> {
+  try {
+    // Check if Supabase is configured
+    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+    const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+      console.warn('Supabase ist nicht konfiguriert. Verwende Mock-Daten für Tasks.');
+      return MOCK_TASKS;
+    }
+
+    const uid = userId || await getCurrentUserId();
+    if (!uid) return [];
+    
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('user_id', uid)
+      .order('due_date', { ascending: true })
+      .order('due_time', { ascending: true });
+
+    if (error) {
+      // Check if it's a "table not found" error
+      if (error.message?.includes('tasks') || error.message?.includes('schema cache')) {
+        console.warn('Tabelle tasks existiert nicht. Verwende Mock-Daten.');
+        return MOCK_TASKS;
+      }
+      
+      console.error('Supabase error:', error);
+      return MOCK_TASKS;
+    }
+    
+    return data || [];
+  } catch (error: any) {
+    console.error('Error fetching tasks:', error);
+    
+    if (error?.message?.includes('tasks') || error?.message?.includes('schema cache')) {
+      console.warn('Tabelle tasks existiert nicht. Verwende Mock-Daten.');
+      return MOCK_TASKS;
+    }
+    
+    return MOCK_TASKS;
+  }
+}
+
+export async function createTask(task: Omit<Task, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<Task | null> {
+  try {
+    const uid = await getCurrentUserId();
+    if (!uid) {
+      toast({
+        title: 'Fehler',
+        description: 'Du musst angemeldet sein, um Tasks zu erstellen.',
+        variant: 'destructive',
+      });
+      return null;
+    }
+    const { data, error } = await (supabase
+      .from('tasks') as any)
+      .insert([{ 
+        title: task.title,
+        due_date: task.due_date,
+        due_time: task.due_time,
+        completed: task.completed || false,
+        priority: task.priority || 'medium',
+        user_id: uid 
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    toast({
+      title: 'Erfolg',
+      description: 'Task wurde erstellt.',
+    });
+    
+    return data;
+  } catch (error) {
+    console.error('Error creating task:', error);
+    toast({
+      title: 'Fehler',
+      description: 'Task konnte nicht erstellt werden.',
+      variant: 'destructive',
+    });
+    return null;
+  }
+}
+
+export async function updateTask(taskId: string, updates: Partial<Omit<Task, 'id' | 'user_id' | 'created_at'>>): Promise<Task | null> {
+  try {
+    const uid = await getCurrentUserId();
+    if (!uid) return null;
+    const { data, error } = await (supabase
+      .from('tasks') as any)
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', taskId)
+      .eq('user_id', uid)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error updating task:', error);
+    return null;
+  }
+}
+
+export async function deleteTask(taskId: string): Promise<boolean> {
+  try {
+    const uid = await getCurrentUserId();
+    if (!uid) return false;
+    const { error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', taskId)
+      .eq('user_id', uid);
+
+    if (error) throw error;
+    
+    toast({
+      title: 'Erfolg',
+      description: 'Task wurde gelöscht.',
+    });
+    
+    return true;
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    toast({
+      title: 'Fehler',
+      description: 'Task konnte nicht gelöscht werden.',
+      variant: 'destructive',
+    });
+    return false;
+  }
+}

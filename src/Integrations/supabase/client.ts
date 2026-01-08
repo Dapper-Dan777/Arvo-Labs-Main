@@ -2,28 +2,56 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-// Unterstütze beide Variablennamen für Kompatibilität
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Support both Vite (import.meta.env) and Next.js (process.env)
+// Check if we're in a browser environment first
+const isBrowser = typeof window !== 'undefined';
+const hasProcessEnv = typeof process !== 'undefined' && process.env;
+const hasImportMeta = typeof import.meta !== 'undefined' && import.meta.env;
+
+// Try Next.js environment variables first, then Vite
+const SUPABASE_URL = 
+  (hasProcessEnv && (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL)) ||
+  (hasImportMeta && import.meta.env?.VITE_SUPABASE_URL) ||
+  undefined;
+
+const SUPABASE_KEY = 
+  (hasProcessEnv && (
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
+    process.env.VITE_SUPABASE_ANON_KEY || 
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY
+  )) ||
+  (hasImportMeta && (
+    import.meta.env?.VITE_SUPABASE_ANON_KEY || 
+    import.meta.env?.VITE_SUPABASE_PUBLISHABLE_KEY
+  )) ||
+  undefined;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
 // Check if Supabase is configured (nur in Development warnen)
-if (import.meta.env.DEV && (!SUPABASE_URL || !SUPABASE_KEY)) {
+const isDev = 
+  (hasProcessEnv && process.env.NODE_ENV === 'development') ||
+  (hasImportMeta && import.meta.env?.DEV) ||
+  false;
+
+if (isDev && (!SUPABASE_URL || !SUPABASE_KEY)) {
   console.error(
     '⚠️ Supabase ist nicht konfiguriert. Bitte setze die Umgebungsvariablen:\n' +
-    'VITE_SUPABASE_URL und VITE_SUPABASE_ANON_KEY (oder VITE_SUPABASE_PUBLISHABLE_KEY) in einer .env Datei.\n' +
+    (hasProcessEnv 
+      ? 'NEXT_PUBLIC_SUPABASE_URL und NEXT_PUBLIC_SUPABASE_ANON_KEY in einer .env.local Datei.\n'
+      : 'VITE_SUPABASE_URL und VITE_SUPABASE_ANON_KEY (oder VITE_SUPABASE_PUBLISHABLE_KEY) in einer .env Datei.\n') +
     '(Diese Warnung wird nur in Development angezeigt)'
   );
 }
 
 // Debug: Zeige Konfiguration in Development
-if (import.meta.env.DEV) {
+if (isDev) {
   console.log('🔍 Supabase Config:', {
     url: SUPABASE_URL ? `${SUPABASE_URL.substring(0, 30)}...` : 'NICHT GESETZT',
     hasKey: !!SUPABASE_KEY,
     keyLength: SUPABASE_KEY?.length || 0,
+    environment: hasProcessEnv ? 'Next.js' : 'Vite',
   });
 }
 

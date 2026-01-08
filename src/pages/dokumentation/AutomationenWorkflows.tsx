@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import { Layout } from "@/components/layout/Layout";
+import { LayoutNext } from "@/components/layout/LayoutNext";
 import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
@@ -9,12 +11,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { ArrowLeft, ArrowRight, Workflow, Zap, GitBranch, Settings } from "lucide-react";
 
 export default function AutomationenWorkflows() {
   return (
-    <Layout>
+    <LayoutNext>
       {/* Breadcrumb */}
       <section className="pt-8 pb-4">
         <div className="container mx-auto px-6 max-w-4xl">
@@ -22,13 +24,13 @@ export default function AutomationenWorkflows() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to="/">Startseite</Link>
+                  <Link href="/">Startseite</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to="/dokumentation">Dokumentation</Link>
+                  <Link href="/dokumentation">Dokumentation</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -45,7 +47,7 @@ export default function AutomationenWorkflows() {
         <div className="container mx-auto px-6 max-w-4xl">
           {/* Zurück-Button */}
           <Button variant="opuxGhost" asChild className="mb-8">
-            <Link to="/dokumentation">
+            <Link href="/dokumentation">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Zurück zur Übersicht
             </Link>
@@ -199,13 +201,13 @@ export default function AutomationenWorkflows() {
             </h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button variant="opux" asChild>
-                <Link to="/dokumentation/erste-automatisierung">
+                <Link href="/dokumentation/erste-automatisierung">
                   Erste Automatisierung erstellen
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
               <Button variant="opuxOutline" asChild>
-                <Link to="/dokumentation">
+                <Link href="/dokumentation">
                   Zurück zur Übersicht
                 </Link>
               </Button>
@@ -213,7 +215,7 @@ export default function AutomationenWorkflows() {
           </section>
         </div>
       </article>
-    </Layout>
+    </LayoutNext>
   );
 }
 

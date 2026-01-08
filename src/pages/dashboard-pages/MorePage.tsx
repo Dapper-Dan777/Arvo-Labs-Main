@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 
 const MorePage = () => {
   return (
-    <div className="space-y-6 animate-fade-in pb-20">
+    <div className="space-y-6 animate-fade-in pt-4 pb-20">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Mehr</h1>
         <p className="text-muted-foreground mt-1">

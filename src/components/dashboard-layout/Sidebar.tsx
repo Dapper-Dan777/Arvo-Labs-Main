@@ -14,7 +14,8 @@ import {
   Clock, 
   MoreHorizontal,
   Globe,
-  Lock
+  Lock,
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +44,7 @@ const getNavigationItems = (basePath: string, t: any): NavItem[] => [
   { id: 'teams', label: { de: t.nav.teams, en: t.nav.teams }, icon: Users, path: `${basePath}/teams`, badge: null, feature: 'teamManagement' },
   { id: 'documents', label: { de: t.nav.documents, en: t.nav.documents }, icon: FileText, path: `${basePath}/documents`, badge: null, feature: 'documents' },
   { id: 'dashboards', label: { de: t.nav.dashboards, en: t.nav.dashboards }, icon: LayoutDashboard, path: `${basePath}/dashboards`, badge: null, feature: 'dashboard' },
+  { id: 'design-showcase', label: { de: 'Design Showcase', en: 'Design Showcase' }, icon: Sparkles, path: `${basePath}/design-showcase`, badge: null },
   { id: 'whiteboards', label: { de: t.nav.whiteboards, en: t.nav.whiteboards }, icon: PenTool, path: `${basePath}/whiteboards`, badge: null, feature: 'whiteboards' },
   { id: 'forms', label: { de: t.nav.forms, en: t.nav.forms }, icon: ClipboardList, path: `${basePath}/forms`, badge: null, feature: 'forms' },
   { id: 'mail', label: { de: t.nav.mail, en: t.nav.mail }, icon: Mail, path: `${basePath}/mail`, badge: null, feature: 'mail' },
@@ -65,7 +67,6 @@ const ArvoLogo = ({ className }: { className?: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <rect width="32" height="32" rx="6" className="fill-indigo-600 dark:fill-indigo-500" />
     <path
       d="M10 10h12M10 16h12M10 22h8"
       stroke="white"

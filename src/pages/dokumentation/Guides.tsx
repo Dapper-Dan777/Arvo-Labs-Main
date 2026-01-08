@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import { Layout } from "@/components/layout/Layout";
+import { LayoutNext } from "@/components/layout/LayoutNext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -10,7 +12,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { ArrowLeft, ArrowRight, Lightbulb, BookOpen, Target, TrendingUp } from "lucide-react";
 
 export default function Guides() {
@@ -60,7 +62,7 @@ export default function Guides() {
   ];
 
   return (
-    <Layout>
+    <LayoutNext>
       {/* Breadcrumb */}
       <section className="pt-8 pb-4">
         <div className="container mx-auto px-6 max-w-4xl">
@@ -68,13 +70,13 @@ export default function Guides() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to="/">Startseite</Link>
+                  <Link href="/">Startseite</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to="/dokumentation">Dokumentation</Link>
+                  <Link href="/dokumentation">Dokumentation</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -91,7 +93,7 @@ export default function Guides() {
         <div className="container mx-auto px-6 max-w-6xl">
           {/* Zurück-Button */}
           <Button variant="opuxGhost" asChild className="mb-8">
-            <Link to="/dokumentation">
+            <Link href="/dokumentation">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Zurück zur Übersicht
             </Link>
@@ -127,7 +129,7 @@ export default function Guides() {
                   </CardHeader>
                   <CardContent>
                     <Button variant="opuxOutline" className="w-full" asChild>
-                      <Link to={guide.link}>
+                      <Link href={guide.link}>
                         Guide öffnen
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Link>
@@ -182,13 +184,13 @@ export default function Guides() {
             </h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button variant="opux" asChild>
-                <Link to="/dokumentation/erste-automatisierung">
+                <Link href="/dokumentation/erste-automatisierung">
                   Erste Automatisierung erstellen
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
               <Button variant="opuxOutline" asChild>
-                <Link to="/dokumentation">
+                <Link href="/dokumentation">
                   Zurück zur Übersicht
                 </Link>
               </Button>
@@ -196,7 +198,7 @@ export default function Guides() {
           </section>
         </div>
       </article>
-    </Layout>
+    </LayoutNext>
   );
 }
 

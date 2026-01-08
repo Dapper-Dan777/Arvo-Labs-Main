@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -17,10 +19,12 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Settings2 } from 'lucide-react';
+import { Settings2, Building2, User } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
+import { useCurrentPlan } from '@/hooks/useCurrentPlan';
+import { Separator } from '@/components/ui/separator';
 
 interface SettingsDialogProps {
   trigger?: React.ReactNode;
@@ -30,6 +34,7 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const { t } = useLanguage();
+  const { planInfo, planDisplay, isLoading: planLoading } = useCurrentPlan();
   const [defaultView, setDefaultView] = useState('dashboard');
   const [showStats, setShowStats] = useState(true);
   const [showTasks, setShowTasks] = useState(true);
@@ -71,6 +76,37 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
+          {/* Account Information */}
+          <div className="space-y-3 p-4 rounded-lg bg-secondary/50 border border-border">
+            <Label className="text-sm font-medium">Account-Informationen</Label>
+            {planLoading ? (
+              <p className="text-sm text-muted-foreground">Lädt...</p>
+            ) : planInfo ? (
+              <div className="space-y-2">
+                {planInfo.orgName && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Building2 className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Organisation:</span>
+                    <span className="font-medium text-foreground">{planInfo.orgName}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 text-sm">
+                  {planInfo.isTeam ? (
+                    <Building2 className="w-4 h-4 text-muted-foreground" />
+                  ) : (
+                    <User className="w-4 h-4 text-muted-foreground" />
+                  )}
+                  <span className="text-muted-foreground">Plan:</span>
+                  <span className="font-medium text-foreground">{planDisplay}</span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Kein Plan zugewiesen</p>
+            )}
+          </div>
+
+          <Separator />
+
           {/* Theme Settings */}
           <div>
             <Label className="text-sm font-medium mb-3 block">{t.dashboard.settings.appearance}</Label>

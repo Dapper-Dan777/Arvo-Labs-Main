@@ -274,7 +274,7 @@ const GoalsPage = () => {
   const progress = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
 
   return (
-    <div className="space-y-6 animate-fade-in pb-20">
+    <div className="space-y-6 animate-fade-in pt-4 pb-20">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Ziele</h1>

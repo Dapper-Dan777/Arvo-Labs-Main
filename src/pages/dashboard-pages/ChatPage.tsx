@@ -81,7 +81,7 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] lg:h-[calc(100vh-6rem)] pb-20 lg:pb-0">
+    <div className="flex flex-col h-[calc(100vh-8rem)] lg:h-[calc(100vh-6rem)] pt-4 pb-20 lg:pb-0">
       {/* Messages Container */}
       <div className="flex-1 overflow-y-auto py-6 px-4 space-y-6 scrollbar-thin">
         {messages.map((message) => (

@@ -72,7 +72,7 @@ const AssistantPage = () => {
   };
   
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] lg:h-[calc(100vh-6rem)] pb-20 lg:pb-0">
+    <div className="flex flex-col h-[calc(100vh-8rem)] lg:h-[calc(100vh-6rem)] pt-4 pb-20 lg:pb-0">
       {/* Header */}
       <div className="flex items-center gap-3 pb-4 border-b border-border">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">

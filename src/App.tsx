@@ -50,6 +50,7 @@ import DashboardWhiteboards from "./pages/dashboard/DashboardWhiteboards.tsx";
 import DashboardForms from "./pages/dashboard/DashboardForms.tsx";
 import DashboardMore from "./pages/dashboard/DashboardMore.tsx";
 import DashboardBilling from "./pages/dashboard/DashboardBilling.tsx";
+import DashboardDesignShowcase from "./pages/dashboard/DashboardDesignShowcase.tsx";
 import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 import SignIn from "./pages/auth/SignIn.tsx";
 import SignUp from "./pages/auth/SignUp.tsx";
@@ -98,7 +99,7 @@ const App = () => (
               <Route path="/payment/success" element={<PaymentSuccess />} />
               
               {/* Protected Routes - Require Authentication */}
-              <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />
+              {/* Spezifische Dashboard-Routen ZUERST (wichtig für React Router) */}
               <Route path="/dashboard/billing" element={<ProtectedRoute><DashboardBilling /></ProtectedRoute>} />
               <Route path="/dashboard/starter" element={<ProtectedRoute><DashboardStarter /></ProtectedRoute>} />
               <Route path="/dashboard/pro" element={<ProtectedRoute><DashboardPro /></ProtectedRoute>} />
@@ -115,8 +116,11 @@ const App = () => (
               <Route path="/dashboard/assistant" element={<ProtectedRoute><DashboardAssistant /></ProtectedRoute>} />
               <Route path="/dashboard/whiteboards" element={<ProtectedRoute><DashboardWhiteboards /></ProtectedRoute>} />
               <Route path="/dashboard/forms" element={<ProtectedRoute><DashboardForms /></ProtectedRoute>} />
-              <Route path="/dashboard/more" element={<ProtectedRoute><DashboardMore /></ProtectedRoute>} />
+              <Route path="/dashboard/design-showcase" element={<ProtectedRoute><DashboardDesignShowcase /></ProtectedRoute>} />
               <Route path="/dashboard/more/:sectionId" element={<ProtectedRoute><DashboardMore /></ProtectedRoute>} />
+              <Route path="/dashboard/more" element={<ProtectedRoute><DashboardMore /></ProtectedRoute>} />
+              {/* Allgemeine /dashboard Route ZULETZT (als Fallback) */}
+              <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

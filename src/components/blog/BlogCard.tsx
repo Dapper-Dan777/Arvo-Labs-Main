@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Calendar, Tag } from "lucide-react";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
@@ -35,7 +37,7 @@ export function BlogCard({ post }: BlogCardProps) {
   return (
     <article className="group">
       <Link
-        to={`/blog/${post.slug}`}
+        href={`/blog/${post.slug}`}
         className="block p-6 rounded-xl bg-card border border-border hover:border-foreground/20 transition-all hover:shadow-lg h-full flex flex-col"
       >
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
