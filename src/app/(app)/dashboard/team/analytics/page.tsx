@@ -127,7 +127,7 @@ export default function TeamAnalyticsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <Icon className={`h-5 w-5 ${isHighlight ? "text-white" : "text-muted-foreground"}`} />
-                  <span className={`text-xs flex items-center gap-1 ${isHighlight ? "text-white" : (kpi.positive ? "text-green-600" : "text-red-600")}`}>
+                  <span className={`text-xs flex items-center gap-1 ${isHighlight ? "text-white" : (kpi.positive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400")}`}>
                     {kpi.positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                     {kpi.change}
                   </span>

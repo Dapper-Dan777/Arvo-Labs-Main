@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 interface ColorUsage {
   color: string;

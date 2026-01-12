@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 interface Goal {
   id: string;
@@ -82,10 +83,10 @@ const mockGoals: Goal[] = [
 ];
 
 const categoryConfig = {
-  workflow: { label: "Workflow", color: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
-  team: { label: "Team", color: "bg-primary/10 text-primary border-primary/20" },
-  revenue: { label: "Revenue", color: "bg-purple-500/10 text-purple-500 border-purple-500/20" },
-  personal: { label: "Persönlich", color: "bg-orange-500/10 text-orange-500 border-orange-500/20" },
+  workflow: { label: "Workflow", color: "bg-blue-500/10 dark:bg-blue-500/20 text-blue-500 dark:text-blue-400 border-blue-500/20 dark:border-blue-500/30" },
+  team: { label: "Team", color: "bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary border-primary/20 dark:border-primary/30" },
+  revenue: { label: "Revenue", color: "bg-purple-500/10 dark:bg-purple-500/20 text-purple-500 dark:text-purple-400 border-purple-500/20 dark:border-purple-500/30" },
+  personal: { label: "Persönlich", color: "bg-orange-500/10 dark:bg-orange-500/20 text-orange-500 dark:text-orange-400 border-orange-500/20 dark:border-orange-500/30" },
 };
 
 export default function TeamGoalsPage() {
@@ -199,7 +200,7 @@ export default function TeamGoalsPage() {
                 <p className="text-sm text-muted-foreground">Durchschnittlicher Fortschritt</p>
                 <p className="text-2xl font-bold">{Math.round(averageProgress)}%</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-blue-500 opacity-50" />
+              <TrendingUp className="h-8 w-8 text-blue-500 dark:text-blue-400 opacity-50" />
             </div>
           </CardContent>
         </Card>

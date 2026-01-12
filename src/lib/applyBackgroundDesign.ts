@@ -119,6 +119,24 @@ function hexToHsl(hex: string): string {
  */
 export function applyBackgroundDesign(config: BackgroundDesignConfig) {
   const rootElement = document.documentElement;
+  
+  // Stelle sicher, dass der Hintergrund basierend auf dem Theme gesetzt wird
+  const currentTheme = rootElement.classList.contains('dark') ? 'dark' : 'light';
+  if (currentTheme === 'light') {
+    // Im Light-Mode: Stelle sicher, dass der Hintergrund hell bleibt
+    rootElement.style.setProperty('--background', '0 0% 100%');
+    rootElement.style.backgroundColor = '#fafbfc';
+    if (document.body) {
+      document.body.style.backgroundColor = '#fafbfc';
+    }
+  } else {
+    // Im Dark-Mode: Dunkler Hintergrund
+    rootElement.style.setProperty('--background', '240 10% 6%');
+    rootElement.style.backgroundColor = '#050505';
+    if (document.body) {
+      document.body.style.backgroundColor = '#050505';
+    }
+  }
 
   // Setze CSS-Variablen für Hintergründe
   if (config.primary) {

@@ -433,9 +433,8 @@ export default function TeamTimesheetsPage() {
         description="Arbeitszeit verfolgen und dokumentieren"
       />
       
-      <div className="flex items-center justify-end">
-          <p className="text-sm text-muted-foreground">Verfolge deine Arbeitszeit und Projekte</p>
-        </div>
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">Verfolge deine Arbeitszeit und Projekte</p>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => setNewEntryOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
@@ -459,7 +458,6 @@ export default function TeamTimesheetsPage() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -487,7 +485,7 @@ export default function TeamTimesheetsPage() {
                 <p className="text-sm text-muted-foreground">Diese Woche</p>
                 <p className="text-2xl font-bold">{totalHours.toFixed(1)}h</p>
               </div>
-              <Calendar className="h-8 w-8 text-blue-500 opacity-50" />
+              <Calendar className="h-8 w-8 text-blue-500 dark:text-blue-400 opacity-50" />
             </div>
           </CardContent>
         </Card>
@@ -509,7 +507,7 @@ export default function TeamTimesheetsPage() {
                 <p className="text-sm text-muted-foreground">Einträge</p>
                 <p className="text-2xl font-bold">{entries.length}</p>
               </div>
-              <Clock className="h-8 w-8 text-purple-500 opacity-50" />
+              <Clock className="h-8 w-8 text-purple-500 dark:text-purple-400 opacity-50" />
             </div>
           </CardContent>
         </Card>

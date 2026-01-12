@@ -611,10 +611,10 @@ export default function CustomersPage() {
   const getPrioColor = (prio: string): string => {
     if (!prio) return "text-muted-foreground";
     const prioLower = prio.toLowerCase().trim();
-    if (prioLower === "niedrig") return "text-green-600 font-medium";
-    if (prioLower === "mittel") return "text-yellow-600 font-medium";
-    if (prioLower === "hoch") return "text-red-600 font-medium";
-    if (prioLower === "sehr hoch" || prioLower === "sehrhoch") return "text-red-700 font-bold";
+    if (prioLower === "niedrig") return "text-green-600 dark:text-green-400 font-medium";
+    if (prioLower === "mittel") return "text-yellow-600 dark:text-yellow-400 font-medium";
+    if (prioLower === "hoch") return "text-red-600 dark:text-red-400 font-medium";
+    if (prioLower === "sehr hoch" || prioLower === "sehrhoch") return "text-red-700 dark:text-red-500 font-bold";
     return "text-foreground";
   };
 
@@ -873,9 +873,8 @@ export default function CustomersPage() {
         description="Kunden-Datenbank verwalten und organisieren"
       />
       
-      <div className="flex items-center justify-end">
-          <p className="text-sm text-muted-foreground">Verwalten Sie Ihre Kunden-Datenbank</p>
-        </div>
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">Verwalten Sie Ihre Kunden-Datenbank</p>
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -891,7 +890,6 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4">

@@ -64,7 +64,7 @@ export default function AutomationsPage() {
 
   return (
     <ReactFlowProvider>
-      <div className="relative h-screen w-full overflow-hidden bg-[#0A0A0F]">
+      <div className="relative h-screen w-full overflow-hidden bg-background dark:bg-[#0A0A0F]">
         {/* 3D Background with Particles - Disabled to avoid blocking interactions */}
         {/* <Canvas3DBackground /> */}
 

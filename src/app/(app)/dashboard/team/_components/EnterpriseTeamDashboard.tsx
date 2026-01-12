@@ -232,12 +232,12 @@ function SortableStatCard({
               </div>
             ) : (
               <div
-                className={cn(
+                  className={cn(
                   "p-2 rounded-lg",
-                  stat.icon === "zap" && "bg-primary/10",
-                  stat.icon === "activity" && "bg-primary/10",
-                  stat.icon === "users" && "bg-blue-500/10",
-                  stat.icon === "clock" && "bg-purple-500/10",
+                  stat.icon === "zap" && "bg-primary/10 dark:bg-primary/20",
+                  stat.icon === "activity" && "bg-primary/10 dark:bg-primary/20",
+                  stat.icon === "users" && "bg-blue-500/10 dark:bg-blue-500/20",
+                  stat.icon === "clock" && "bg-purple-500/10 dark:bg-purple-500/20",
                 )}
               >
                 <Icon
@@ -245,8 +245,8 @@ function SortableStatCard({
                     "h-5 w-5",
                     stat.icon === "zap" && "text-primary",
                     stat.icon === "activity" && "text-primary",
-                    stat.icon === "users" && "text-blue-500",
-                    stat.icon === "clock" && "text-purple-500",
+                    stat.icon === "users" && "text-blue-500 dark:text-blue-400",
+                    stat.icon === "clock" && "text-purple-500 dark:text-purple-400",
                   )}
                 />
               </div>
