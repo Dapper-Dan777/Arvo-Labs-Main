@@ -160,6 +160,7 @@ const DropdownMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTML
 };
 DropdownMenuShortcut.displayName = "DropdownMenuShortcut";
 
+// Export all dropdown menu components
 export {
   DropdownMenu,
   DropdownMenuTrigger,
