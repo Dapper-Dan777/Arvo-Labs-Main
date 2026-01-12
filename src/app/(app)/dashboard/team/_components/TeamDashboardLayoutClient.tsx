@@ -24,19 +24,61 @@ export function TeamDashboardLayoutClient({ children, plan }: TeamDashboardLayou
   }, [isMobile]);
 
   useEffect(() => {
-    // Sicherstellen, dass das Theme nach dem Login angewendet wird
-    const root = document.documentElement;
-    const saved = localStorage.getItem('arvo-theme') || 'light';
-    root.classList.remove('light', 'dark');
-    root.classList.add(saved);
-    // Hintergrund nur auf documentElement setzen, nicht auf body
-    // Der Hintergrund wird durch die Hintergrund-Design-Funktion gesetzt
-    if (document.body) {
-      document.body.style.backgroundColor = 'transparent';
-    }
+    // Funktion zum Setzen des Themes und Hintergrunds
+    const applyTheme = () => {
+      const root = document.documentElement;
+      const saved = localStorage.getItem('arvo-theme') || 'light';
+      root.classList.remove('light', 'dark');
+      root.classList.add(saved);
+      
+      // Setze Hintergrund basierend auf Theme
+      const bgColor = saved === 'dark' ? '#050505' : '#fafbfc';
+      root.style.backgroundColor = bgColor;
+      if (document.body) {
+        document.body.style.backgroundColor = bgColor;
+      }
+      
+      // Lade und wende das gespeicherte Hintergrund-Design an
+      loadAndApplyBackgroundDesign();
+    };
     
-    // Lade und wende das gespeicherte Hintergrund-Design an
-    loadAndApplyBackgroundDesign();
+    // Initial anwenden
+    applyTheme();
+    
+    // Listener für Theme-Änderungen
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'arvo-theme') {
+        applyTheme();
+      }
+    };
+    
+    // Listener für Theme-Toggle (falls ein Custom Event verwendet wird)
+    const handleThemeChange = () => {
+      applyTheme();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('theme-change', handleThemeChange);
+    
+    // Prüfe alle 100ms auf Theme-Änderungen (Fallback)
+    const interval = setInterval(() => {
+      const root = document.documentElement;
+      const saved = localStorage.getItem('arvo-theme') || 'light';
+      const hasLight = root.classList.contains('light');
+      const hasDark = root.classList.contains('dark');
+      
+      if (saved === 'light' && !hasLight) {
+        applyTheme();
+      } else if (saved === 'dark' && !hasDark) {
+        applyTheme();
+      }
+    }, 100);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('theme-change', handleThemeChange);
+      clearInterval(interval);
+    };
   }, []);
 
   // Sidebar-Breite: 64px (w-16) wenn collapsed, 224px (w-56) wenn expanded
@@ -45,7 +87,7 @@ export function TeamDashboardLayoutClient({ children, plan }: TeamDashboardLayou
   const sidebarPxWidth = sidebarExpanded ? 224 : 64; // 56 (w-56) * 4 = 224px, 16 (w-16) * 4 = 64px
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
+    <div className="min-h-screen bg-[#fafbfc] dark:bg-[#050505]">
       <TeamDashboardSidebar 
         isOpen={sidebarOpen} 
         onClose={() => setSidebarOpen(false)}
@@ -55,11 +97,10 @@ export function TeamDashboardLayoutClient({ children, plan }: TeamDashboardLayou
       />
 
       <div
-        className="transition-all duration-300"
+        className="transition-all duration-300 bg-[#fafbfc] dark:bg-[#050505]"
         style={{
           paddingLeft: isMobile ? '0px' : `${sidebarPxWidth}px`,
           paddingTop: '0px',
-          backgroundColor: 'transparent',
         }}
       >
         <TeamDashboardHeader 
@@ -72,14 +113,13 @@ export function TeamDashboardLayoutClient({ children, plan }: TeamDashboardLayou
         />
 
         <main 
-          className="overflow-y-auto relative z-10 scrollbar-hide"
+          className="overflow-y-auto relative z-10 scrollbar-hide bg-[#fafbfc] dark:bg-[#050505]"
           style={{
             height: 'calc(100vh - 5rem)',
             paddingTop: '5.5rem',
-            backgroundColor: 'transparent',
           }}
         >
-          <div className="w-full p-6 lg:p-12" style={{ backgroundColor: 'transparent' }}>
+          <div className="w-full p-6 lg:p-12">
             {children}
           </div>
         </main>

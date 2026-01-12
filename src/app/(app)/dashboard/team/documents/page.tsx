@@ -160,7 +160,6 @@ export default function TeamDocumentsPage() {
             Hochladen
           </Button>
         </div>
-      </div>
 
       {/* Search and Filters */}
       <div className="flex items-center gap-4">

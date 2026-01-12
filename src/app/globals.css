@@ -144,6 +144,15 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Sicherstellen, dass html-Element theme-aware ist */
+  html.light {
+    background-color: #fafbfc !important;
+  }
+
+  html.dark {
+    background-color: #050505 !important;
+  }
+
   /* Typography Hierarchy */
   h1 {
     font-size: 1.875rem; /* 30px */
@@ -668,4 +677,119 @@
     rgba(139, 92, 246, 0.15) 50%,
     rgba(236, 72, 153, 0.1) 100%
   );
+}
+
+/* ===== BACKGROUND DESIGN CLASSES ===== */
+/* Stelle sicher, dass Background-Design-Klassen theme-aware sind */
+.neon-grid-background,
+.holographic-background,
+.cyber-mesh-background,
+.liquid-gradient-background,
+.particle-field-background,
+.neural-network-background,
+.aurora-borealis-background,
+.matrix-rain-background,
+.circuit-board-background,
+.starry-night-background,
+.geometric-waves-background,
+.prism-light-background,
+.hexagon-pattern-background,
+.flowing-lines-background,
+.digital-rain-background,
+.cosmic-dust-background,
+.minimal-dots-background,
+.subtle-lines-background,
+.soft-gradient-background,
+.paper-texture-background,
+.gentle-waves-background,
+.clean-grid-background,
+.soft-blur-background,
+.minimal-mesh-background,
+.geometric-shapes-background,
+.wave-pattern-background,
+.dot-matrix-background,
+.radial-gradient-background,
+.diagonal-lines-background,
+.organic-blobs-background,
+.tech-circuit-background,
+.watercolor-background,
+.noise-texture-background,
+.luminous-gradient-background {
+  background-color: var(--color-bg-primary) !important;
+}
+
+/* Im Light-Mode: Heller Hintergrund */
+.light .neon-grid-background,
+.light .holographic-background,
+.light .cyber-mesh-background,
+.light .liquid-gradient-background,
+.light .particle-field-background,
+.light .neural-network-background,
+.light .aurora-borealis-background,
+.light .matrix-rain-background,
+.light .circuit-board-background,
+.light .starry-night-background,
+.light .geometric-waves-background,
+.light .prism-light-background,
+.light .hexagon-pattern-background,
+.light .flowing-lines-background,
+.light .digital-rain-background,
+.light .cosmic-dust-background,
+.light .minimal-dots-background,
+.light .subtle-lines-background,
+.light .soft-gradient-background,
+.light .paper-texture-background,
+.light .gentle-waves-background,
+.light .clean-grid-background,
+.light .soft-blur-background,
+.light .minimal-mesh-background,
+.light .geometric-shapes-background,
+.light .wave-pattern-background,
+.light .dot-matrix-background,
+.light .radial-gradient-background,
+.light .diagonal-lines-background,
+.light .organic-blobs-background,
+.light .tech-circuit-background,
+.light .watercolor-background,
+.light .noise-texture-background,
+.light .luminous-gradient-background {
+  background-color: #fafbfc !important;
+}
+
+/* Im Dark-Mode: Dunkler Hintergrund */
+.dark .neon-grid-background,
+.dark .holographic-background,
+.dark .cyber-mesh-background,
+.dark .liquid-gradient-background,
+.dark .particle-field-background,
+.dark .neural-network-background,
+.dark .aurora-borealis-background,
+.dark .matrix-rain-background,
+.dark .circuit-board-background,
+.dark .starry-night-background,
+.dark .geometric-waves-background,
+.dark .prism-light-background,
+.dark .hexagon-pattern-background,
+.dark .flowing-lines-background,
+.dark .digital-rain-background,
+.dark .cosmic-dust-background,
+.dark .minimal-dots-background,
+.dark .subtle-lines-background,
+.dark .soft-gradient-background,
+.dark .paper-texture-background,
+.dark .gentle-waves-background,
+.dark .clean-grid-background,
+.dark .soft-blur-background,
+.dark .minimal-mesh-background,
+.dark .geometric-shapes-background,
+.dark .wave-pattern-background,
+.dark .dot-matrix-background,
+.dark .radial-gradient-background,
+.dark .diagonal-lines-background,
+.dark .organic-blobs-background,
+.dark .tech-circuit-background,
+.dark .watercolor-background,
+.dark .noise-texture-background,
+.dark .luminous-gradient-background {
+  background-color: #050505 !important;
 }
